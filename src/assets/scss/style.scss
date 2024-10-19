@@ -1,0 +1,567 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import './variables.scss';
+
+:active,
+:hover,
+:focus {
+  outline: 0;
+  outline-offset: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+div,
+p,
+span,
+a,
+li {
+  font-family: 'Inter', sans-serif;
+}
+body.watch__mode {
+  transition: 0.3s ease-in;
+}
+body::after {
+  opacity: 0;
+  visibility: hidden;
+  content: '';
+  width: 100%;
+  height: 100vh;
+  position: absolute;
+  background-color: rgba($color: #000000, $alpha: 0.25);
+  left: 0;
+  top: 0;
+  z-index: 100;
+  transition: 0.3s ease-in-out;
+}
+body.watch__mode::after {
+  opacity: 1;
+  visibility: visible;
+}
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 10px;
+}
+
+a {
+  color: $blue;
+}
+
+.v-header {
+  position: relative;
+  z-index: 200;
+}
+
+.v-header-top {
+  height: 40px;
+  padding: 7px 0;
+  background-color: #fff;
+  @media (max-width: 600px) {
+    display: none;
+  }
+  &__switcher {
+    background-color: $gray;
+    padding: 2px;
+    width: 190px;
+    height: 30px;
+    border-radius: 4px;
+  }
+  &__switcher-picker {
+    font-size: 14px;
+    padding: 2px 10px;
+    text-align: center;
+  }
+  &__switcher-picker.active {
+    background-color: #ff6c2c;
+    color: white;
+    border-radius: 4px;
+  }
+}
+
+.menu {
+  &__btn {
+    background-color: #ff6c2c;
+    color: #fff;
+    padding: 5px 9px;
+    border-radius: 5px;
+    font-size: 14px;
+    @media (max-width: 730px) {
+      font-size: 10px;
+    }
+  }
+  &__list {
+    gap: 7px;
+  }
+  &__list-item {
+    @media (max-width: 730px) {
+      font-size: 12px;
+    }
+  }
+  &__list-item:nth-child(1) {
+    @media (hover: hover) {
+      &:hover .v-header-menu {
+        display: flex;
+      }
+    }
+  }
+  &__list-item:nth-child(2) {
+    @media (max-width: 999px) {
+      display: none;
+    }
+  }
+}
+
+.v-select {
+  color: $blue;
+  width: 35px;
+  position: relative;
+  &::after {
+    content: url(../images/arrow-up.svg);
+
+    position: absolute;
+    width: 5px;
+    height: 3px;
+    top: -3px;
+    right: 4px;
+  }
+  &.selected::after {
+    content: url(../images/arrow-down.svg);
+  }
+
+  & * {
+    cursor: pointer;
+  }
+  &__selected {
+  }
+}
+
+.options {
+  position: absolute;
+  background-color: white;
+  padding: 5px;
+}
+
+.v-header-bottom {
+  background-color: $blue;
+  height: 55px;
+  @media (max-width: 600px) {
+    display: none;
+  }
+  &__container {
+    padding: 7px;
+    color: #fff;
+  }
+  &__search {
+    display: inline-block;
+    max-width: 275px;
+    margin-left: 10px;
+    height: 40px;
+    position: relative;
+    @media (max-width: 760px) {
+      max-width: clamp(8.125rem, -8.281rem + 43.75vw, 12.5rem);
+    }
+  }
+  &__search input {
+    width: 100%;
+    border: 0;
+    padding: 0 35px 0 16px;
+    border-radius: 4px;
+    height: 100%;
+    color: #000;
+  }
+  &__search::after {
+    content: url(../images/search.svg);
+    position: absolute;
+    right: 10px;
+    bottom: 0px;
+  }
+  &__search input {
+  }
+}
+.bottom-menu {
+  width: 90%;
+  &__list-item {
+    cursor: pointer;
+    @media (max-width: 950px) {
+      font-size: clamp(0.625rem, -0.375rem + 2.11vw, 0.875rem);
+    }
+  }
+  &__list-item:nth-child(1):hover ~ .v-header-menu {
+    display: flex;
+  }
+  &__list-item a {
+    color: #fff;
+  }
+}
+
+.v-header-mob {
+  display: none;
+  padding-top: 10px;
+  @media (max-width: 600px) {
+    display: flex;
+  }
+  &__input {
+    height: 50px;
+    background-color: #f2f1f0;
+    position: relative;
+    border-radius: 10px;
+  }
+  &__input input {
+    height: 100%;
+    width: 100%;
+    background-color: #f2f1f0;
+    padding: 0 30px 0 35px;
+    border-radius: 10px;
+  }
+  &__input::after {
+    content: url(../images/search.svg);
+    position: absolute;
+    left: 5px;
+    bottom: 7px;
+  }
+  &__input::before {
+    content: url(../images/filter.svg);
+    position: absolute;
+    right: 5px;
+    bottom: 7px;
+  }
+}
+
+.chat {
+  position: relative;
+}
+.chat__item {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+
+  background-color: red;
+  color: #fff;
+  font-size: 9px;
+  border-radius: 50%;
+
+  right: -5px;
+  top: -4px;
+}
+.v-header-menu {
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.2s ease-in;
+  position: absolute;
+  left: 50%;
+
+  transform: translateX(-50%);
+  z-index: 200;
+  height: 380px;
+  width: clamp(36.875rem, -0.625rem + 100vw, 74.375rem);
+  padding: 25px 0 45px;
+  flex-wrap: wrap;
+  background-color: #ffff;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  @media (max-width: 600px) {
+    display: none;
+    opacity: 0;
+  }
+  &__container {
+    @media (max-width: 970px) {
+      gap: 10px !important;
+    }
+  }
+
+  &.active {
+    opacity: 1;
+    visibility: visible;
+  }
+  &__theme {
+    width: 260px;
+    height: 40px;
+    padding: 10px 0 10px 8px;
+    transition: 0.3s ease-in;
+    border-radius: 4px;
+    cursor: pointer;
+
+    position: relative;
+    @media (hover: hover) {
+      &:hover {
+        background-color: $lightgray;
+      }
+    }
+    @media (max-width: 760px) {
+      width: 150px;
+      font-size: 12px;
+    }
+  }
+  &__theme::after {
+    content: url(../images/arrow-right.svg);
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    right: 0;
+  }
+  &__container {
+    gap: 100px; /* Задает расстояние между главными блоками */
+  }
+  &__links {
+    height: 85%;
+    display: inline-flex;
+    width: 50%;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 0 clamp(0rem, -9.534rem + 25.42vw, 9.375rem); /* Расстояние между элементами */
+    @media (max-width: 1050px) {
+      gap: 0 clamp(0rem, -7.5rem + 20vw, 5.625rem);
+    }
+    @media (max-width: 790px) {
+      gap: 0 10px;
+    }
+  }
+  &__content {
+    width: 100%; /* Задает ширину контейнера */
+    height: 380px; /* Позволяет контенту занимать всю высоту */
+  }
+  &__title {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 21.5px;
+    margin-bottom: 25px; /* Отступ снизу для заголовка */
+  }
+}
+
+.category {
+  margin-bottom: 20px;
+  min-width: auto;
+  height: auto;
+  @media (max-width: 760px) {
+    font-size: 12px;
+  }
+
+  & * {
+    /* Стили для вложенных элементов */
+  }
+  &__title {
+    font-weight: 500;
+    margin-bottom: 15px; /* Отступ снизу для заголовка категории */
+    max-width: 110px; /* Максимальная ширина заголовка */
+  }
+  &__subcategory {
+    @media (max-width: 760px) {
+      font-size: 11px;
+    }
+    /* Стили для подкатегорий */
+  }
+}
+
+.v-cards {
+  margin-top: 37px;
+  &__list {
+    gap: 16px;
+  }
+}
+.category-card {
+  width: 161px;
+  height: 90px;
+  background-color: $lightgray;
+
+  border-bottom-right-radius: 18px;
+  border-top-left-radius: 18px;
+  position: relative;
+  padding: 10px;
+
+  & p {
+    font-size: 13px;
+    width: 90px;
+    color: #000;
+  }
+
+  & img {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+  }
+}
+
+.v-recomendations {
+  margin-top: 50px;
+  &__title {
+    margin-bottom: 25px;
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+  &__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+}
+.v-product {
+  width: 268px;
+  height: 360px;
+  border-radius: 8px;
+  position: relative;
+  border: 1px solid #cfcfcf;
+  & img {
+    margin-bottom: 12px;
+  }
+}
+.recomendation-card {
+  &__mark {
+    background-image: url(../images/salon-bg.svg);
+    background-repeat: no-repeat;
+    color: #fff;
+    width: 70px;
+    height: 20px;
+    font-size: 12px;
+
+    position: absolute;
+    bottom: 170px;
+    left: 15px;
+    z-index: 100;
+  }
+  &__viewed {
+    background-color: rgba($color: #000000, $alpha: 0.58);
+    border-radius: 4px;
+    padding: 3px;
+    color: #fff;
+    display: inline-block;
+
+    position: absolute;
+    top: 10px;
+    left: 10px;
+
+    z-index: 100;
+  }
+
+  &__content {
+    padding: 0 16px;
+  }
+
+  &__price {
+    font-size: 17px;
+    font-weight: 500;
+  }
+  &__price.vip {
+    background-color: #ff6c2c;
+    padding: 0 4px;
+    border-radius: 4px;
+    color: #fff;
+  }
+  &__title {
+    font-size: 19px;
+    font-weight: 500;
+  }
+  &__block {
+    margin-bottom: 5px;
+  }
+  &__description {
+    font-size: 17px;
+  }
+  &__location {
+    font-size: 15;
+  }
+}
+.v-pagination {
+  gap: 16px;
+  margin-top: 32px;
+  &__list {
+    gap: 16px;
+  }
+  &__list-item,
+  &__next {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid #cfcfcf;
+    font-weight: 500;
+    font-size: 14px;
+  }
+  &__list-item.active {
+    background-color: #0c4a60;
+
+    border: none;
+    & a {
+      color: #fff;
+    }
+  }
+  &__list-item a {
+    width: 32px;
+    height: 32px;
+  }
+}
+.swiper-pagination {
+  display: flex;
+  height: 10px;
+}
+.swiper-pagination-bullet {
+  width: 100%;
+  height: 2px;
+  background-color: #e8e8e8;
+  opacity: 1;
+  border-radius: 0;
+  &.swiper-pagination-bullet-active {
+    background-color: $orange;
+  }
+}
+.overlay {
+  height: 100%;
+  width: 100%;
+}
+.last-slide {
+  position: relative;
+  &__overlay {
+    position: absolute;
+    background-color: rgba($color: #000000, $alpha: 0.3);
+    color: #fff;
+    font-size: 18px;
+    width: 266px;
+    height: 200px;
+    top: 0;
+    left: 0;
+    text-wrap: wrap;
+    text-align: center;
+  }
+  & span {
+    width: 60px;
+  }
+}
+
+.v-cars {
+  margin-top: 32px;
+}
+.title {
+  font-size: 17px;
+  font-weight: 500;
+  color: #000;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+.v-cars__popular {
+  &-title {
+    font-size: 24px;
+  }
+  &-marks {
+    height: 170px !important;
+  }
+  &-title span {
+    color: $orange;
+  }
+  &-link {
+    color: #000;
+  }
+  &-link span {
+    color: #707070;
+  }
+  &-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px clamp(0.625rem, -11.25rem + 31.67vw, 12.5rem);
+  }
+}
