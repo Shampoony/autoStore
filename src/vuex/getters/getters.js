@@ -5,7 +5,10 @@ export default {
   CARDS(state) {
     return state.cards
   },
-  CATEGORIES(state) {
-    return state.categories
+  TRANSPORT_CATEGORIES(state) {
+    return state.transport_categories
+  },
+  TRANSPORT_SUB_CATEGORIES(state) {
+    return state.transport_sub_categories
   }
 }

@@ -11,7 +11,9 @@ let store = createStore({
   state: {
     recomendations: [],
     cards: [],
-    categories: []
+    transport_categories: [],
+    tokens: [],
+    transport_sub_categories: []
   },
   mutations,
   actions,

@@ -1,5 +1,5 @@
 <template>
-  <div class="v-pagination flex items-center justify-center">
+  <div v-if="totalPages > 1" class="v-pagination flex items-center justify-center">
     <ul class="v-pagination__list flex">
       <li
         v-for="page in totalPages"

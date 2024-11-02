@@ -1,15 +1,27 @@
 <template>
-  <div class="v-select" :class="{ selected: !areOptionsVisible }">
-    <p class="v-select__selected" @click="areOptionsVisible = !areOptionsVisible">{{ selected }}</p>
-    <div class="options" v-if="areOptionsVisible">
-      <p
-        class="v-select__options"
-        v-for="option in options"
+  <div
+    class="v-selectStyled flex items-center justify-start"
+    :class="{ selected: !areOptionsVisible }"
+    @click="areOptionsVisible = !areOptionsVisible"
+  >
+    <input
+      class="v-selectStyled__selected"
+      v-model="selectedValue"
+      :placeholder="selected"
+      :name="options.name"
+      readonly
+    />
+
+    <div class="v-selectStyled__options" v-if="areOptionsVisible">
+      <p class="v-selectStyled__reset v-selectStyled__option" @click="resetOption">Сбросить</p>
+      <div
+        class="v-selectStyled__option"
+        v-for="option in options.options"
         :key="option.value"
         @click="selectOption(option)"
       >
         {{ option.name }}
-      </p>
+      </div>
     </div>
   </div>
 </template>
@@ -18,7 +30,7 @@
 export default {
   props: {
     options: {
-      type: Array,
+      type: Object,
       default() {
         return []
       }
@@ -27,14 +39,22 @@ export default {
   data() {
     return {
       areOptionsVisible: false,
-      selected: 'RU'
+      selected: this.options.default
     }
   },
-  computed: {},
+  computed: {
+    selectedValue() {
+      return this.selected !== this.options.default ? this.selected : ''
+    }
+  },
   methods: {
     selectOption(option) {
       this.selected = option.name
-      this.areOptionsVisible = !this.areOptionsVisible
+      this.areOptionsVisible = true
+    },
+    resetOption() {
+      this.selected = this.options.default
+      this.areOptionsVisible = true
     }
   }
 }
