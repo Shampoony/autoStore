@@ -5,32 +5,6 @@ if (user) {
   accessToken = user.access
 }
 export default {
-  GET_ACCESS_TOKEN({ commit }) {
-    return axios('http://api.rcarentacar.com/api/users/register/', {
-      method: 'POST',
-      body: JSON.stringify({
-        email: 'vladreznov@gmail.com',
-        username: 'vlad',
-        password: 'vlad2506',
-        is_company: false,
-        profile: {
-          full_name: 'Влад Резнов',
-          phone: '+998 33 777 88 99',
-          gender: 1,
-          yar_birth: '20.03.2007',
-          region: 'Узбекистан',
-          city: 'Ангрен'
-        }
-      })
-    })
-      .then((tokens) => {
-        commit('SET_TOKENS_TO_STATE', tokens.data)
-      })
-      .catch((error) => {
-        console.error(error)
-        return error
-      })
-  },
   GET_PRODUCTS_FROM_API({ commit }) {
     return axios('http://api.rcarentacar.com/api/transport/transports/', {
       method: 'GET',
@@ -70,7 +44,6 @@ export default {
       }
     })
       .then((categories) => {
-        console
         commit('SET_TRANSPORT_CATEGORIES_TO_STATE', categories.data)
       })
       .catch((error) => {
@@ -117,6 +90,38 @@ export default {
       .catch((error) => {
         console.log(error)
         return error
+      })
+  },
+  async GET_TRANSPORT_CONDITIONS({ commit }) {
+    return axios('http://api.rcarentacar.com/api/transport/condition', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
+      .then((conditions) => {
+        commit('SET_TRANSPORT_CONDITIONS_TO_STATE', conditions.data)
+      })
+      .catch((error) => {
+        console.error('Ошибка при получении состояний:', error)
+        alert('Произошла ошибка при получении состояний')
+      })
+  },
+  async GET_TRANSPORT_FAVOURITES({ commit }) {
+    return axios('http://api.rcarentacar.com/api/transport/favorites/', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
+      .then((favourites) => {
+        commit('SET_TRANSPORT_FAVOURITES_TO_STATE', favourites.data)
+      })
+      .catch((error) => {
+        console.error('Ошибка при получении состояний:', error)
+        alert('Произошла ошибка при получении состояний')
       })
   }
 }

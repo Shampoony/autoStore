@@ -28,7 +28,40 @@
                 >Кабинет</span
               >
               <div class="cabinet-link__container" :class="{ active: isCabinetActive }">
-                <div class="cabinet-link__item"><a href="" @click="logout">Выйти</a></div>
+                <div class="cabinet-link__block">
+                  <div class="cabinet-link__item">
+                    <a href="">Мой профиль</a>
+                  </div>
+                  <div class="cabinet-link__item">
+                    <a href="">Мои объявления</a>
+                  </div>
+                  <div class="cabinet-link__item">
+                    <router-link :to="{ name: 'reviews' }">Мои отзывы</router-link>
+                  </div>
+                  <div class="cabinet-link__item">
+                    <router-link :to="{ name: 'favourites' }">Избранное</router-link>
+                  </div>
+                </div>
+                <div class="cabinet-link__block">
+                  <div class="cabinet-link__item">
+                    <router-link to="/messages">Сообщения</router-link>
+                  </div>
+                  <div class="cabinet-link__item">
+                    <router-link to="/notifications">Уведомления</router-link>
+                  </div>
+                </div>
+                <div class="cabinet-link__block">
+                  <div class="cabinet-link__item flex justify-between">
+                    <router-link to="/wallet">Кошелёк</router-link>
+                    <span class="" style="text-align: end">0</span>
+                  </div>
+                  <div class="cabinet-link__item">
+                    <router-link to="/settings">Настройки</router-link>
+                  </div>
+                </div>
+                <div class="cabinet-link__item pt-3">
+                  <a class="pt-3" href="" @click="logout">Выйти</a>
+                </div>
               </div>
             </li>
             <li class="menu__list-item">
@@ -70,9 +103,9 @@
     </div>
     <div class="v-header-mob">
       <div class="v-header-mob__container container">
-        <div class="v-header-mob__input">
+        <div class="v-header-mob__input" @click="console.log('Кликнули')">
           <input type="text" placeholder="Поиск" />
-          <div class="burger" @click="burgerOpen">
+          <div class="burger" @click.stop="toggleFilterMenu">
             <img src="../../assets/images/filter.svg" alt="" />
           </div>
         </div>
@@ -139,6 +172,9 @@ import vSelect from './v-select.vue'
 
 export default {
   name: 'v-header',
+  props: {
+    isMenuOpen: Boolean
+  },
   components: {
     vSelect
   },
@@ -151,6 +187,7 @@ export default {
       isMenuVisible: false,
       isCabinetActive: false,
       isBurgerOpen: true,
+      isFilterMenuOpen: false,
       user: localStorage.getItem('user') || null,
       menuTitle: 'Транспорт'
     }
@@ -187,8 +224,8 @@ export default {
     setMenuTitle(title) {
       this.menuTitle = title
     },
-    burgerOpen() {
-      this.isBurgerOpen = true
+    toggleFilterMenu() {
+      this.$emit('toggleMenu')
     },
     async logout() {
       try {

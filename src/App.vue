@@ -1,23 +1,19 @@
-
-
 <template>
-  <vMainWrapper/>
+  <vMainWrapper />
 </template>
 
 <script>
-import vMainWrapper from './components/v-main-wrapper.vue';
-
+import vMainWrapper from './components/v-main-wrapper.vue'
 
 export default {
   name: 'app',
   components: {
-    vMainWrapper,
-
+    vMainWrapper
   }
 }
 </script>
 
 <style>
-  @import './output.css'; 
-  @import './assets/scss/style.scss';
+@import './output.css';
+@import './assets/scss/style.scss';
 </style>

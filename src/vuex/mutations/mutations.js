@@ -8,10 +8,13 @@ export default {
   SET_TRANSPORT_CATEGORIES_TO_STATE: (state, categories) => {
     state.transport_categories = categories
   },
-  SET_TOKENS_TO_STATE: (state, tokens) => {
-    state.tokens = tokens
-  },
   SET_TRANSPORT_SUB_CATEGORIES_TO_STATE: (state, subCategories) => {
     state.transport_sub_categories = subCategories
+  },
+  SET_TRANSPORT_FAVOURITES_TO_STATE: (state, favourites) => {
+    state.favourites = favourites?.results
+  },
+  SET_TRANSPORT_CONDITIONS_TO_STATE: (state, conditions) => {
+    state.conditions['transport'] = conditions.results
   }
 }

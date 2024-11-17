@@ -1,7 +1,7 @@
 <template>
-  <main class="v-main-wrapper">
+  <div class="v-main-wrapper">
     <router-view></router-view>
-  </main>
+  </div>
 </template>
 
 <script>

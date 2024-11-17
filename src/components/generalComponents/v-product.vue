@@ -26,10 +26,15 @@
         <div class="v-product__price flex items-center" :class="{ vip: product_data.vip }">
           {{ product_data.price }} ₽
         </div>
-        <img src="../assets/images/like-product.svg" alt="" />
+        <img src="../../assets/images/favourites.svg" alt="" />
       </div>
       <div class="v-product__block">
-        <a class="v-product__title" href=""> {{ product_data.title }}</a>
+        <router-link
+          class="v-product__title"
+          :to="{ name: 'transport-item', params: { id: product_data.id } }"
+        >
+          {{ product_data.title }}
+        </router-link>
       </div>
       <div class="v-product__block">
         <p class="v-product__description">{{ product_data.year_of_release }}</p>

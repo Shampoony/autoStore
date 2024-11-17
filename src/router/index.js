@@ -1,3 +1,6 @@
+import VProductPage from '@/components/generalComponents/vProductPage.vue'
+import vFavourites from '@/components/favouritePage/v-favourites.vue'
+import vReviews from '@/components/reviewsPage/v-reviews.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 // Ленивая загрузка компонентов
@@ -13,9 +16,6 @@ const vRegistrationRealEstate = () =>
   import('@/components/users/registration/v-registration-real-estate.vue')
 
 const vLogin = () => import('@/components/users/login/v-login.vue') // Используем ленивую загрузку
-
-import guest from './middleware/guest'
-import auth from './middleware/auth'
 
 // Группируем маршруты регистрации
 const registrationRoutes = [
@@ -38,6 +38,19 @@ const registrationRoutes = [
     path: 'real-estate',
     name: 'registration-real-estate',
     component: vRegistrationRealEstate
+  }
+]
+
+const profileRoutes = [
+  {
+    path: 'favourites',
+    name: 'favourites',
+    component: vFavourites
+  },
+  {
+    path: 'reviews',
+    name: 'reviews',
+    component: vReviews
   }
 ]
 
@@ -64,6 +77,15 @@ const routes = [
     path: '/users/login',
     name: 'login',
     component: vLogin
+  },
+  {
+    path: '/transport/product/:id',
+    name: 'transport-item',
+    component: VProductPage
+  },
+  {
+    path: '/profile/',
+    children: profileRoutes
   }
 ]
 

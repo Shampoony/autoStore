@@ -1,7 +1,7 @@
 import { createStore } from 'vuex'
 
 import getters from './getters/getters'
-import apiActions from './actions/apiActions'
+import apiActions from './actions/Transport/apiActions'
 import mutations from './mutations/mutations'
 import commandActions from './actions/commandActions'
 
@@ -12,7 +12,9 @@ let store = createStore({
     recomendations: [],
     cards: [],
     transport_categories: [],
-    tokens: [],
+    conditions: {},
+    favourites: [],
+
     transport_sub_categories: []
   },
   mutations,
