@@ -14,7 +14,7 @@
       </li>
     </ul>
     <div class="v-pagination__next flex items-center justify-center" @click="nextPage">
-      <img src="../assets/images/arrow-right.svg" alt="" />
+      <img src="../../assets/images/arrow-right.svg" alt="" />
     </div>
   </div>
 </template>
