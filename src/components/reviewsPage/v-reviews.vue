@@ -1,7 +1,7 @@
 <template>
   <v-header />
   <main class="v-reviews">
-    <div class="v-reviews__container container">
+    <div class="v-reviews__container container my-container">
       <v-left-menu />
       <div class="v-reviews__content"></div>
     </div>

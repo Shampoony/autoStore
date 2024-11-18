@@ -11,10 +11,10 @@ export default {
   TRANSPORT_SUB_CATEGORIES(state) {
     return state.transport_sub_categories
   },
-  TRANSPORT_CONDITIONS(state) {
-    return state.conditions['transport']
-  },
   TRANSPORT_FAVOURITES(state) {
     return state.favourites
+  },
+  TRANSPORT_CONDITIONS(state) {
+    return state.conditions['transport']
   }
 }

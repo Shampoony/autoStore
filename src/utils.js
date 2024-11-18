@@ -35,21 +35,38 @@ export async function removeFromFavourites(accessToken, transportId) {
     console.error('Ошибка при добавлении в избранное:', error)
   }
 }
-function decodeAccessToken(token) {
+
+export function decodeAccessToken(token) {
   try {
     // Вырезаем payload из токена
     const payload = token.split('.')[1]
 
+    // Приводим payload к правильному формату Base64 для декодирования
+    let base64Decoded = payload.replace(/-/g, '+').replace(/_/g, '/')
+
+    // Добавляем необходимое количество знаков равенства для корректного декодирования Base64
+    while (base64Decoded.length % 4) {
+      base64Decoded += '='
+    }
+
     // Декодируем Base64
-    const decodedPayload = atob(payload.replace(/-/g, '+').replace(/_/g, '/'))
+    const decoded = atob(base64Decoded)
 
     // Парсим JSON
-    const data = JSON.parse(decodedPayload)
+    const data = JSON.parse(decoded)
 
-    return data
+    // Извлекаем нужные данные
+    const userId = data.user_id
+    const status = data.status
+    const profileId = data.profile_id
+
+    return {
+      user_id: userId,
+      status: status,
+      profile_id: profileId
+    }
   } catch (error) {
-    console.error('Ошибка при декодировании токена:', error)
-    return null
+    throw new Error('Не удалось декодировать токен: ' + error.message)
   }
 }
 

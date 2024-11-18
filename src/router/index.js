@@ -1,6 +1,6 @@
-import VProductPage from '@/components/generalComponents/vProductPage.vue'
-import vFavourites from '@/components/favouritePage/v-favourites.vue'
-import vReviews from '@/components/reviewsPage/v-reviews.vue'
+const vProductPage = () => import('@/components/productPage/vProductPage.vue')
+const vFavourites = () => import('@/components/favouritePage/v-favourites.vue')
+const vReviews = () => import('@/components/reviewsPage/v-reviews.vue')
 import { createRouter, createWebHistory } from 'vue-router'
 
 // Ленивая загрузка компонентов
@@ -67,6 +67,7 @@ const routes = [
     path: '/cars',
     name: 'cars',
     component: vCars,
+    props: (route) => ({ query: route.query }),
     meta: { requiresAuth: true }
   },
   {
@@ -81,7 +82,7 @@ const routes = [
   {
     path: '/transport/product/:id',
     name: 'transport-item',
-    component: VProductPage
+    component: vProductPage
   },
   {
     path: '/profile/',

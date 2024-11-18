@@ -11,10 +11,11 @@
       :modules="modules"
     >
       <swiper-slide v-for="image in getImages" :key="image.id">
-        <img src="../../assets/images/car-product.jpg" alt="product" />
+        <img :src="image.image" class="v-product__image" alt="product" />
+        <img :src="image.image" class="product-image-overlay" alt="product" />
       </swiper-slide>
       <swiper-slide class="last-slide" v-if="checkImagesLength">
-        <img src="../../assets/images/car-product.jpg" alt="product" />
+        <img :src="image.image" alt="product" />
         <a href="#!" class="last-slide__overlay flex items-center justify-center">
           <span>Ещё {{ countOfImages }} фото</span>
         </a>
@@ -24,9 +25,20 @@
     <div class="v-product__content">
       <div class="v-product__block flex justify-between">
         <div class="v-product__price flex items-center" :class="{ vip: product_data.vip }">
-          {{ product_data.price }} ₽
+          {{ prettyPrice(product_data.price) }} ₽
         </div>
-        <img src="../../assets/images/favourites.svg" alt="" />
+        <img
+          @click="toggleToFavourites"
+          v-if="!productInFavourites"
+          src="../../assets/images/favourites.svg"
+          alt=""
+        />
+        <img
+          @click="toggleToFavourites"
+          v-if="productInFavourites"
+          src="../../assets/images/favourites-on.svg"
+          alt=""
+        />
       </div>
       <div class="v-product__block">
         <router-link
@@ -55,6 +67,8 @@ import { Swiper, SwiperSlide, useSwiper } from 'swiper/vue'
 import 'swiper/css'
 import 'swiper/css/pagination'
 import { Pagination } from 'swiper/modules'
+import { addToFavourites, removeFromFavourites, isProductInFavourites } from '@/utils'
+import prettyPrice from '@/filters/prettyPrice.js'
 
 export default {
   name: 'v-product',
@@ -74,6 +88,7 @@ export default {
       tempOfWidth: 0,
       currentSegment: 0,
       isPagination: false,
+      productInFavourites: false,
       swiper: null
     }
   },
@@ -96,24 +111,48 @@ export default {
     },
     getImages() {
       if (Array.isArray(this.product_data.images)) {
+        console.log(this.product_data.images)
         if (this.product_data.images.length > 4) {
           return this.product_data.images.slice(0, 4) // Используем slice вместо splice, так как нам не нужно изменять массив
         } else {
           return this.product_data.images
         }
       } else {
-        // Если это не массив, возвращаем пустой массив или делаем другую обработку
         return []
       }
     },
     countOfImages() {
       return Math.abs(4 - this.product_data.images.length)
+    },
+    accessToken() {
+      return JSON.parse(localStorage.getItem('user')).access || ''
     }
   },
 
-  methods: {},
+  methods: {
+    prettyPrice,
+    toggleToFavourites() {
+      if (!this.productInFavourites) {
+        addToFavourites(this.accessToken, this.product_data.id).then(() => {
+          console.log('Добавили в избранное')
+          this.productInFavourites = true
+        })
+      } else {
+        removeFromFavourites(this.accessToken, this.product_data.id).then(() => {
+          console.log('Удалили из избранного')
+          this.productInFavourites = false
+        })
+      }
+    },
+    checkIfProductInFavourites() {
+      isProductInFavourites(this.accessToken, this.product_data.id).then((result) => {
+        this.productInFavourites = result
+      })
+    }
+  },
   mounted() {
     this.swiper = this.$refs.swiperRef.swiper
+    this.checkIfProductInFavourites()
   }
 }
 </script>

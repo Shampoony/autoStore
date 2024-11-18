@@ -60,7 +60,7 @@
                   </div>
                 </div>
                 <div class="cabinet-link__item pt-3">
-                  <a class="pt-3" href="" @click="logout">Выйти</a>
+                  <a class="pt-3" href="" @click.prevent="logout">Выйти</a>
                 </div>
               </div>
             </li>
@@ -188,6 +188,7 @@ export default {
       isCabinetActive: false,
       isBurgerOpen: true,
       isFilterMenuOpen: false,
+
       user: localStorage.getItem('user') || null,
       menuTitle: 'Транспорт'
     }
@@ -206,6 +207,7 @@ export default {
   },
   methods: {
     ...mapActions(['GET_TRANSPORT_CATEGORIES_FROM_API', 'GET_TRANSPORT_SUB_CATEGORIES_FROM_API']),
+
     getSubCategories(index) {
       return this.TRANSPORT_SUB_CATEGORIES[index] || []
     },
@@ -245,13 +247,14 @@ export default {
         alert('Вы вышли из аккаунта')
       } catch (error) {
         console.error('Ошибка при выходе:', error)
-        alert('Произошла ошибка при выходе')
+        alert('Произошла ошибка при выходе', error)
       }
     }
   },
   mounted() {
     this.GET_TRANSPORT_CATEGORIES_FROM_API()
     this.GET_TRANSPORT_SUB_CATEGORIES_FROM_API()
+    console.log(localStorage)
   }
 }
 </script>

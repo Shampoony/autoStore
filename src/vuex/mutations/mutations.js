@@ -12,7 +12,7 @@ export default {
     state.transport_sub_categories = subCategories
   },
   SET_TRANSPORT_FAVOURITES_TO_STATE: (state, favourites) => {
-    state.favourites = favourites?.results
+    state.favourites = favourites.results
   },
   SET_TRANSPORT_CONDITIONS_TO_STATE: (state, conditions) => {
     state.conditions['transport'] = conditions.results

@@ -1,7 +1,6 @@
 <template>
   <vHeader @toggleMenu="toggleFilterMenu" />
-
-  <div class="v-cars">
+  <main class="v-cars">
     <div class="v-cars__container container">
       <form class="filter-form" method="GET" action="" @submit="onSubmit">
         <div class="filter v-cars__filter flex gap-4">
@@ -255,7 +254,11 @@
         </div>
         <div class="filter__conditions hidden-filters" :class="{ hideFilters: menuRolled }">
           <div class="filter__conditions-list">
-            <div class="filter-option" v-for="condition in conditions" :key="condition.id">
+            <div
+              class="filter-option"
+              v-for="condition in TRANSPORT_CONDITIONS"
+              :key="condition.id"
+            >
               <input
                 type="checkbox"
                 :id="'as-' + condition.id"
@@ -660,18 +663,25 @@
         <h1>ПО вашему запросу не найдено</h1>
       </div>
     </div>
-  </div>
+  </main>
 </template>
 
 <script>
-import vProduct from './generalComponents/v-product.vue'
 import { mapGetters, mapActions } from 'vuex'
 import vSelectStyled from './v-select-styled.vue'
+import { getFilteredProducts } from '@/api/requests'
 import vHeader from './generalComponents/v-header.vue'
+import vProduct from './generalComponents/v-product.vue'
 
 export default {
   name: 'v-cars',
   components: { vProduct, vSelectStyled, vHeader },
+  props: {
+    query: {
+      type: Object,
+      default: () => ({})
+    }
+  },
   data() {
     return {
       popularCars: [],
@@ -709,9 +719,7 @@ export default {
         seats_count: '',
         drive: '',
         fuel_type: '',
-        model: '',
-
-        brand: ''
+        model: ''
       },
       options: {
         color: {
@@ -786,6 +794,17 @@ export default {
   },
   methods: {
     ...mapActions(['GET_PRODUCTS_FROM_API', 'GET_TRANSPORT_CONDITIONS']),
+    setFiltersFromURL() {
+      const params = new URLSearchParams(window.location.search)
+      for (const [key, value] of params.entries()) {
+        let title = key.replace('-', '_')
+        if (title in this.inputs) {
+          this.inputs[title] = value
+        } else if (title in this.options || title == 'brand') {
+          console.log(title)
+        }
+      }
+    },
     toggleFilterMenu() {
       this.filterMenuOpen = !this.filterMenuOpen
       console.log('Звшли', this.filterMenuOpen)
@@ -823,9 +842,8 @@ export default {
       const queryString = params.toString()
       console.log(decodeURIComponent(queryString))
       const url = 'http://api.rcarentacar.com/api/transport/filter/?'
-      window.history.pushState(null, '', '/cars/' + queryString)
-      this.getFilteredProducts(url + queryString).then((products) => {
-        console.log(products)
+      window.history.pushState(null, '', '/cars/? ' + queryString)
+      getFilteredProducts(this.accessToken, url + queryString).then((products) => {
         this.filteredProducts = products
         this.isFilteredProductsFound = this.filteredProducts.length > 0
         console.log(this.isFilteredProductsFound)
@@ -833,76 +851,11 @@ export default {
       })
     },
 
-    async getFilteredProducts(url) {
-      try {
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${this.accessToken}`
-          }
-        })
-
-        const responseData = await response.json()
-        console.log(responseData)
-        return response.length ? responseData.results : responseData
-      } catch (error) {
-        console.error('Ошибка при получении отфильтрованных товаров:', error)
-      }
-    },
-
     changeRadio(e) {
       this.selectedCarType = e.target.value
       console.log(this.selectedCarType)
     },
 
-    async getConditions() {
-      try {
-        const accessToken = JSON.parse(localStorage.getItem('user')).access
-        const response = await fetch('http://api.rcarentacar.com/api/transport/condition', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${accessToken}`
-          }
-        })
-
-        if (!response.ok) {
-          throw new Error('Ошибка получения состояний')
-        }
-
-        const responseData = await response.json()
-        return responseData.results
-      } catch (error) {
-        console.error('Ошибка при получении состояний:', error)
-        alert('Произошла ошибка при получении состояний')
-      }
-    },
-    async getOptions() {
-      try {
-        const accessToken = JSON.parse(localStorage.getItem('user')).access
-        const response = await fetch(
-          'http://api.rcarentacar.com/api/transport/additionally-options/',
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${accessToken}`
-            }
-          }
-        )
-
-        if (!response.ok) {
-          throw new Error('Ошибка получения опций')
-        }
-
-        const responseData = await response.json()
-        return responseData.results
-      } catch (error) {
-        console.error('Ошибка при получении опций:', error)
-        alert('Произошла ошибка при получении опций')
-      }
-    },
     resetFilter() {
       for (let key in this.inputs) {
         this.inputs[key] = ''
@@ -913,41 +866,6 @@ export default {
       }
     },
 
-    async getSelectOptions(title, name) {
-      try {
-        const options = []
-        const response = await fetch(`http://api.rcarentacar.com/api/transport/${title}/`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${this.accessToken}`
-          }
-        })
-
-        const responseData = await response.json()
-        if (name == 'brands') {
-          for (let option of responseData.results) {
-            options.push({
-              id: option.id,
-              value: option['title'],
-              name: option['title']
-            })
-          }
-        } else {
-          for (let option of responseData.results) {
-            options.push({
-              id: option.id,
-              value: option[name],
-              name: option[name]
-            })
-          }
-        }
-
-        return options
-      } catch (error) {
-        console.error(`Ошибка при получении ${title}:`, error)
-      }
-    },
     setOptionsToSelect() {
       for (let select in this.options) {
         let title
@@ -957,7 +875,7 @@ export default {
           title = select.replace('_', '-')
         }
 
-        this.getSelectOptions(title, select).then((options) => {
+        getSelectOptions(this.accessToken, title, select).then((options) => {
           this.options[select].options = options
         })
       }
@@ -969,20 +887,17 @@ export default {
       return JSON.parse(localStorage.getItem('user'))?.access || ''
     },
     vipSalons() {
-      return this.PRODUCTS.filter((product) => product.vip && product.company).slice(0, 4)
+      const vipSalonsArr = this.PRODUCTS
+      return vipSalonsArr.filter((product) => product.vip && product.company).slice(0, 4)
     },
     vipProducts() {
-      return this.PRODUCTS.filter((product) => product.vip).slice(0, 4)
+      const vipProductsArr = this.PRODUCTS
+      return vipProductsArr.filter((product) => product.vip).slice(0, 4)
     }
   },
-
   mounted() {
-    this.GET_PRODUCTS_FROM_API()
-    this.setOptionsToSelect()
-    this.getConditions().then((conditions) => {
-      this.conditions = conditions
-    })
-    console.log(this.accessToken)
+    this.setFiltersFromURL()
+    this.GET_TRANSPORT_CONDITIONS(), this.GET_PRODUCTS_FROM_API(), console.log(this.PRODUCTS)
   }
 }
 </script>
