@@ -63,7 +63,7 @@
 </template>
 
 <script>
-import { Swiper, SwiperSlide, useSwiper } from 'swiper/vue'
+import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/css'
 import 'swiper/css/pagination'
 import { Pagination } from 'swiper/modules'
@@ -111,7 +111,6 @@ export default {
     },
     getImages() {
       if (Array.isArray(this.product_data.images)) {
-        console.log(this.product_data.images)
         if (this.product_data.images.length > 4) {
           return this.product_data.images.slice(0, 4) // Используем slice вместо splice, так как нам не нужно изменять массив
         } else {
@@ -151,7 +150,6 @@ export default {
     }
   },
   mounted() {
-    this.swiper = this.$refs.swiperRef.swiper
     this.checkIfProductInFavourites()
   }
 }

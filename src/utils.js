@@ -82,7 +82,7 @@ export async function isProductInFavourites(accessToken, productId) {
     const responseData = await response.json()
 
     const userId = decodeAccessToken(accessToken)?.user_id
-    console.log(decodeAccessToken(accessToken))
+
     for (let product of responseData.results) {
       if (product.user == userId && product.transport.id == productId) {
         return true

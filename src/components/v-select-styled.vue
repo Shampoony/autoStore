@@ -3,6 +3,7 @@
   <div
     class="v-selectStyled flex items-center justify-start"
     :class="{ selected: !areOptionsVisible }"
+    v-click-outside="toggleMenu"
   >
     <input
       class="v-selectStyled__selected"
@@ -22,19 +23,20 @@
       >
         Сбросить
       </p>
-      <div class="v-selectStyled__option flex" v-for="option in options.options" :key="option.id">
-        <label
-          v-if="options.is_multiselect"
-          class="flex justify-between w-1"
-          :for="option.name"
-          @click="selectOption(option)"
-        >
+      <div
+        class="v-selectStyled__option flex"
+        @click="selectOption(option)"
+        v-for="option in options.options"
+        :key="option.id"
+      >
+        <label v-if="options.is_multiselect" class="flex justify-between w-1" :for="option.name">
           {{ option.name }}
           <input
             :id="option.name"
             :name="options.name"
             :value="option.name"
             type="checkbox"
+            :checked="isChecked"
             @click.stop
           />
         </label>
@@ -59,7 +61,8 @@ export default {
   data() {
     return {
       areOptionsVisible: false,
-      selected: this.options.default
+      selected: this.options.default,
+      isChecked: false
     }
   },
   computed: {
@@ -71,27 +74,42 @@ export default {
     }
   },
   methods: {
+    toggleCheck() {
+      console.log('Лала')
+      this.isChecked = !this.isChecked
+    },
+    toggleMenu() {
+      this.areOptionsVisible = false
+    },
     selectOption(option) {
+      console.log('-----')
+      console.log(this.options.is_multiselect, option)
       if (this.options.is_multiselect) {
-        const optionName = option.name
+        const optionName = option.name ? option.name : option
+        if (this.selected) {
+          if (this.selected.includes(this.options.default)) {
+            this.selected = optionName
+          } else if (!this.selected.includes(optionName)) {
+            this.selected += `, ${optionName}`
+          } else {
+            // Удаляем опцию из selected
+            this.selected = this.selected
+              .split(', ')
+              .filter((name) => name !== optionName) // Фильтруем массив, удаляя выбранное имя
+              .join(', ') // Объединяем обратно в строку
 
-        if (this.selected.includes(this.options.default)) {
-          this.selected = optionName
-        } else if (!this.selected.includes(optionName)) {
-          this.selected += `, ${optionName}`
-        } else {
-          // Удаляем опцию из selected
-          this.selected = this.selected
-            .split(', ')
-            .filter((name) => name !== optionName) // Фильтруем массив, удаляя выбранное имя
-            .join(', ') // Объединяем обратно в строку
-
-          if (!this.selected) {
-            this.selected = this.options.default
+            if (!this.selected) {
+              this.selected = this.options.default
+            }
           }
         }
       } else {
-        this.selected = option.name
+        console.log('в элэсу', option)
+        if (option.name) {
+          this.selected = option.name
+        } else {
+          this.selected = option
+        }
         this.areOptionsVisible = false
       }
     },

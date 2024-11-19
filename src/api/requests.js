@@ -7,7 +7,6 @@ export async function getFilteredProducts(accessToken, url) {
         Authorization: `Bearer ${accessToken}`
       }
     })
-    console.log('Зашли')
     const responseData = await response.json()
     console.log(responseData)
     return response.length ? responseData.results : responseData
@@ -27,7 +26,7 @@ export async function getSelectOptions(accessToken, title, name) {
     })
 
     const responseData = await response.json()
-    if (name == 'brands') {
+    if (title == 'brands') {
       for (let option of responseData.results) {
         options.push({
           id: option.id,

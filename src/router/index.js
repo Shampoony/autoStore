@@ -64,8 +64,8 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: '/cars',
-    name: 'cars',
+    path: '/transport/filter',
+    name: 'transport-filter',
     component: vCars,
     props: (route) => ({ query: route.query }),
     meta: { requiresAuth: true }

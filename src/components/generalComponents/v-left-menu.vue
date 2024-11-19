@@ -17,11 +17,11 @@
         </div>
         <div class="v-left-menu__link">
           <img src="../../assets/images/my-reviews.svg" alt="" />
-          <a href="">Мои отзывы</a>
+          <router-link :to="{ name: 'reviews' }">Мои отзывы</router-link>
         </div>
         <div class="v-left-menu__link">
           <img src="../../assets/images/favourites.svg" alt="" />
-          <a href="">Избранные</a>
+          <router-link :to="{ name: 'favourites' }">Избранные</router-link>
         </div>
       </div>
       <div class="v-left-menu__block">

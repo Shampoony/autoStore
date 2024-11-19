@@ -23,12 +23,13 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import vPagination from '../generalComponents/v-pagination.vue'
 import vProduct from '../generalComponents/v-product.vue'
+import vPagination from '../generalComponents/v-pagination.vue'
+import vBottomMenu from '../generalComponents/v-bottom-menu.vue'
 
 export default {
   name: 'v-recomedations.vue',
-  components: { vPagination, vProduct },
+  components: { vPagination, vProduct, vBottomMenu },
   data() {
     return {
       itemsPerPage: 20

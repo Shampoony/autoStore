@@ -4,7 +4,11 @@
       <div class="v-header-top__container container">
         <nav class="v-header-top__menu menu flex justify-between">
           <div class="v-header-top__switcher flex gap-2 items-center justify-start">
-            <a class="v-header-top__switcher-picker active" href="/">Авто</a>
+            <router-link
+              class="v-header-top__switcher-picker active"
+              :to="{ name: 'transport-filter' }"
+              >Авто</router-link
+            >
             <a class="v-header-top__switcher-picker" href="#!">Недвижимость</a>
           </div>
           <ul class="menu__list flex gap-5 items-center">
@@ -16,7 +20,11 @@
               <img src="../../assets/images/chats.svg" alt="chat" />
               <div class="chat__item">11</div>
             </li>
-            <li class="menu__list-item"><img src="../../assets/images/like.svg" alt="" /></li>
+            <li class="menu__list-item">
+              <router-link :to="{ name: 'favourites' }">
+                <img src="../../assets/images/like.svg" alt="" />
+              </router-link>
+            </li>
             <li class="menu__list-item">
               <v-select :options="options" />
             </li>
@@ -75,7 +83,8 @@
     </div>
     <div class="v-header-bottom flex items-center">
       <div class="v-header-bottom__container container flex justify-between items-center">
-        <div class="v-header-bottom__logo">LOGO</div>
+        <router-link class="v-header-bottom__logo" :to="{ name: 'main' }">LOGO</router-link>
+
         <nav class="v-header-bottom__menu bottom-menu flex justify-between">
           <ul class="bottom-menu__list flex items-center gap-5">
             <li class="bottom-menu__list-item flex items-center" @mouseover="showMenu">
@@ -163,12 +172,14 @@
         </div>
       </div>
     </div>
+    <v-main-mob-menu />
   </header>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import vSelect from './v-select.vue'
+import vMainMobMenu from '../mainPage/v-main-mob-menu.vue'
 
 export default {
   name: 'v-header',
@@ -176,7 +187,8 @@ export default {
     isMenuOpen: Boolean
   },
   components: {
-    vSelect
+    vSelect,
+    vMainMobMenu
   },
   data() {
     return {

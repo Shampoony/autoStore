@@ -6,19 +6,19 @@
         <div class="filter v-cars__filter flex gap-4">
           <div class="filter__column">
             <div class="filter__row">
-              <v-select-styled ref="brand" :options="options.brands" />
+              <v-select-styled ref="brand" :options="options.brand" />
             </div>
             <div class="filter__row pc-filter">
               <input
                 class="filter__input splited"
-                type="text"
+                type="number"
                 name="price_min"
                 v-model="inputs.price_min"
                 placeholder="Цена от"
               />
               <input
                 class="filter__input splited"
-                type="text"
+                type="number"
                 name="price_max"
                 v-model="inputs.price_max"
                 placeholder="До"
@@ -27,12 +27,12 @@
 
             <div class="hidden-filters" :class="{ hideFilters: menuRolled }">
               <div class="filter__row">
-                <v-select-styled ref="marks" :options="options.color" />
+                <v-select-styled ref="color" :options="options.color" />
               </div>
               <div class="filter__row">
                 <input
                   class="filter__input splited"
-                  type="text"
+                  type="number"
                   name="engine_volume_min"
                   v-model="inputs.engine_volume_min"
                   placeholder="Объём от"
@@ -41,14 +41,14 @@
                   class="filter__input splited"
                   name="engine_volume_max"
                   v-model="inputs.engine_volume_max"
-                  type="text"
+                  type="number"
                   placeholder="До"
                 />
               </div>
               <div class="filter__row">
                 <input
                   class="filter__input"
-                  type="text"
+                  type="number"
                   v-model="inputs.owners_count"
                   name="owners_count"
                   placeholder="Количество владельцев"
@@ -70,11 +70,23 @@
               <v-select-styled ref="currency" :options="options.currency" />
               <div class="flex gap-2 filter__special-block">
                 <div class="filter-option special">
-                  <input type="checkbox" id="credit" name="credit" value="true" />
+                  <input
+                    type="checkbox"
+                    id="credit"
+                    name="credit"
+                    value="true"
+                    v-model="boolean_val.credit"
+                  />
                   <label for="credit">Кредит</label>
                 </div>
                 <div class="filter-option special">
-                  <input type="checkbox" id="barter" name="barter" value="true" />
+                  <input
+                    type="checkbox"
+                    id="barter"
+                    name="barter"
+                    value="true"
+                    v-model="boolean_val.barter"
+                  />
                   <label for="barter">Бартер</label>
                 </div>
               </div>
@@ -82,14 +94,14 @@
             <div class="hidden-filters special-filters" :class="{ hideFilters: menuRolled }">
               <div class="filter__row">
                 <input
-                  type="text"
+                  type="number"
                   class="filter__input splited"
                   name="power_min"
                   v-model="inputs.power_min"
                   placeholder="Мощность(л.с) от"
                 />
                 <input
-                  type="text"
+                  type="number"
                   class="filter__input splited"
                   name="power_max"
                   v-model="inputs.power_max"
@@ -107,7 +119,7 @@
               </div>
               <div class="filter__row">
                 <input
-                  type="text"
+                  type="number"
                   class="filter__input"
                   name="seats_count"
                   v-model="inputs.seats_count"
@@ -294,297 +306,330 @@
           </div>
         </div>
       </form>
-      <form v-if="filterMenuOpen" class="mob-filter-form" method="GET" action="" @submit="onSubmit">
-        <div class="mob-filter v-cars__filter flex gap-4">
-          <div class="mob-filter__column">
-            <div class="mob-filter__row">
-              <v-select-styled ref="brand" :options="options.brands" />
-            </div>
-            <div class="mob-filter__row mt-2">
-              <h2 class="mob-filter__row-title">Цена</h2>
-              <div class="mob-filter__row-block">
-                <input
-                  class="mob-filter__input"
-                  type="text"
-                  name="price_min"
-                  v-model="inputs.price_min"
-                  placeholder="от"
-                />
-                <input
-                  class="mob-filter__input"
-                  type="text"
-                  name="price_max"
-                  v-model="inputs.price_max"
-                  placeholder="до"
-                />
+      <div class="mob-filter">
+        <form
+          v-if="filterMenuOpen"
+          class="mob-filter-form"
+          method="GET"
+          action=""
+          @submit="onSubmit"
+        >
+          <div class="mob-filter__header flex justify-between">
+            <img
+              @click="this.filterMenuOpen = false"
+              src="../assets/images/cross.svg"
+              alt="cross"
+            />
+            <h3 class="mob-filter__header-title">Фильтры</h3>
+            <div class="mob-filter__reset" @click="resetFilter">Сбросить</div>
+          </div>
+          <div class="mob-filter v-cars__filter flex gap-4">
+            <div class="mob-filter__column">
+              <div class="mob-filter__row">
+                <v-select-styled ref="brand" :options="options.brand" />
               </div>
-              <div class="filter-option special mr-3">
-                <input type="checkbox" id="credit1" name="credit" value="true" />
-                <label for="credit1">Кредит</label>
+              <div class="mob-filter__row mt-2">
+                <h2 class="mob-filter__row-title">Цена</h2>
+                <div class="mob-filter__row-block">
+                  <input
+                    class="mob-filter__input"
+                    type="text"
+                    name="price_min"
+                    v-model="inputs.price_min"
+                    placeholder="от"
+                  />
+                  <input
+                    class="mob-filter__input"
+                    type="text"
+                    name="price_max"
+                    v-model="inputs.price_max"
+                    placeholder="до"
+                  />
+                </div>
+                <div class="filter-option special mr-3">
+                  <input
+                    type="checkbox"
+                    id="credit1"
+                    name="credit"
+                    value="true"
+                    v-model="boolean_val.credit"
+                  />
+                  <label for="credit1">Кредит</label>
+                </div>
+                <div class="filter-option special">
+                  <input
+                    type="checkbox"
+                    id="barter1"
+                    name="barter"
+                    value="true"
+                    v-model="boolean_val.barter"
+                  />
+                  <label for="barter1">Бартер</label>
+                </div>
               </div>
-              <div class="filter-option special">
-                <input type="checkbox" id="barter1" name="barter" value="true" />
-                <label for="barter1">Бартер</label>
-              </div>
-            </div>
 
-            <div class="hidden-filters" :class="{ hideFilters: menuRolled }">
-              <div class="mob-filter__row">
-                <v-select-styled ref="marks" :options="options.color" />
-              </div>
-              <div class="mob-filter__row my-4">
-                <div class="mob-filter__row-title">Объём</div>
-                <div class="mob-filter__row-block">
+              <div class="hidden-filters" :class="{ hideFilters: menuRolled }">
+                <div class="mob-filter__row">
+                  <v-select-styled ref="color" :options="options.color" />
+                </div>
+                <div class="mob-filter__row my-4">
+                  <div class="mob-filter__row-title">Объём</div>
+                  <div class="mob-filter__row-block">
+                    <input
+                      class="mob-filter__input splited"
+                      type="text"
+                      name="engine_volume_min"
+                      v-model="inputs.engine_volume_min"
+                      placeholder="от"
+                    />
+                    <input
+                      class="mob-filter__input splited"
+                      name="engine_volume_max"
+                      v-model="inputs.engine_volume_max"
+                      type="text"
+                      placeholder="до"
+                    />
+                  </div>
+                </div>
+                <div class="mob-filter__row">
                   <input
-                    class="mob-filter__input splited"
+                    class="mob-filter__input"
+                    type="number"
+                    v-model="inputs.owners_count"
+                    name="owners_count"
+                    placeholder="Количество владельцев"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="mob-filter__column">
+              <div class="mob-filter__row mb-4">
+                <input
+                  type="text"
+                  class="mob-filter__input"
+                  name="model"
+                  v-model="inputs.model"
+                  placeholder="Модель"
+                />
+              </div>
+              <div class="mob-filter__row filter__row-currency flex gap-2">
+                <v-select-styled ref="currency" :options="options.currency" />
+              </div>
+              <div class="hidden-filters" :class="{ hideFilters: menuRolled }">
+                <div class="mob-filter__row mb-4">
+                  <div class="mob-filter__row-title">Мощность (л.c)</div>
+                  <div class="mob-filter__row-block">
+                    <input
+                      type="number"
+                      class="mob-filter__input splited"
+                      name="power_min"
+                      v-model="inputs.power_min"
+                      placeholder="Мощность от"
+                    />
+                    <input
+                      type="number"
+                      class="mob-filter__input splited"
+                      name="power_max"
+                      v-model="inputs.power_max"
+                      placeholder="До"
+                    />
+                  </div>
+                </div>
+                <div class="mob-filter__row mb-4">
+                  <input
                     type="text"
-                    name="engine_volume_min"
-                    v-model="inputs.engine_volume_min"
-                    placeholder="от"
+                    class="mob-filter__input"
+                    placeholder="Тип топлива"
+                    name="fuel-type"
+                    v-model="inputs.fuel_type"
                   />
+                </div>
+                <div class="mob-filter__row">
                   <input
-                    class="mob-filter__input splited"
-                    name="engine_volume_max"
-                    v-model="inputs.engine_volume_max"
-                    type="text"
-                    placeholder="до"
+                    type="number"
+                    class="mob-filter__input"
+                    name="seats_count"
+                    v-model="inputs.seats_count"
+                    placeholder="Количество мест"
                   />
                 </div>
               </div>
-              <div class="mob-filter__row">
-                <input
-                  class="mob-filter__input"
-                  type="text"
-                  v-model="inputs.owners_count"
-                  name="owners_count"
-                  placeholder="Количество владельцев"
-                />
-              </div>
             </div>
-          </div>
-          <div class="mob-filter__column">
-            <div class="mob-filter__row mb-4">
-              <input
-                type="text"
-                class="mob-filter__input"
-                name="model"
-                v-model="inputs.model"
-                placeholder="Модель"
-              />
-            </div>
-            <div class="mob-filter__row filter__row-currency flex gap-2">
-              <v-select-styled ref="currency" :options="options.currency" />
-            </div>
-            <div class="hidden-filters" :class="{ hideFilters: menuRolled }">
+            <div class="mob-filter__column">
               <div class="mob-filter__row mb-4">
-                <div class="mob-filter__row-title">Мощность (л.c)</div>
-                <div class="mob-filter__row-block">
-                  <input
-                    type="number"
-                    class="mob-filter__input splited"
-                    name="power_min"
-                    v-model="inputs.power_min"
-                    placeholder="Мощность от"
-                  />
-                  <input
-                    type="number"
-                    class="mob-filter__input splited"
-                    name="power_max"
-                    v-model="inputs.power_max"
-                    placeholder="До"
-                  />
-                </div>
-              </div>
-              <div class="mob-filter__row mb-4">
-                <input
-                  type="text"
-                  class="mob-filter__input"
-                  placeholder="Тип топлива"
-                  name="fuel-type"
-                  v-model="inputs.fuel_type"
-                />
-              </div>
-              <div class="mob-filter__row">
-                <input
-                  type="text"
-                  class="mob-filter__input"
-                  name="seats_count"
-                  v-model="inputs.seats_count"
-                  placeholder="Количество мест"
-                />
-              </div>
-            </div>
-          </div>
-          <div class="mob-filter__column">
-            <div class="mob-filter__row mb-4">
-              <div class="form_toggle">
-                <div class="form_toggle-item item-1">
-                  <input
-                    id="type_of_novetly-all"
-                    type="radio"
-                    name="condition"
-                    value="Все"
-                    v-model="radio.condition"
-                    @click="changeRadio"
-                  />
-                  <label for="type_of_novetly-all">Все</label>
-                </div>
-                <div class="form_toggle-item item-mid">
-                  <input
-                    id="type_of_novetly-new"
-                    type="radio"
-                    name="condition"
-                    value="Новые"
-                    v-model="radio.condition"
-                    @click="changeRadio"
-                  />
-                  <label for="type_of_novetly-new">Новые</label>
-                </div>
-                <div class="form_toggle-item item-2">
-                  <input
-                    id="type_of_novetly-mileage"
-                    type="radio"
-                    name="condition"
-                    value="С пробегом"
-                    v-model="radio.condition"
-                    @click="changeRadio"
-                  />
-                  <label for="type_of_novetly-mileage">С пробегом</label>
-                </div>
-              </div>
-            </div>
-            <div class="mob-filter__row">
-              <v-select-styled ref="body_type" :options="options.body_type" />
-            </div>
-            <div class="hidden-filters" :class="{ hideFilters: menuRolled }">
-              <div class="mob-filter__row my-4">
-                <input
-                  type="text"
-                  placeholder="Привод"
-                  name="drive"
-                  v-model="inputs.drive"
-                  class="mob-filter__input"
-                />
-              </div>
-              <div class="mob-filter__row mb-4">
-                <h2 class="mob-filter__row-titlee">Пробег от</h2>
-                <div class="mob-filter__row-block">
-                  <input
-                    type="number"
-                    placeholder="от"
-                    name="mileage_min"
-                    v-model="inputs.mileage_min"
-                    class="mob-filter__input splited"
-                  />
-                  <input
-                    type="number"
-                    placeholder="до"
-                    name="mileage_max"
-                    v-model="inputs.mileage_max"
-                    class="mob-filter__input splited"
-                  />
-                </div>
-              </div>
-              <div class="mob-filter__row">
-                <v-select-styled ref="market_version" :options="options.market_version" />
-              </div>
-            </div>
-          </div>
-          <div class="mob-filter__column">
-            <div class="mob-filter__row mb-4">
-              <input type="text" class="mob-filter__input" name="city" placeholder="Город" />
-            </div>
-            <div class="mob-filter__row">
-              <h2 class="mob-filter__row-title">Год</h2>
-              <div class="mob-filter__row-block mb-4">
-                <input
-                  type="number"
-                  class="mob-filter__input splited"
-                  name="yar_min"
-                  v-model="inputs.yar_min"
-                  placeholder="от"
-                />
-                <input
-                  type="number"
-                  class="mob-filter__input splited"
-                  name="yar_max"
-                  v-model="inputs.yar_max"
-                  placeholder="до"
-                />
-              </div>
-            </div>
-            <div class="hidden-filters" :class="{ hideFilters: menuRolled }">
-              <div class="mob-filter__row">
-                <v-select-styled ref="transmission" :options="options.transmission" />
-              </div>
-              <div class="mob-filter__row my-4" id="">
                 <div class="form_toggle">
                   <div class="form_toggle-item item-1">
                     <input
-                      id="seler_type-all1"
+                      id="type_of_novetly-all"
                       type="radio"
-                      name="seler_type"
+                      name="condition"
                       value="Все"
-                      v-model="radio.seller_type"
+                      v-model="radio.condition"
+                      @click="changeRadio"
                     />
-                    <label for="seler_type-all1">Все</label>
+                    <label for="type_of_novetly-all">Все</label>
                   </div>
                   <div class="form_toggle-item item-mid">
                     <input
-                      id="seler_type-salons1"
+                      id="type_of_novetly-new"
                       type="radio"
-                      name="seler_type"
-                      value="Салоны"
-                      v-model="radio.seller_type"
+                      name="condition"
+                      value="Новые"
+                      v-model="radio.condition"
+                      @click="changeRadio"
                     />
-                    <label for="seler_type-salons1">Салоны</label>
+                    <label for="type_of_novetly-new">Новые</label>
                   </div>
                   <div class="form_toggle-item item-2">
                     <input
-                      id="seler_type-private1"
+                      id="type_of_novetly-mileage"
                       type="radio"
-                      name="seler_type"
-                      value="Частники"
-                      v-model="radio.seller_type"
+                      name="condition"
+                      value="С пробегом"
+                      v-model="radio.condition"
+                      @click="changeRadio"
                     />
-                    <label for="seler_type-private1">Частники</label>
+                    <label for="type_of_novetly-mileage">С пробегом</label>
                   </div>
                 </div>
               </div>
               <div class="mob-filter__row">
-                <v-select-styled ref="status" :options="options.status" />
+                <v-select-styled ref="body_type" :options="options.body_type" />
+              </div>
+              <div class="hidden-filters" :class="{ hideFilters: menuRolled }">
+                <div class="mob-filter__row my-4">
+                  <input
+                    type="text"
+                    placeholder="Привод"
+                    name="drive"
+                    v-model="inputs.drive"
+                    class="mob-filter__input"
+                  />
+                </div>
+                <div class="mob-filter__row mb-4">
+                  <h2 class="mob-filter__row-titlee">Пробег от</h2>
+                  <div class="mob-filter__row-block">
+                    <input
+                      type="number"
+                      placeholder="от"
+                      name="mileage_min"
+                      v-model="inputs.mileage_min"
+                      class="mob-filter__input splited"
+                    />
+                    <input
+                      type="number"
+                      placeholder="до"
+                      name="mileage_max"
+                      v-model="inputs.mileage_max"
+                      class="mob-filter__input splited"
+                    />
+                  </div>
+                </div>
+                <div class="mob-filter__row">
+                  <v-select-styled ref="market_version" :options="options.market_version" />
+                </div>
+              </div>
+            </div>
+            <div class="mob-filter__column">
+              <div class="mob-filter__row mb-4">
+                <input type="text" class="mob-filter__input" name="city" placeholder="Город" />
+              </div>
+              <div class="mob-filter__row">
+                <h2 class="mob-filter__row-title">Год</h2>
+                <div class="mob-filter__row-block mb-4">
+                  <input
+                    type="number"
+                    class="mob-filter__input splited"
+                    name="yar_min"
+                    v-model="inputs.yar_min"
+                    placeholder="от"
+                  />
+                  <input
+                    type="number"
+                    class="mob-filter__input splited"
+                    name="yar_max"
+                    v-model="inputs.yar_max"
+                    placeholder="до"
+                  />
+                </div>
+              </div>
+              <div class="hidden-filters" :class="{ hideFilters: menuRolled }">
+                <div class="mob-filter__row">
+                  <v-select-styled ref="transmission" :options="options.transmission" />
+                </div>
+                <div class="mob-filter__row my-4" id="">
+                  <div class="form_toggle">
+                    <div class="form_toggle-item item-1">
+                      <input
+                        id="seler_type-all1"
+                        type="radio"
+                        name="seler_type"
+                        value="Все"
+                        v-model="radio.seller_type"
+                      />
+                      <label for="seler_type-all1">Все</label>
+                    </div>
+                    <div class="form_toggle-item item-mid">
+                      <input
+                        id="seler_type-salons1"
+                        type="radio"
+                        name="seler_type"
+                        value="Салоны"
+                        v-model="radio.seller_type"
+                      />
+                      <label for="seler_type-salons1">Салоны</label>
+                    </div>
+                    <div class="form_toggle-item item-2">
+                      <input
+                        id="seler_type-private1"
+                        type="radio"
+                        name="seler_type"
+                        value="Частники"
+                        v-model="radio.seller_type"
+                      />
+                      <label for="seler_type-private1">Частники</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="mob-filter__row">
+                  <v-select-styled ref="status" :options="options.status" />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div class="filter__conditions" :class="{ hideFilters: menuRolled }">
-          <div class="filter__conditions-list">
-            <div class="filter-option" v-for="condition in conditions" :key="condition.id">
-              <input
-                type="checkbox"
-                :id="condition.id"
-                name="accident_status"
-                :value="condition.condition"
-                v-model="checkBoxes.conditions_selected"
-              />
-              <label :for="condition.id">{{ condition.condition }}</label>
+          <div class="filter__conditions" :class="{ hideFilters: menuRolled }">
+            <div class="filter__conditions-list">
+              <div class="filter-option" v-for="condition in conditions" :key="condition.id">
+                <input
+                  type="checkbox"
+                  :id="condition.id"
+                  name="accident_status"
+                  :value="condition.condition"
+                  v-model="checkBoxes.conditions_selected"
+                />
+                <label :for="condition.id">{{ condition.condition }}</label>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="filter__options" :class="{ hideFilters: menuRolled }">
-          <h2 class="filter__options-title">Опции</h2>
-          <hr class="split-line" />
-          <ul class="filter__options-list">
-            <li class="filter-option" v-for="condition in TRANSPORT_CONDITIONS" :key="condition.id">
-              <input type="checkbox" :id="condition.id" name="chk" :value="condition.value" />
-              <label :for="condition.id">{{ condition.condition }}</label>
-            </li>
-          </ul>
-        </div>
-        <div class="mob-filter__row filter__styled-submit">
-          <button class="styled-button" type="submit">Применить</button>
-        </div>
-      </form>
+          <div class="filter__options" :class="{ hideFilters: menuRolled }">
+            <h2 class="filter__options-title">Опции</h2>
+            <hr class="split-line" />
+            <ul class="filter__options-list">
+              <li
+                class="filter-option"
+                v-for="condition in TRANSPORT_CONDITIONS"
+                :key="condition.id"
+              >
+                <input type="checkbox" :id="condition.id" name="chk" :value="condition.value" />
+                <label :for="condition.id">{{ condition.condition }}</label>
+              </li>
+            </ul>
+          </div>
+          <div class="mob-filter__row filter__styled-submit">
+            <button class="styled-button" type="submit">Применить</button>
+          </div>
+        </form>
+      </div>
       <div class="v-cars__popular">
         <div class="v-cars__popular-title title" @click="getPopularCars">
           Популярные легковые автомобили <span>Все</span>
@@ -668,11 +713,11 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import { getSelectOptions } from '@/api/requests'
 import vSelectStyled from './v-select-styled.vue'
 import { getFilteredProducts } from '@/api/requests'
 import vHeader from './generalComponents/v-header.vue'
 import vProduct from './generalComponents/v-product.vue'
-
 export default {
   name: 'v-cars',
   components: { vProduct, vSelectStyled, vHeader },
@@ -692,15 +737,7 @@ export default {
       filterMenuOpen: false,
       isFilteredProductsFound: true,
 
-      selects: [
-        'brands',
-        'models',
-        'currency',
-        'status',
-        'transmission',
-        'market_version',
-        'body_type'
-      ],
+      selects: ['brand', 'currency', 'status', 'transmission', 'market_version', 'body_type'],
       menuRolled: false,
       radio: {
         seller_type: 'Все',
@@ -727,20 +764,14 @@ export default {
           default: 'Цвет',
           is_reset: true,
           is_multiselect: true,
-          options: [
-            { value: 'Красный', name: 'Красный' },
-            { value: 'Красный', name: 'Красный' }
-          ]
+          options: []
         },
-        brands: {
+        brand: {
           name: 'brand',
           default: 'Марка',
           is_reset: true,
           is_multiselect: false,
-          options: [
-            { value: 'BMW', name: 'BMW' },
-            { value: 'Mercedes', name: 'Mercedes' }
-          ]
+          options: []
         },
 
         currency: {
@@ -748,11 +779,7 @@ export default {
           default: 'AZN',
           is_reset: false,
           is_multiselect: false,
-          options: [
-            { value: 'AZN', name: 'AZN' },
-            { value: 'USD', name: 'USD' },
-            { value: 'RUB', name: 'RUB' }
-          ]
+          options: []
         },
 
         body_type: {
@@ -760,49 +787,70 @@ export default {
           default: 'Тип кузова',
           is_reset: true,
           is_multiselect: true,
-          options: [
-            { value: 'Седан', name: 'Седан' },
-            { value: 'Купе', name: 'Купе' }
-          ]
+          options: []
         },
         market_version: {
           name: 'market_version',
           is_reset: true,
           default: 'Версия для рынка',
           is_multiselect: true,
-          options: [{ value: 'версия1', name: 'версия1' }]
+          options: []
         },
         transmission: {
           name: 'transmission',
           default: 'Коробка передач',
           is_reset: true,
           is_multiselect: true,
-          options: [{ value: 'Механическая', name: 'Механическая' }]
+          options: []
         },
         status: {
           name: 'status',
           default: 'Статус',
           is_reset: true,
           is_multiselect: false,
-          options: [{ value: '201', name: '201' }]
+          options: []
         }
       },
       checkBoxes: {
         accident_status: []
+      },
+      boolean_val: {
+        credit: false,
+        barter: false
       }
     }
   },
   methods: {
     ...mapActions(['GET_PRODUCTS_FROM_API', 'GET_TRANSPORT_CONDITIONS']),
     setFiltersFromURL() {
-      const params = new URLSearchParams(window.location.search)
-      for (const [key, value] of params.entries()) {
-        let title = key.replace('-', '_')
-        if (title in this.inputs) {
-          this.inputs[title] = value
-        } else if (title in this.options || title == 'brand') {
-          console.log(title)
+      const queryParams = window.location.search
+      if (queryParams) {
+        const params = new URLSearchParams(queryParams)
+        for (const [key, value] of params.entries()) {
+          let title = key.replace('-', '_')
+          if (title in this.inputs) {
+            this.inputs[title] = value
+          } else if (title in this.checkBoxes) {
+            this.checkBoxes[title].push(value)
+          } else if (title in this.radio) {
+            this.radio[title] = value
+          } else if (title in this.boolean_val) {
+            this.boolean_val[title] = value
+          } else if (title in this.options) {
+            if (title !== 'color') {
+              this.$refs[title].selectOption(value)
+            }
+            if (this.options[title].is_multiselect) {
+              this.$refs[title].toggleCheck()
+            }
+          }
         }
+        const url = 'http://api.rcarentacar.com/api/transport/filter/?'
+        const queryUrl = decodeURIComponent(params.toString())
+        getFilteredProducts(this.accessToken, url + queryUrl).then((products) => {
+          this.filteredProducts = products
+          this.isFilteredProductsFound = this.filteredProducts.length > 0
+        })
       }
     },
     toggleFilterMenu() {
@@ -828,26 +876,32 @@ export default {
       })
 
       for (let radio_name in this.radio) {
-        params.append(radio_name, this.radio[radio_name]) // Не используем encodeURIComponent здесь
+        params.append(radio_name, this.radio[radio_name]) // Не используем URIComponent здесь
       }
       for (let checkbox_name in this.checkBoxes) {
         console.log(checkbox_name)
         if (this.checkBoxes[checkbox_name].length) {
           for (let checkbox_param in this.checkBoxes[checkbox_name]) {
-            params.append(this.checkBoxes[checkbox_name][checkbox_param], checkbox_name)
+            params.append(checkbox_name, this.checkBoxes[checkbox_name][checkbox_param])
+            console.log(this.checkBoxes[checkbox_name][0])
           }
         }
       }
 
+      for (let boolean_name in this.boolean_val) {
+        if (this.boolean_val[boolean_name]) {
+          params.append(boolean_name, this.boolean_val[boolean_name])
+        }
+      }
+
       const queryString = params.toString()
-      console.log(decodeURIComponent(queryString))
+
       const url = 'http://api.rcarentacar.com/api/transport/filter/?'
-      window.history.pushState(null, '', '/cars/? ' + queryString)
+      window.history.pushState(null, '', window.location.pathname + '?' + queryString)
       getFilteredProducts(this.accessToken, url + queryString).then((products) => {
         this.filteredProducts = products
         this.isFilteredProductsFound = this.filteredProducts.length > 0
         console.log(this.isFilteredProductsFound)
-        /*  this.filteredProducts = products */
       })
     },
 
@@ -862,7 +916,10 @@ export default {
       }
       for (let select_name of this.selects) {
         this.$refs[select_name].resetOption()
-        this.$refs[select_name].areOptionsVisible = false
+      }
+      this.checkBoxes.accident_status = []
+      for (let key in this.radio) {
+        this.radio[key] = 'Все'
       }
     },
 
@@ -871,12 +928,15 @@ export default {
         let title
         if (select == 'currency') {
           title = 'currency-tr'
+        } else if (select == 'brand') {
+          title = 'brands'
         } else {
           title = select.replace('_', '-')
         }
 
         getSelectOptions(this.accessToken, title, select).then((options) => {
           this.options[select].options = options
+          console.log(options)
         })
       }
     }
@@ -896,8 +956,9 @@ export default {
     }
   },
   mounted() {
+    this.setOptionsToSelect()
     this.setFiltersFromURL()
-    this.GET_TRANSPORT_CONDITIONS(), this.GET_PRODUCTS_FROM_API(), console.log(this.PRODUCTS)
+    this.GET_TRANSPORT_CONDITIONS(), this.GET_PRODUCTS_FROM_API(), console.log(this.accessToken)
   }
 }
 </script>
