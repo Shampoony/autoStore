@@ -74,14 +74,23 @@
           </div>
         </div>
         <div class="product-card__right">
-          <h2 class="page-title product-card__price">{{ prettyPrice(product_data.price) }} ₽</h2>
+          <h2 class="page-title product-card__price">
+            {{ prettyNum(product_data.price) }} {{ currency }}
+          </h2>
           <h2 class="product-card__title page-title mob">
             {{ product_data.title }}
           </h2>
-          <a v-if="product_data.owner_phone" class="product-card__btn show-phone">
-            Показать телефон
-            <p>{{ product_data.owner_phone }}</p>
+          <a
+            v-if="product_data.owner_phone"
+            class="product-card__btn show-phone"
+            :class="{ 'phone-showed': isPhoneShowed }"
+            @click="isPhoneShowed = !isPhoneShowed"
+          >
+            <p v-if="!isPhoneShowed">Показать телефон</p>
+            <p v-if="!isPhoneShowed">{{ maskNumber(product_data.owner_phone) }}</p>
+            <p class="product-card__btn" v-if="isPhoneShowed">{{ product_data.owner_phone }}</p>
           </a>
+
           <a class="product-card__btn write-message">
             Написать сообщение
             <p>Отвечает за несколько минут</p>
@@ -106,7 +115,7 @@
       </div>
       <div class="product-card__container mob">
         <div class="product-card__images">
-          <img class="product-card__main-image" :src="mainImage" alt="" />
+          <ProductCarousel :images="product_data.images" />
           <!--  <Swiper
                   :slides-per-view="1"
                   :space-between="10"
@@ -131,7 +140,9 @@
           </div>
         </div>
 
-        <h2 class="page-title product-card__price mb-4">{{ prettyPrice(product_data.price) }} ₽</h2>
+        <h2 class="page-title product-card__price mb-4">
+          {{ prettyNum(product_data.price) }} {{ currency }}
+        </h2>
         <h2 class="product-card__title page-title mob mb-6">
           {{ product_data.title }}
         </h2>
@@ -215,8 +226,9 @@
   </div>
 </template>
 <script>
-import prettyPrice from '@/filters/prettyPrice.js'
+import prettyNum from '@/filters/prettyNum.js'
 import ProductCarousel from '../generalComponents/productCarousel.vue'
+import { getCurrency } from '@/api/requests'
 
 export default {
   name: 'vProductCard',
@@ -232,6 +244,12 @@ export default {
       type: Function
     }
   },
+  data() {
+    return {
+      currency: '',
+      isPhoneShowed: false
+    }
+  },
   computed: {
     mainImage() {
       return this.product_data.images ? this.product_data.images[0]['image'] : ''
@@ -241,10 +259,21 @@ export default {
     }
   },
   methods: {
-    prettyPrice
+    prettyNum,
+    getCurrency,
+    setCurrency() {
+      getCurrency(this.product_data.currency).then((currency) => {
+        console.log('Валюта', currency)
+        this.currency = currency.currency
+      })
+    },
+    maskNumber(number) {
+      return number.replace(/^(.{7}).*$/, '$1' + '*'.repeat(number.length - 3))
+    }
   },
   mounted() {
     console.log(this.product_data.descriptions)
+    this.setCurrency()
   }
 }
 </script>

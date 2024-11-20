@@ -25,7 +25,7 @@
     <div class="v-product__content">
       <div class="v-product__block flex justify-between">
         <div class="v-product__price flex items-center" :class="{ vip: product_data.vip }">
-          {{ prettyPrice(product_data.price) }} ₽
+          {{ prettyNum(product_data.price) }} {{ currency }}
         </div>
         <img
           @click="toggleToFavourites"
@@ -49,10 +49,21 @@
         </router-link>
       </div>
       <div class="v-product__block">
-        <p class="v-product__description">{{ product_data.year_of_release }}</p>
+        <div class="v-product__description flex">
+          <div v-if="product_data.year_of_release">{{ product_data.year_of_release }}г</div>
+          <div v-if="product_data.engine_volume">
+            , {{ prettyNum(product_data.engine_volume) }}л
+          </div>
+          <div v-if="product_data.mileage">, {{ product_data.mileage }}км</div>
+        </div>
       </div>
       <div class="v-product__block">
-        <p class="v-product__location">{{ product_data.address }}</p>
+        <div class="v-product__location flex gap-2">
+          <div v-if="product_data.city">{{ product_data.city }}</div>
+          <div v-if="product_data.created_at">
+            {{ formattedDateTime.date }} {{ formattedDateTime.time }}
+          </div>
+        </div>
       </div>
     </div>
     <div v-if="product_data.is_viewed" class="v-product__viewed">Просмотрено</div>
@@ -67,8 +78,9 @@ import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/css'
 import 'swiper/css/pagination'
 import { Pagination } from 'swiper/modules'
+import { getCurrency } from '@/api/requests'
+import prettyNum from '@/filters/prettyNum.js'
 import { addToFavourites, removeFromFavourites, isProductInFavourites } from '@/utils'
-import prettyPrice from '@/filters/prettyPrice.js'
 
 export default {
   name: 'v-product',
@@ -89,7 +101,9 @@ export default {
       currentSegment: 0,
       isPagination: false,
       productInFavourites: false,
-      swiper: null
+      swiper: null,
+      currency: '',
+      apiUrl: 'http://api.rcarentacar.com/'
     }
   },
   components: {
@@ -110,9 +124,15 @@ export default {
       }
     },
     getImages() {
+      for (let image of this.product_data.images) {
+        if (!image.image.includes(this.apiUrl)) {
+          image.image = this.apiUrl + image.image // Обновляем свойство image объекта напрямую
+        }
+      }
+      console.log('images', this.product_data.images)
       if (Array.isArray(this.product_data.images)) {
         if (this.product_data.images.length > 4) {
-          return this.product_data.images.slice(0, 4) // Используем slice вместо splice, так как нам не нужно изменять массив
+          return this.product_data.images.slice(0, 4)
         } else {
           return this.product_data.images
         }
@@ -125,11 +145,34 @@ export default {
     },
     accessToken() {
       return JSON.parse(localStorage.getItem('user')).access || ''
+    },
+    formattedDateTime() {
+      // Обрезаем строку до валидного формата
+      const validDateString = this.product_data.created_at.slice(0, 23) + 'Z' // Берём только первые 23 символа и добавляем 'Z'
+      const date = new Date(validDateString)
+
+      // Форматируем дату и время
+      return {
+        date: date.toLocaleDateString('ru-RU', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        }),
+        time: date.toLocaleTimeString('ru-RU', {
+          hour: '2-digit',
+          minute: '2-digit'
+        })
+      }
     }
   },
 
   methods: {
-    prettyPrice,
+    prettyNum,
+    setCurrency() {
+      getCurrency(this.product_data.currency).then((currency) => {
+        this.currency = currency.currency
+      })
+    },
     toggleToFavourites() {
       if (!this.productInFavourites) {
         addToFavourites(this.accessToken, this.product_data.id).then(() => {
@@ -151,6 +194,8 @@ export default {
   },
   mounted() {
     this.checkIfProductInFavourites()
+    this.setCurrency()
+    console.log(this.product_data.mileage)
   }
 }
 </script>

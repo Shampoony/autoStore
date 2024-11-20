@@ -2,7 +2,10 @@
   <div class="product-carousel">
     <!-- Текущая картинка -->
     <div class="main-image">
-      <button @click="toggler = !toggler"><img :src="currentImage" alt="" /></button>
+      <button @click="toggler = !toggler">
+        <img class="carousel-overlay" :src="currentImage" alt="" />
+        <img :src="currentImage" alt="" />
+      </button>
       <FsLightbox :toggler="toggler" :sources="imageSources" />
     </div>
 

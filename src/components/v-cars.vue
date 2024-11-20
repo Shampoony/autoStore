@@ -847,7 +847,7 @@ export default {
         }
         const url = 'http://api.rcarentacar.com/api/transport/filter/?'
         const queryUrl = decodeURIComponent(params.toString())
-        getFilteredProducts(this.accessToken, url + queryUrl).then((products) => {
+        getFilteredProducts(url + queryUrl).then((products) => {
           this.filteredProducts = products
           this.isFilteredProductsFound = this.filteredProducts.length > 0
         })
@@ -898,7 +898,7 @@ export default {
 
       const url = 'http://api.rcarentacar.com/api/transport/filter/?'
       window.history.pushState(null, '', window.location.pathname + '?' + queryString)
-      getFilteredProducts(this.accessToken, url + queryString).then((products) => {
+      getFilteredProducts(url + queryString).then((products) => {
         this.filteredProducts = products
         this.isFilteredProductsFound = this.filteredProducts.length > 0
         console.log(this.isFilteredProductsFound)

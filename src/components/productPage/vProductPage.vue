@@ -22,7 +22,18 @@
         :productInFavourites="productInFavourites"
         :toggleToFavourites="toggleToFavourites"
       />
-      <div class="v-product-page__similar"></div>
+      <div class="v-product-page__similar similar">
+        <h2 class="title my-6" v-if="similarProducts.length">Похожие объявления</h2>
+        <ul class="similar__list products-container">
+          <li
+            class="similar__list-item"
+            v-for="similar_product in similarProducts"
+            :key="similar_product.id"
+          >
+            <v-product :product_data="similar_product" :products_length="similarProducts.length" />
+          </li>
+        </ul>
+      </div>
     </div>
     <transition name="fade">
       <vModal v-if="modals.barterModal" :show="modals.barterModal">
@@ -98,20 +109,23 @@
 </template>
 
 <script>
-import vHeader from '../generalComponents/v-header.vue'
+import vProductCard from './vProductCard.vue'
+import { getSimilarProducts } from '@/api/requests'
 import VModal from '../generalComponents/v-modal.vue'
+import vHeader from '../generalComponents/v-header.vue'
+import vProduct from '../generalComponents/v-product.vue'
 import vHeaderAlt from '../generalComponents/v-header-alt.vue'
 import { addToFavourites, removeFromFavourites, isProductInFavourites } from '@/utils'
-import vProductCard from './vProductCard.vue'
 
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/swiper-bundle.css'
 
 export default {
-  components: { vHeader, VModal, Swiper, SwiperSlide, vHeaderAlt, vProductCard },
+  components: { vHeader, VModal, Swiper, SwiperSlide, vHeaderAlt, vProductCard, vProduct },
   data() {
     return {
       product_data: {},
+      similarProducts: [],
       modals: { barterModal: false },
       imagePreview: null, // Состояние для хранения превью изображения,
       isImageAdded: false,
@@ -136,10 +150,19 @@ export default {
       })
     },
 
+    setSimilarProducts() {
+      if (this.product_data) {
+        getSimilarProducts(this.product_data).then((products) => {
+          this.similarProducts = products.splice(0, 16)
+          console.log(this.similarProducts, products)
+        })
+      }
+    },
+
     setThumbsSwiper(swiper) {
       this.thumbsSwiper = swiper
     },
-    prettyPrice(price) {
+    prettyNum(price) {
       return price?.toLocaleString('ru')
     },
     deletePreview() {
@@ -203,6 +226,7 @@ export default {
         const responseData = await response.json()
         this.product_data = responseData
         this.checkIfProductInFavourites()
+        this.setSimilarProducts()
         console.log(this.product_data)
       } catch (error) {
         console.error('Ошибка при получении данных о товаре:', error)
@@ -211,6 +235,8 @@ export default {
   },
   mounted() {
     this.getProductById()
+
+    console.log(this.accessToken)
   }
 }
 </script>
