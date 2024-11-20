@@ -26,29 +26,7 @@
       <div class="product-card__container flex justify-between gap-4">
         <div class="product-card__left">
           <div class="product-card__images">
-            <img class="product-card__main-image" :src="mainImage" alt="" />
-            <!--  <Swiper
-                  :slides-per-view="1"
-                  :space-between="10"
-                  thumbs.swiper="thumbsSwiper"
-                  class="main-slider product-card__main-image"
-                >
-                  <SwiperSlide v-for="(image, index) in product_data.images" :key="index">
-                    <img :src="image['image']" alt="main photo" />
-                  </SwiperSlide>
-                </Swiper> -->
-            <div class="product-card__carousel">
-              <!--  <Swiper
-                    :slides-per-view="1"
-                    :space-between="10"
-                    thumbs.swiper="thumbsSwiper"
-                    class="main-slider product-card__carousel-item"
-                  >
-                    <SwiperSlide v-for="(image, index) in product_data.images" :key="index">
-                      <img :src="image['image']" alt="main photo" />
-                    </SwiperSlide>
-                  </Swiper> -->
-            </div>
+            <ProductCarousel :images="product_data.images" />
           </div>
           <div class="product-card__info flex justify-between">
             <div class="flex justify-between w-full">
@@ -238,8 +216,11 @@
 </template>
 <script>
 import prettyPrice from '@/filters/prettyPrice.js'
+import ProductCarousel from '../generalComponents/productCarousel.vue'
+
 export default {
   name: 'vProductCard',
+  components: { ProductCarousel },
   props: {
     product_data: {
       type: Object
