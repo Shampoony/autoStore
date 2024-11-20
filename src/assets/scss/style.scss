@@ -564,9 +564,12 @@ a {
     font-size: 12px;
 
     position: absolute;
-    top: clamp(5rem, -1.207rem + 31.03vw, 10.625rem);
+    top: 150px;
     left: 15px;
     z-index: 100;
+    @media (max-width: 500px) {
+      top: 75px;
+    }
   }
   &__viewed {
     background-color: rgba($color: #000000, $alpha: 0.58);
@@ -602,6 +605,9 @@ a {
   &__price {
     font-size: 17px;
     font-weight: 500;
+    @media (max-width: 370px) {
+      font-size: 12px;
+    }
   }
   &__price.vip {
     background-color: #ff6c2c;
@@ -1200,6 +1206,9 @@ a {
   @media (max-width: 410px) {
     max-width: 300px;
   }
+  &__tip {
+    font-size: 12px;
+  }
   &__form {
     display: flex;
     flex-direction: column;
@@ -1249,7 +1258,7 @@ a {
     justify-content: center;
     height: 40px;
 
-    margin-top: 20px;
+    margin-top: 10px;
   }
 }
 
@@ -1346,13 +1355,24 @@ a {
   font-weight: 500;
 }
 
+.v-product-page {
+  margin-top: 60px;
+}
+
 .product-card {
+  padding-top: 60px;
+
   &__left > div {
     border-bottom: 1px solid #cfcfcf;
     padding: 16px 0;
   }
+
+  &__addParams {
+    flex-wrap: wrap;
+  }
+
   &__images {
-    max-width: 795px;
+    max-width: 100%;
     max-height: 755px;
 
     border-bottom: 0 !important;
@@ -1436,14 +1456,20 @@ a {
   &__specifications-block {
     width: 100%;
     justify-content: space-between;
+    gap: 30px;
+  }
+  &__specifications-block p {
+    text-align: left;
+    display: inline;
+    max-width: 50%;
   }
   &__specifications-block span {
     color: #707070;
   }
   &__specifications-container {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0px 20px;
   }
   &__addParam {
     background-color: #f2f1f0;
@@ -1619,7 +1645,7 @@ textarea {
 }
 
 .v-left-menu {
-  max-width: 220px;
+  width: 220px;
 
   &__container {
     display: flex;
@@ -1656,6 +1682,12 @@ textarea {
   gap: 92px;
 }
 .v-favourites {
+  &__list {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+  }
 }
 
 .product-image-overlay {

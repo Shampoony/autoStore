@@ -13,6 +13,10 @@
         <div @click="changeMethod" :data-link="'registration-real-estate'" class="window__field">
           Салон недвижимости
         </div>
+        <p class="window__tip">
+          Уже есть аккаунт? Тогда
+          <router-link :to="{ name: 'login' }">Войдите</router-link>
+        </p>
         <router-link :to="registrationLink" class="window__button">Далее</router-link>
       </div>
     </div>

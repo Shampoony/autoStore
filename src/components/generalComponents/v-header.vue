@@ -252,9 +252,6 @@ export default {
           }
         })
 
-        if (response.ok) {
-          console.log('Окей')
-        }
         localStorage.removeItem('user')
         alert('Вы вышли из аккаунта')
       } catch (error) {

@@ -82,11 +82,13 @@ const routes = [
   {
     path: '/transport/product/:id',
     name: 'transport-item',
-    component: vProductPage
+    component: vProductPage,
+    meta: { requiresAuth: true }
   },
   {
     path: '/profile/',
-    children: profileRoutes
+    children: profileRoutes,
+    meta: { requiresAuth: true }
   }
 ]
 

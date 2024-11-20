@@ -18,6 +18,10 @@
             name="password"
             v-model="form.password"
           />
+          <p class="window__tip">
+            Ещё нет аккаунта? Тогда
+            <router-link :to="{ name: 'registration' }">Зарегестрируйтесь</router-link>
+          </p>
           <button class="window__button" type="submit">Войти</button>
         </form>
       </div>

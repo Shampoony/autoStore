@@ -68,7 +68,7 @@
                 :key="product.id"
               >
                 <span>{{ product.parameter }}</span>
-                {{ product.parameter_info }}
+                <p>{{ product.parameter_info }}</p>
               </div>
             </div>
           </div>
@@ -81,8 +81,10 @@
           </div>
           <div class="product-card__description">
             <h2 class="product-title">Описание</h2>
-            {{ product_data.description }}
-            <div class="product-card__addParams flex gap-2">
+            <p v-for="description in product_data.descriptions" :key="description.id">
+              {{ description.title }}
+            </p>
+            <div class="product-card__addParams flex gap-2 mt-4">
               <div
                 class="product-card__addParam"
                 v-for="param in product_data.additionally_param"
@@ -194,7 +196,9 @@
           </div>
           <div class="product-card__description">
             <h2 class="product-title">Описание</h2>
-            {{ product_data.description }}
+            <p v-for="description in product_data.descriptions" :key="description.id">
+              {{ description.title }}
+            </p>
             <div class="product-card__addParams flex gap-2">
               <div
                 class="product-card__addParam"
@@ -242,6 +246,9 @@ export default {
     },
     productInFavourites: {
       type: Boolean
+    },
+    toggleToFavourites: {
+      type: Function
     }
   },
   computed: {
@@ -255,6 +262,8 @@ export default {
   methods: {
     prettyPrice
   },
-  mounted() {}
+  mounted() {
+    console.log(this.product_data.descriptions)
+  }
 }
 </script>

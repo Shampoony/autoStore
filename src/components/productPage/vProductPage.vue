@@ -20,6 +20,7 @@
         v-if="Object.keys(product_data).length"
         :product_data="product_data"
         :productInFavourites="productInFavourites"
+        :toggleToFavourites="toggleToFavourites"
       />
       <div class="v-product-page__similar"></div>
     </div>

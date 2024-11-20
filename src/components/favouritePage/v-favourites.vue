@@ -4,10 +4,12 @@
     <div class="v-favourites__container container my-container">
       <v-left-menu />
       <ul class="v-favourites__list">
-        <li class="v-favourites__list-item">
+        <li
+          class="v-favourites__list-item"
+          v-for="product_data in favouriteProducts"
+          :key="product_data.transport.id"
+        >
           <v-product
-            v-for="product_data in favouriteProducts"
-            :key="product_data.transport.id"
             :product_data="product_data.transport"
             :products_length="favouriteProducts.length"
           />
