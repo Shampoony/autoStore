@@ -27,7 +27,7 @@
                 </div>
                 <div class="flex-col">
                   <div class="chat-item__name user-name">{{ chat.user2_name }}</div>
-                  <div class="chat-item__message">
+                  <div class="chat-item__message" v-if="chat.last_message">
                     {{ chat.last_message.content }}
                   </div>
                 </div>
@@ -62,17 +62,6 @@ export default {
         this.chats = chats
         console.log(chats)
       })
-    },
-    setUsersName() {
-      for (let chat of this.chats) {
-        console.log('Зашли')
-        const userId = chat.user1
-        getUserById(userId).then((userInfo) => {
-          console.log(userInfo.user_profile.full_name, userId)
-          this.users[userId] = userInfo.user_profile.full_name
-          console.log(this.users)
-        })
-      }
     }
   },
   mounted() {

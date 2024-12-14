@@ -65,7 +65,7 @@
             <img src="../../assets/images/phone.svg" alt="" />
           </button>
         </div>
-        <div class="v-chat-current__messages" v-if="messages.length">
+        <div class="v-chat-current__messages">
           <ul class="v-chat-current__messages-list">
             <li
               class="v-chat-current__messages-list-item message"
