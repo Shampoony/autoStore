@@ -90,7 +90,7 @@
 </template>
 
 <script>
-import registerUser from '@/api/requests'
+import { registerUser } from '@/api/requests'
 export default {
   data() {
     return {
