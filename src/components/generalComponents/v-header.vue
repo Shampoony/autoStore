@@ -226,13 +226,10 @@ export default {
     },
 
     filteredCategory() {
-      console.log()
       if (this.menuTitle === 'Транспорт') {
-        console.log(this.transportCategories)
         return this.transportCategories
       }
       if (this.menuTitle === 'Запчасти и аксессуары') {
-        console.log('d')
         return this.sparePartsCategories
       }
     }
@@ -275,7 +272,6 @@ export default {
   },
   async mounted() {
     await this.loadData()
-    console.log(JSON.parse(localStorage.getItem('user'))?.access || '')
   }
 }
 </script>

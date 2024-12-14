@@ -12,8 +12,7 @@
               class="chat-item flex justify-between"
               :to="{
                 name: 'current_chat',
-                params: { id: chat.id },
-                state: { chatName: chat.user2_name }
+                params: { id: chat.id }
               }"
             >
               <div class="chat-item__info flex gap-6">
@@ -26,7 +25,7 @@
                   </div>
                 </div>
                 <div class="flex-col">
-                  <div class="chat-item__name user-name">{{ chat.user2_name }}</div>
+                  <div class="chat-item__name user-name">{{ getName(chat) }}</div>
                   <div class="chat-item__message" v-if="chat.last_message">
                     {{ chat.last_message.content }}
                   </div>
@@ -42,8 +41,8 @@
   <v-bottom-menu :active-item="'chat'" />
 </template>
 <script>
+import { getUserId } from '@/utils'
 import { fetchChats } from '@/api/requests'
-import { getUserById } from '@/api/requests'
 import vHeader from '../generalComponents/v-header.vue'
 import vLeftMenu from '../generalComponents/v-left-menu.vue'
 import vBottomMenu from '../generalComponents/v-bottom-menu.vue'
@@ -60,8 +59,14 @@ export default {
     setChats() {
       fetchChats().then((chats) => {
         this.chats = chats
-        console.log(chats)
       })
+    },
+    getName(chat) {
+      const userId = getUserId()
+      if (chat.user1 != userId) {
+        return chat.user1_name
+      }
+      return chat.user2_name
     }
   },
   mounted() {
