@@ -126,6 +126,7 @@ export default {
       number: '',
       numberContent: 'Показать телефон',
       numberShowed: false,
+      user2: '',
 
       socket: null,
       newMessage: '',
@@ -188,7 +189,7 @@ export default {
     initializeWebSocket() {
       const accessToken =
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM1NzQwODQxLCJpYXQiOjE3MzMxNDg4NDEsImp0aSI6ImEyMWU4YjljMGIzOTRjNmM4ZDY2NjBmZTliYjZhZjNlIiwidXNlcl9pZCI6Miwic3RhdHVzIjoidXNlciIsInByb2ZpbGVfaWQiOjV9.D-hf4sLhsssb_e1v5fXu5iL1MVRmWoBMWqE7-ODTFTU'
-      const wsUrl = ` ws://api.rcarentacar.com/ws/chat/pocoxe/?token=${accessToken}`
+      const wsUrl = ` ws://api.rcarentacar.com/ws/chat/${this.chatName}/?token=${accessToken}`
       this.socket = new WebSocket(wsUrl)
 
       this.socket.onopen = () => {
@@ -210,14 +211,21 @@ export default {
         console.error('WebSocket ошибка:', error)
       }
     },
-    setChatById() {},
     setUserInfo() {
       fetchChatById(this.$route.params.id).then((chatInfo) => {
-        getUserById(chatInfo.user2).then((userInfo) => {
+        console.log(chatInfo)
+        if (chatInfo.user1 != this.user1Id) {
+          this.user2 = chatInfo.user1
+        } else {
+          this.user2 = chatInfo.user2
+        }
+        getUserById(this.user2).then((userInfo) => {
           this.chatName = userInfo.username
           this.number = userInfo.user_profile.phone
+          this.initializeWebSocket()
         })
       })
+      console.log(this.chatName)
     },
 
     // Отправка сообщения (текстового или файла)
@@ -262,10 +270,15 @@ export default {
       container.scrollTop = container.scrollHeight + 45 // Прокрутка в самый низ с небольшим отступом
     }
   },
+  computed: {
+    user1Id() {
+      return getUserId()
+    }
+  },
   mounted() {
     this.setChatMessage()
-    this.initializeWebSocket()
     this.setUserInfo()
+
     /*  this.setChatName() */
     console.log(this.$route)
   },

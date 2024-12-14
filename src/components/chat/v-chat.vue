@@ -59,6 +59,7 @@ export default {
     setChats() {
       fetchChats().then((chats) => {
         this.chats = chats
+        console.log(chats)
       })
     },
     getName(chat) {
