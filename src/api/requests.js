@@ -285,7 +285,8 @@ export async function fetchChatMessages(chatId) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
     const responseData = await response.json()
-    return responseData.results
+    console.log(responseData)
+    return responseData
   } catch (error) {
     console.error('Ошибка при загрузке сообщений:', error)
   }

@@ -23,13 +23,11 @@ li {
 }
 
 html {
-  width: 100vw;
   height: 100vh;
 }
 body {
   min-height: 100%;
   margin: 0;
-  width: 100vw;
   height: 100vh;
 }
 
@@ -2418,20 +2416,11 @@ textarea {
     flex-direction: column;
     /*   justify-content: flex-end; */
     gap: 5px;
-    margin-bottom: 24px;
+    padding-bottom: 34px;
     padding-right: 10px;
 
     height: 492px;
     overflow-y: auto;
-  }
-
-  &__messages-list::-webkit-scrollbar {
-    width: 5px;
-    border-radius: 20px;
-    background-color: #cfcfcf;
-  }
-  &__messages-list::-webkit-scrollbar-thumb {
-    background-color: #918e8e;
   }
 
   &__send textarea {
@@ -2612,4 +2601,15 @@ textarea {
 .notFound {
   font-size: 36px;
   text-align: center;
+}
+
+.styled-scrollbar {
+  &::-webkit-scrollbar {
+    width: 5px;
+    border-radius: 20px;
+    background-color: #cfcfcf;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #918e8e;
+  }
 }

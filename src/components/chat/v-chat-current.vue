@@ -66,7 +66,7 @@
           </button>
         </div>
         <div class="v-chat-current__messages">
-          <ul class="v-chat-current__messages-list">
+          <ul class="v-chat-current__messages-list styled-scrollbar" ref="messagesContainer">
             <li
               class="v-chat-current__messages-list-item message"
               v-for="msg in messages"
@@ -88,6 +88,7 @@
               class="custom-textarea"
               v-model="newMessage"
               @input="autoResize"
+              @keydown.enter="handleEnterKey"
             ></textarea>
             <button class="v-chat-current__submit" type="submit">
               <img src="../../assets/images/submit-message.svg" alt="" />
@@ -133,6 +134,15 @@ export default {
     }
   },
   methods: {
+    handleEnterKey(event) {
+      if (event.shiftKey) {
+        // Shift + Enter: добавление новой строки
+        return
+      }
+      // Просто Enter: отправить сообщение
+      this.sendMessage()
+      event.preventDefault() // Предотвращает добавление новой строки
+    },
     toPrevPage() {
       window.history.back()
     },
@@ -145,7 +155,7 @@ export default {
       fetchChatMessages(this.$route.params.id).then((messages) => {
         this.messages = messages
         this.userId = getUserId()
-        console.log(messages)
+        this.scrollToBottom()
       })
     },
     getMessageDate(timestamp) {
@@ -191,6 +201,7 @@ export default {
         this.messages.push({
           sender: data.sender,
           content: data.message || data.file,
+          timestamp: data.timestamp,
           type: data.message ? 'text' : 'file'
         })
       }
@@ -219,7 +230,6 @@ export default {
       if (this.newMessage.trim()) {
         const messageData = {
           message: this.newMessage,
-
           type: 'text' // Тип сообщения — текст
         }
         this.socket.send(JSON.stringify(messageData))
@@ -240,6 +250,16 @@ export default {
         }
         reader.readAsDataURL(this.selectedFile)
       }
+
+      // Прокрутка каждого нового сообщения в видимую область
+      this.$nextTick(() => {
+        const lastMessage = this.$refs.messagesContainer.lastElementChild
+        lastMessage.scrollIntoView({ behavior: 'smooth' })
+      })
+    },
+    scrollToBottom() {
+      const container = this.$refs.messagesContainer
+      container.scrollTop = container.scrollHeight + 45 // Прокрутка в самый низ с небольшим отступом
     }
   },
   mounted() {
@@ -248,6 +268,14 @@ export default {
     this.setUserInfo()
     /*  this.setChatName() */
     console.log(this.$route)
+  },
+  watch: {
+    // Если сообщения обновляются, прокручиваем в низ
+    messages: function () {
+      this.$nextTick(() => {
+        this.scrollToBottom()
+      })
+    }
   }
 }
 </script>
