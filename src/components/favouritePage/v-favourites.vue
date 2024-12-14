@@ -6,15 +6,16 @@
       <ul class="v-favourites__list">
         <li
           class="v-favourites__list-item"
-          v-for="product_data in favouriteProducts"
+          v-for="product_data in favouterites"
           :key="product_data.transport.id"
         >
           <v-product
             :product_data="product_data.transport"
-            :products_length="favouriteProducts.length"
+            :products_length="favouterites.length"
+            :type_of_product="'transport'"
           />
         </li>
-      </ul>
+      </ul>   
     </div>
   </div>
 </template>
@@ -22,28 +23,30 @@
 import vHeader from '../generalComponents/v-header.vue'
 import vLeftMenu from '../generalComponents/v-left-menu.vue'
 import vProduct from '../generalComponents/v-product.vue'
-import { mapActions, mapGetters } from 'vuex'
+
+import { getFFavouriteProducts } from '@/api/requests'
 export default {
   name: 'v-favourites',
   components: { vHeader, vLeftMenu, vProduct },
   data() {
-    return {}
+    return {
+      favouterites: []
+    }
   },
   computed: {
-    ...mapGetters(['TRANSPORT_FAVOURITES']),
     accessToken() {
       return JSON.parse(localStorage.getItem('user'))?.access || ''
-    },
-    favouriteProducts() {
-      return this.TRANSPORT_FAVOURITES
     }
   },
   methods: {
-    ...mapActions(['GET_TRANSPORT_FAVOURITES']),
-    getFavourites() {}
+    setFavourites() {
+      getFFavouriteProducts().then((products) => {
+        this.favouterites = products
+      })
+    }
   },
   mounted() {
-    this.GET_TRANSPORT_FAVOURITES()
+    this.setFavourites()
   }
 }
 </script>

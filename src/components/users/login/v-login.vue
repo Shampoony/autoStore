@@ -3,7 +3,11 @@
     <div class="v-login__container container">
       <div class="v-login__window window" v-if="!user">
         <h2 class="window__title">Вход в личный кабинет</h2>
-        <form @submit.prevent="loginUser" class="v-login__form window__form" method="POST">
+        <form
+          @submit.prevent="loginUser(this.form)"
+          class="v-login__form window__form"
+          method="POST"
+        >
           <input
             type="email"
             class="window__field"
@@ -31,6 +35,7 @@
 </template>
 
 <script>
+import { loginUser } from '@/api/auth'
 export default {
   name: 'v-login',
   data() {
@@ -43,30 +48,7 @@ export default {
     }
   },
   methods: {
-    async loginUser() {
-      try {
-        const response = await fetch('http://api.rcarentacar.com/api/users/login/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(this.form)
-        })
-
-        if (!response.ok) {
-          throw new Error('Ошибка входа')
-        }
-
-        const responseData = await response.json()
-        console.log(responseData)
-        // Сохраняем токен в localStorage
-        localStorage.setItem('user', JSON.stringify(responseData))
-        this.$router.push({ name: 'main' })
-      } catch (error) {
-        console.error('Ошибка при входе в аккаунт:', error)
-        alert('Произошла ошибка при входе в аккаунт')
-      }
-    }
+    loginUser
   }
 }
 </script>

@@ -1,13 +1,37 @@
 <template>
   <div class="product-carousel">
     <!-- Текущая картинка -->
-    <div class="main-image">
-      <button @click="toggler = !toggler">
-        <img class="carousel-overlay" :src="currentImage" alt="" />
-        <img :src="currentImage" alt="" />
-      </button>
-      <FsLightbox :toggler="toggler" :sources="imageSources" />
-    </div>
+    <swiper
+      class="main-image product-carousel__images"
+      ref="swiperRef"
+      :slides-per-view="1"
+      :space-between="0"
+      @slideChange="onSlideChange"
+    >
+      <swiper-slide
+        v-for="(image, index) in imageSources"
+        :key="index"
+        class="main-image__button"
+        @click="toggleLightbox"
+      >
+        <img class="carousel-overlay" :src="image" alt="" />
+        <img :src="image" alt="" />
+      </swiper-slide>
+    </swiper>
+
+    <!-- FsLightbox -->
+    <FsLightbox :toggler="toggler" :sources="imageSources" :slide="activeSlide + 1" />
+    <!-- <swiper
+      ref="swiperRef"
+      class="product-carousel__images"
+      :slides-per-view="1"
+      :space-between="0"
+    >
+      <swiper-slide v-for="image in imageSources" :key="image.id">
+        <img :src="image" class="v-product__image" alt="product" />
+        <img :src="image" class="product-image-overlay" alt="product" />
+      </swiper-slide>
+    </swiper> -->
 
     <!-- Миниатюры -->
     <div class="thumbnails">
@@ -26,10 +50,16 @@
 
 <script>
 import FsLightbox from 'fslightbox-vue/v3'
+import { SwiperSlide, Swiper } from 'swiper/vue'
+
+import 'swiper/css'
+import 'swiper/css/pagination'
 
 export default {
   components: {
-    FsLightbox
+    FsLightbox,
+    Swiper,
+    SwiperSlide
   },
   props: {
     images: {
@@ -39,6 +69,7 @@ export default {
   },
   data() {
     return {
+      activeSlide: 0,
       currentIndex: 0, // Индекс текущей картинки
       toggler: false
     }
@@ -50,49 +81,31 @@ export default {
     // Возвращаем массив с URL изображений
     imageSources() {
       return this.images.map((image) => image.image) // Генерируем правильный массив
+    },
+    checkImagesLength() {
+      if (this.images.length > 9) {
+        return true
+      } else {
+        return false
+      }
+    },
+    countOfImages() {
+      return Math.abs(4 - this.product_data.images.length)
     }
   },
   methods: {
     setCurrentImage(index) {
       this.currentIndex = index
+    },
+    toggleLightbox() {
+      this.toggler = !this.toggler // Переключение состояния FsLightbox
+    },
+    onSlideChange() {
+      const swiperInstance = this.$refs.swiperRef
+      console.log(swiperInstance)
     }
   }
 }
 </script>
 
-<style scoped>
-.product-carousel {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.main-image img {
-  max-width: 100%;
-  cursor: zoom-in;
-}
-
-.thumbnails {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.thumbnail {
-  width: 60px;
-  height: 60px;
-  overflow: hidden;
-  cursor: pointer;
-  border: 2px solid transparent;
-}
-
-.thumbnail.active {
-  border-color: #007bff;
-}
-
-.thumbnail img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-</style>
+<style scoped></style>

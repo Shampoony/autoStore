@@ -3,7 +3,10 @@
     <div class="v-registration-user__container">
       <div class="v-registration-user__window window">
         <h1 class="window__title">Регистрация</h1>
-        <form @submit.prevent="registerTransport" class="v-registration-user__form window__form">
+        <form
+          @submit.prevent="registerTransport(form)"
+          class="v-registration-user__form window__form"
+        >
           <input
             placeholder="Электронный адрес"
             class="window__field"
@@ -47,6 +50,7 @@
 </template>
 
 <script>
+import { registerTransport } from '@/api/auth'
 export default {
   data() {
     return {
@@ -62,33 +66,6 @@ export default {
       }
     }
   },
-  methods: {
-    async registerTransport() {
-      try {
-        const response = await fetch('http://127.0.0.1:8000/api/users/register/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data)
-        })
-
-        if (!response.ok) {
-          throw new Error('Ошибка регистрации')
-        }
-
-        const responseData = await response.json()
-        // Сохраняем токен в localStorage
-        localStorage.setItem('user', JSON.stringify(responseData))
-        this.$router.push({ name: 'main' })
-
-        // Действия после успешной регистрации
-        alert('Регистрация успешна!')
-      } catch (error) {
-        console.error('Ошибка при регистрации:', error)
-        alert('Произошла ошибка при регистрации')
-      }
-    }
-  }
+  methods: {}
 }
 </script>

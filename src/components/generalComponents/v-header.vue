@@ -17,8 +17,10 @@
               Техподдержка: <a href="tel:0125057755">(012) 505-77-55</a>
             </li>
             <li class="menu__list-item chat">
-              <img src="../../assets/images/chats.svg" alt="chat" />
-              <div class="chat__item">11</div>
+              <router-link :to="{ name: 'chat' }">
+                <img src="../../assets/images/chats.svg" alt="chat" />
+                <div class="chat__item">11</div>
+              </router-link>
             </li>
             <li class="menu__list-item">
               <router-link :to="{ name: 'favourites' }">
@@ -37,6 +39,9 @@
               >
               <div class="cabinet-link__container" :class="{ active: isCabinetActive }">
                 <div class="cabinet-link__block">
+                  <average-rating />
+                </div>
+                <div class="cabinet-link__block">
                   <div class="cabinet-link__item">
                     <a href="">Мой профиль</a>
                   </div>
@@ -44,7 +49,7 @@
                     <a href="">Мои объявления</a>
                   </div>
                   <div class="cabinet-link__item">
-                    <router-link :to="{ name: 'reviews' }">Мои отзывы</router-link>
+                    <router-link :to="{ name: 'my_reviews' }">Мои отзывы</router-link>
                   </div>
                   <div class="cabinet-link__item">
                     <router-link :to="{ name: 'favourites' }">Избранное</router-link>
@@ -95,13 +100,13 @@
               <a href="#!">Ищу</a>
             </li>
             <li class="bottom-menu__list-item">
-              <a href="#!">Салоны</a>
+              <router-link :to="{ name: 'salons' }">Салоны</router-link>
             </li>
             <li class="bottom-menu__list-item">
-              <a href="#!">Аренда</a>
+              <router-link :to="{ name: 'rent' }">Аренда</router-link>
             </li>
             <li class="bottom-menu__list-item">
-              <a href="#!">Запчасти и Аксессуары</a>
+              <router-link :to="{ name: 'spare_parts' }">Запчасти и Аксессуары</router-link>
             </li>
           </ul>
           <div class="v-header-bottom__search">
@@ -114,7 +119,7 @@
       <div class="v-header-mob__container container">
         <div class="v-header-mob__input" @click="console.log('Кликнули')">
           <input type="text" placeholder="Поиск" />
-          <div class="burger" @click.stop="toggleFilterMenu">
+          <div class="burger" @click.stop="toggleMenu">
             <img src="../../assets/images/filter.svg" alt="" />
           </div>
         </div>
@@ -154,7 +159,7 @@
               :key="category.id"
             >
               <div class="category__title">
-                <a href="#!">{{ category.category_name }}</a>
+                <a :href="'/?category=' + category.id">{{ category.category_name }}</a>
               </div>
               <ul class="category__subcategories flex flex-col gap-2">
                 <li
@@ -162,7 +167,7 @@
                   v-for="subcategory in getSubCategories(category.id)"
                   :key="subcategory.id"
                 >
-                  <a class="category__subcategory-link" href="#!">
+                  <a class="category__subcategory-link" :href="'/?subcategory=' + subcategory.id">
                     {{ subcategory.sub_category_name }}</a
                   >
                 </li>
@@ -172,13 +177,14 @@
         </div>
       </div>
     </div>
-    <v-main-mob-menu />
   </header>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { logout } from '@/api/auth'
 import vSelect from './v-select.vue'
+import { mapActions, mapGetters } from 'vuex'
+import averageRating from './average-rating.vue'
 import vMainMobMenu from '../mainPage/v-main-mob-menu.vue'
 
 export default {
@@ -188,7 +194,8 @@ export default {
   },
   components: {
     vSelect,
-    vMainMobMenu
+    vMainMobMenu,
+    averageRating
   },
   data() {
     return {
@@ -200,25 +207,42 @@ export default {
       isCabinetActive: false,
       isBurgerOpen: true,
       isFilterMenuOpen: false,
+      isMainMenuVisible: false,
 
-      user: localStorage.getItem('user') || null,
+      user: JSON.parse(localStorage.getItem('user')) || null,
       menuTitle: 'Транспорт'
     }
   },
   computed: {
-    ...mapGetters(['TRANSPORT_CATEGORIES', 'TRANSPORT_SUB_CATEGORIES']),
+    ...mapGetters(['TRANSPORT_CATEGORIES', 'TRANSPORT_SUB_CATEGORIES', 'SPARE_PARTS_CATEGORIES']),
     getMenuTitle() {
       return this.menuTitle
     },
     transportCategories() {
       return this.TRANSPORT_CATEGORIES?.results || []
     },
+    sparePartsCategories() {
+      return this.SPARE_PARTS_CATEGORIES?.results || []
+    },
+
     filteredCategory() {
-      return this.menuTitle === 'Транспорт' ? this.transportCategories : []
+      console.log()
+      if (this.menuTitle === 'Транспорт') {
+        console.log(this.transportCategories)
+        return this.transportCategories
+      }
+      if (this.menuTitle === 'Запчасти и аксессуары') {
+        console.log('d')
+        return this.sparePartsCategories
+      }
     }
   },
   methods: {
-    ...mapActions(['GET_TRANSPORT_CATEGORIES_FROM_API', 'GET_TRANSPORT_SUB_CATEGORIES_FROM_API']),
+    ...mapActions([
+      'GET_TRANSPORT_CATEGORIES_FROM_API',
+      'GET_TRANSPORT_SUB_CATEGORIES_FROM_API',
+      'GET_SPARE_PARTS_CATEGORIES_FROM_API'
+    ]),
 
     getSubCategories(index) {
       return this.TRANSPORT_SUB_CATEGORIES[index] || []
@@ -229,41 +253,29 @@ export default {
         document.body.classList.add('watch__mode')
       }
     },
+
     hideMenu() {
       if (this.isMenuVisible) {
         this.isMenuVisible = false
         document.body.classList.remove('watch__mode')
       }
     },
+    async loadData() {
+      await this.GET_TRANSPORT_SUB_CATEGORIES_FROM_API()
+      await this.GET_TRANSPORT_CATEGORIES_FROM_API()
+      await this.GET_SPARE_PARTS_CATEGORIES_FROM_API()
+    },
     setMenuTitle(title) {
       this.menuTitle = title
     },
-    toggleFilterMenu() {
+    toggleMenu() {
       this.$emit('toggleMenu')
     },
-    async logout() {
-      try {
-        const accessToken = JSON.parse(localStorage.getItem('user')).access
-        const response = await fetch('http://api.rcarentacar.com/api/users/logout/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${accessToken}`
-          }
-        })
-
-        localStorage.removeItem('user')
-        alert('Вы вышли из аккаунта')
-      } catch (error) {
-        console.error('Ошибка при выходе:', error)
-        alert('Произошла ошибка при выходе', error)
-      }
-    }
+    logout
   },
-  mounted() {
-    this.GET_TRANSPORT_CATEGORIES_FROM_API()
-    this.GET_TRANSPORT_SUB_CATEGORIES_FROM_API()
-    console.log(localStorage)
+  async mounted() {
+    await this.loadData()
+    console.log(JSON.parse(localStorage.getItem('user'))?.access || '')
   }
 }
 </script>

@@ -662,6 +662,7 @@
             :key="product_data.id"
             :product_data="product_data"
             :products_length="vipSalons.length"
+            :type_of_product="'transport'"
           />
         </div>
       </div>
@@ -679,6 +680,7 @@
             :key="product_data.id"
             :product_data="product_data"
             :products_length="vipSalons.length"
+            :type_of_product="'transport'"
           />
         </div>
       </div>
@@ -686,10 +688,11 @@
         <h2 class="v-cars__title title">Все объявления</h2>
         <div class="v-cars__all-container products-container">
           <vProduct
-            v-for="product in PRODUCTS"
+            v-for="product in TRANSPORT_PRODUCTS"
             :key="product.id"
             :product_data="product"
-            :products_length="PRODUCTS.length"
+            :products_length="TRANSPORT_PRODUCTS.length"
+            :type_of_product="'transport'"
           />
         </div>
       </div>
@@ -701,6 +704,7 @@
             :key="product.id"
             :product_data="product"
             :products_length="filteredProducts.length"
+            :type_of_product="'transport'"
           />
         </div>
       </div>
@@ -821,7 +825,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['GET_PRODUCTS_FROM_API', 'GET_TRANSPORT_CONDITIONS']),
+    ...mapActions(['GET_TRANSPORT_PRODUCTS_FROM_API', 'GET_TRANSPORT_CONDITIONS']),
     setFiltersFromURL() {
       const queryParams = window.location.search
       if (queryParams) {
@@ -934,7 +938,7 @@ export default {
           title = select.replace('_', '-')
         }
 
-        getSelectOptions(this.accessToken, title, select).then((options) => {
+        getSelectOptions(title, select).then((options) => {
           this.options[select].options = options
           console.log(options)
         })
@@ -942,23 +946,24 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['PRODUCTS', 'TRANSPORT_CONDITIONS']),
+    ...mapGetters(['TRANSPORT_PRODUCTS', 'TRANSPORT_CONDITIONS']),
     accessToken() {
       return JSON.parse(localStorage.getItem('user'))?.access || ''
     },
     vipSalons() {
-      const vipSalonsArr = this.PRODUCTS
+      const vipSalonsArr = this.TRANSPORT_PRODUCTS
       return vipSalonsArr.filter((product) => product.vip && product.company).slice(0, 4)
     },
     vipProducts() {
-      const vipProductsArr = this.PRODUCTS
+      const vipProductsArr = this.TRANSPORT_PRODUCTS
       return vipProductsArr.filter((product) => product.vip).slice(0, 4)
     }
   },
   mounted() {
     this.setOptionsToSelect()
     this.setFiltersFromURL()
-    this.GET_TRANSPORT_CONDITIONS(), this.GET_PRODUCTS_FROM_API(), console.log(this.accessToken)
+    this.GET_TRANSPORT_CONDITIONS()
+    this.GET_TRANSPORT_PRODUCTS_FROM_API()
   }
 }
 </script>

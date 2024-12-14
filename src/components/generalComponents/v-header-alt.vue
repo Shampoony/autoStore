@@ -4,15 +4,14 @@
       <div class="v-header__back" @click="toPrevPage">
         <img src="../../assets/images/ArrowLeft.svg" alt="" />
       </div>
-      <div class="v-header-alt__buttons">
-        <slot></slot>
-      </div>
+      <slot></slot>
     </div>
   </div>
 </template>
 <script>
 export default {
-  name: 'vHeader',
+  name: 'vHeaderAlt',
+
   methods: {
     toPrevPage() {
       window.history.back()

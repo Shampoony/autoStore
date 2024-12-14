@@ -3,7 +3,7 @@
     <div class="v-registration-user__container">
       <div class="v-registration-user__window window">
         <h1 class="window__title">Регистрация</h1>
-        <form @submit.prevent="registerUser" class="v-registration-user__form window__form">
+        <form @submit.prevent="register" class="v-registration-user__form window__form">
           <input
             placeholder="Электронный адрес"
             class="window__field"
@@ -36,8 +36,8 @@
             placeholder="Номер телефона"
             class="window__field"
             type="text"
-            v-model="form.profile.number"
-            name="number"
+            v-model="form.profile.phone"
+            name="phone"
           />
           <div class="form_toggle window__form-checkboxes">
             <div class="form_toggle-item item-1">
@@ -90,6 +90,7 @@
 </template>
 
 <script>
+import registerUser from '@/api/requests'
 export default {
   data() {
     return {
@@ -99,7 +100,7 @@ export default {
         password: '',
         profile: {
           full_name: '',
-          number: '',
+          phone: '',
           gender: '',
           yar_birth: '',
           region: '',
@@ -109,32 +110,8 @@ export default {
     }
   },
   methods: {
-    async registerUser() {
-      try {
-        console.log(JSON.stringify(this.form))
-        const response = await fetch('http://api.rcarentacar.com/api/users/register/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(this.form)
-        })
-
-        if (!response.ok) {
-          throw new Error('Ошибка регистрации')
-        }
-
-        const responseData = await response.json()
-        // Сохраняем токен в localStorage
-        localStorage.setItem('user', JSON.stringify(responseData))
-        this.$router.push({ name: 'main' })
-
-        // Можете выполнить перенаправление или показать сообщение пользователю
-        alert('Регистрация успешна!')
-      } catch (error) {
-        console.error('Ошибка при регистрации:', error)
-        alert('Произошла ошибка при регистрации')
-      }
+    register() {
+      registerUser('users', this.form)
     }
   }
 }

@@ -1,21 +1,38 @@
-const vProductPage = () => import('@/components/productPage/vProductPage.vue')
-const vFavourites = () => import('@/components/favouritePage/v-favourites.vue')
-const vReviews = () => import('@/components/reviewsPage/v-reviews.vue')
 import { createRouter, createWebHistory } from 'vue-router'
 
+const vReviews = () => import('@/components/reviewsPage/v-reviews.vue')
+const vProductPage = () => import('@/components/productPage/vProductPage.vue')
+const vFavourites = () => import('@/components/favouritePage/v-favourites.vue')
+const VWaitReviews = () => import('@/components/reviewsPage/v-wait-reviews.vue')
+const vBuyersReviews = () => import('@/components/reviewsPage/v-buyers-reviews.vue')
+
+/* Аренда */
+const rentCars = () => import('@/components/rentPage/vRentCars.vue')
+
+/* Салоны */
+const vSalons = () => import('@/components/salonsPage/vSalons.vue')
+const VSalonPage = () => import('@/components/salonsPage/vSalonPage.vue')
+
+/* Запчасти и аксессуары */
+const vSpareParts = () => import('@/components/sparePartsPage/v-spare-parts.vue')
+const test = () => import('@/components/chat/test.vue')
+
 // Ленивая загрузка компонентов
-const vMainPage = () => import('@/components/mainPage/v-main-page.vue')
 const vCars = () => import('@/components/v-cars.vue')
+const vMainPage = () => import('@/components/mainPage/v-main-page.vue')
+
+/* Чат */
+const vChat = () => import('@/components/chat/v-chat.vue')
+const vChatCurrent = () => import('@/components/chat/v-chat-current.vue')
 
 /* Регистрация - ленивая загрузка */
-const vRegistration = () => import('@/components/users/registration/v-registration.vue')
+const vLogin = () => import('@/components/users/login/v-login.vue') // Используем ленивую загрузку
 const vRegistrationTransport = () =>
   import('@/components/users/registration/v-registration-transport.vue')
-const vRegistrationUser = () => import('@/components/users/registration/v-registration-user.vue')
 const vRegistrationRealEstate = () =>
   import('@/components/users/registration/v-registration-real-estate.vue')
-
-const vLogin = () => import('@/components/users/login/v-login.vue') // Используем ленивую загрузку
+const vRegistration = () => import('@/components/users/registration/v-registration.vue')
+const vRegistrationUser = () => import('@/components/users/registration/v-registration-user.vue')
 
 // Группируем маршруты регистрации
 const registrationRoutes = [
@@ -50,7 +67,65 @@ const profileRoutes = [
   {
     path: 'reviews',
     name: 'reviews',
+    component: vBuyersReviews
+  },
+  {
+    path: 'my-reviews',
+    name: 'my_reviews',
     component: vReviews
+  },
+  {
+    path: 'reviews-wait',
+    name: 'reviews_wait',
+    component: VWaitReviews
+  }
+]
+
+const chatRoutes = [
+  {
+    path: '',
+    name: 'chat',
+    component: vChat
+  },
+  {
+    path: 'messages/:id?',
+    props: true,
+    name: 'current_chat',
+    component: vChatCurrent
+  },
+  {
+    path: 'test/',
+    name: 'chat_test',
+    component: test
+  }
+]
+
+const transportRoutes = [
+  {
+    path: 'filter/',
+    name: 'transport-filter',
+    component: vCars,
+    props: (route) => ({ query: route.query })
+  },
+  {
+    path: 'product/:id',
+    name: 'transport-item',
+    component: vProductPage
+  },
+  {
+    path: '/rent',
+    name: 'rent',
+    component: rentCars
+  },
+  {
+    path: 'salons/',
+    name: 'salons',
+    component: vSalons
+  },
+  {
+    path: 'salons/:id?',
+    name: 'salon-page',
+    component: VSalonPage
   }
 ]
 
@@ -64,31 +139,40 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: '/transport/filter',
-    name: 'transport-filter',
-    component: vCars,
-    props: (route) => ({ query: route.query }),
+    path: '/transport/',
+    children: transportRoutes,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/spare-parts/',
+    name: 'spare_parts',
+    component: vSpareParts,
     meta: { requiresAuth: true }
   },
   {
     path: '/users/registration',
-    children: registrationRoutes // Включаем маршруты регистрации как дочерние
+    children: registrationRoutes
   },
   {
     path: '/users/login',
     name: 'login',
     component: vLogin
   },
-  {
-    path: '/transport/product/:id',
-    name: 'transport-item',
-    component: vProductPage,
-    meta: { requiresAuth: true }
-  },
+
   {
     path: '/profile/',
     children: profileRoutes,
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/chat/',
+    children: chatRoutes,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/chat/:chatId/:user2Username',
+    name: 'Chat',
+    component: test
   }
 ]
 

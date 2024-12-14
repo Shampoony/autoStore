@@ -2,7 +2,7 @@
   <footer class="v-bottom-menu">
     <div class="v-bottom-menu__container container">
       <ul class="v-bottom-menu__list flex">
-        <li class="v-bottom-menu__list-item active">
+        <li class="v-bottom-menu__list-item" :class="{ active: isItemActive('main') }">
           <router-link :to="{ name: 'main' }">
             <svg
               width="30"
@@ -20,7 +20,7 @@
             <p class="v-bottom-menu__subtitle">Главвная</p>
           </router-link>
         </li>
-        <li class="v-bottom-menu__list-item">
+        <li class="v-bottom-menu__list-item" :class="{ active: isItemActive('favourites') }">
           <router-link :to="{ name: 'favourites' }">
             <svg
               width="30"
@@ -38,7 +38,7 @@
             <p class="v-bottom-menu__subtitle">Избранное</p>
           </router-link>
         </li>
-        <li class="v-bottom-menu__list-item">
+        <li class="v-bottom-menu__list-item" :class="{ active: isItemActive('ads') }">
           <router-link :to="{ name: 'main' }">
             <svg
               width="30"
@@ -56,7 +56,7 @@
             <p class="v-bottom-menu__subtitle">Объявления</p>
           </router-link>
         </li>
-        <li class="v-bottom-menu__list-item">
+        <li class="v-bottom-menu__list-item" :class="{ active: isItemActive('chat') }">
           <router-link :to="{ name: 'main' }">
             <svg
               width="30"
@@ -74,7 +74,7 @@
             <p class="v-bottom-menu__subtitle">Сообщения</p>
           </router-link>
         </li>
-        <li class="v-bottom-menu__list-item">
+        <li class="v-bottom-menu__list-item" :class="{ active: isItemActive('more') }">
           <router-link :to="{ name: 'main' }">
             <svg
               width="30"
@@ -98,6 +98,16 @@
 </template>
 <script>
 export default {
-  name: 'vBottomMenu'
+  name: 'vBottomMenu',
+  props: {
+    activeItem: {
+      type: String
+    }
+  },
+  methods: {
+    isItemActive(itemName) {
+      return this.activeItem === itemName
+    }
+  }
 }
 </script>

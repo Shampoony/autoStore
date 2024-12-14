@@ -1,43 +1,32 @@
 <template>
-  <div class="v-main-mob-menu">
-    <div class="v-main-mob-menu" :class="{ active: isMainMenuVisible }">
-      <div class="v-main-mob-menu__container container flex">
-        <ul class="v-main-mob-menu__themes">
-          <li class="v-main-mob-menu__theme flex gap-3" @click="setMenuTitle('Транспорт')">
-            Транспорт
-          </li>
-          <li class="v-main-mob-menu__theme flex gap-3" @click="setMenuTitle('Недвижимость')">
-            Недвижимость
-          </li>
-          <li
-            class="v-main-mob-menu__theme flex gap-3"
-            @click="setMenuTitle('Запчасти и аксессуары')"
-          >
-            Запчасти и аксессуары
-          </li>
-        </ul>
-        <div class="v-main-mob-menu__content">
-          <div class="v-main-mob-menu__title">{{ getMenuTitle }}</div>
-          <div class="v-main-mob-menu__links">
+  <div class="v-main-mob-menu flex-col" :class="{ active: isMainMenuVisible }">
+    <div class="v-main-mob-menu__header flex gap-32">
+      <div @click="isMainMenuVisible = false">
+        <img src="../../assets/images/cross.svg" alt="" />
+      </div>
+      <div>Фильтры</div>
+    </div>
+    <div class="v-main-mob-menu__container container flex">
+      <div class="v-main-mob-menu__themes">
+        <div
+          class="v-main-mob-menu__theme flex gap-3 flex-col"
+          :class="{ active: index === activeIndex }"
+          v-for="(main_category, index) in main_categories"
+          :key="index"
+        >
+          <!-- Единственный обработчик на названии категории -->
+          <div class="v-main-mob-menu__theme-title" @click.stop="openSubcategories(index)">
+            {{ main_category.name }}
+          </div>
+          <div class="v-main-mob-menu__dropdown" :class="{ active: index === activeIndex }">
             <div
-              class="v-main-mob-menu__category category"
-              v-for="category in filteredCategory"
+              class="v-main-mob-menu__category mob-category"
+              v-for="category in main_category.categories"
               :key="category.id"
             >
-              <div class="category__title">
+              <div class="mob-category__title">
                 <a href="#!">{{ category.category_name }}</a>
               </div>
-              <ul class="category__subcategories flex flex-col gap-2">
-                <li
-                  class="category__subcategory"
-                  v-for="subcategory in getSubCategories(category.id)"
-                  :key="subcategory.id"
-                >
-                  <a class="category__subcategory-link" href="#!">
-                    {{ subcategory.sub_category_name }}</a
-                  >
-                </li>
-              </ul>
             </div>
           </div>
         </div>
@@ -49,19 +38,15 @@
 <script>
 export default {
   name: 'vMainMobMenu',
-  props: {
-    setMenuTitle: Function,
-    getMenuTitle: String
-  },
-  data() {
-    return {
-      isMainMenuVisible: false
-    }
-  },
+  props: {},
+  data() {},
+
   methods: {
-    toggleMainMobMenu() {
+    toggleMenu() {
       this.isMainMenuVisible = !this.isMainMenuVisible
+      console.log(this.isMainMenuVisible)
     }
-  }
+  },
+  mounted() {}
 }
 </script>

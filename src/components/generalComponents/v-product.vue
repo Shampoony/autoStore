@@ -14,8 +14,8 @@
         <img :src="image.image" class="v-product__image" alt="product" />
         <img :src="image.image" class="product-image-overlay" alt="product" />
       </swiper-slide>
-      <swiper-slide class="last-slide" v-if="checkImagesLength">
-        <img :src="image.image" alt="product" />
+      <swiper-slide v-if="checkImagesLength">
+        <img :src="getImages[0]?.image || 'default-image-path.jpg'" alt="product" />
         <a href="#!" class="last-slide__overlay flex items-center justify-center">
           <span>Ещё {{ countOfImages }} фото</span>
         </a>
@@ -74,13 +74,13 @@
 </template>
 
 <script>
-import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/css'
 import 'swiper/css/pagination'
 import { Pagination } from 'swiper/modules'
 import { getCurrency } from '@/api/requests'
 import prettyNum from '@/filters/prettyNum.js'
-import { addToFavourites, removeFromFavourites, isProductInFavourites } from '@/utils'
+import { Swiper, SwiperSlide } from 'swiper/vue'
+import { addToFavourites, removeFromFavourites, isProductInFavourites } from '@/api/requests'
 
 export default {
   name: 'v-product',
@@ -91,6 +91,10 @@ export default {
     },
     products_length: {
       type: Number,
+      required: true
+    },
+    type_of_product: {
+      type: String,
       required: true
     }
   },
@@ -175,12 +179,12 @@ export default {
     },
     toggleToFavourites() {
       if (!this.productInFavourites) {
-        addToFavourites(this.accessToken, this.product_data.id).then(() => {
+        addToFavourites(this.type_of_product + '_id', this.product_data.id).then(() => {
           console.log('Добавили в избранное')
           this.productInFavourites = true
         })
       } else {
-        removeFromFavourites(this.accessToken, this.product_data.id).then(() => {
+        removeFromFavourites(this.type_of_product + '_id', this.product_data.id).then(() => {
           console.log('Удалили из избранного')
           this.productInFavourites = false
         })
@@ -195,7 +199,7 @@ export default {
   mounted() {
     this.checkIfProductInFavourites()
     this.setCurrency()
-    console.log(this.product_data.mileage)
+    console.log(this.product_data)
   }
 }
 </script>

@@ -82,22 +82,24 @@
           </h2>
           <a
             v-if="product_data.owner_phone"
-            class="product-card__btn show-phone"
+            class="product-card__btn product-btn show-phone"
             :class="{ 'phone-showed': isPhoneShowed }"
             @click="isPhoneShowed = !isPhoneShowed"
           >
             <p v-if="!isPhoneShowed">Показать телефон</p>
             <p v-if="!isPhoneShowed">{{ maskNumber(product_data.owner_phone) }}</p>
-            <p class="product-card__btn" v-if="isPhoneShowed">{{ product_data.owner_phone }}</p>
+            <p class="product-card__btn product-btn" v-if="isPhoneShowed">
+              {{ product_data.owner_phone }}
+            </p>
           </a>
 
-          <a class="product-card__btn write-message">
+          <a class="product-card__btn product-btn write-message">
             Написать сообщение
             <p>Отвечает за несколько минут</p>
           </a>
           <button
             @click="toggleModal('barterModal')"
-            class="product-card__btn barter-btn"
+            class="product-card__btn product-btn barter-btn"
             v-if="!product_data.barter_bool"
           >
             Предложить бартер
@@ -116,28 +118,6 @@
       <div class="product-card__container mob">
         <div class="product-card__images">
           <ProductCarousel :images="product_data.images" />
-          <!--  <Swiper
-                  :slides-per-view="1"
-                  :space-between="10"
-                  thumbs.swiper="thumbsSwiper"
-                  class="main-slider product-card__main-image"
-                >
-                  <SwiperSlide v-for="(image, index) in product_data.images" :key="index">
-                    <img :src="image['image']" alt="main photo" />
-                  </SwiperSlide>
-                </Swiper> -->
-          <div class="product-card__carousel">
-            <!--  <Swiper
-                    :slides-per-view="1"
-                    :space-between="10"
-                    thumbs.swiper="thumbsSwiper"
-                    class="main-slider product-card__carousel-item"
-                  >
-                    <SwiperSlide v-for="(image, index) in product_data.images" :key="index">
-                      <img :src="image['image']" alt="main photo" />
-                    </SwiperSlide>
-                  </Swiper> -->
-          </div>
         </div>
 
         <h2 class="page-title product-card__price mb-4">
@@ -147,17 +127,9 @@
           {{ product_data.title }}
         </h2>
 
-        <a v-if="product_data.owner_phone" class="product-card__btn show-phone">
-          Показать телефон
-          <p>{{ product_data.owner_phone }}</p>
-        </a>
-        <a class="product-card__btn write-message">
-          Написать сообщение
-          <p>Отвечает за несколько минут</p>
-        </a>
         <button
           @click="toggleModal('barterModal')"
-          class="product-card__btn barter-btn"
+          class="product-card__btn product-btn barter-btn"
           v-if="!product_data.barter_bool"
         >
           Предложить бартер
@@ -224,11 +196,44 @@
       </div>
     </div>
   </div>
+  <div class="main-image-btns flex justify-between">
+    <div class="main-image-block flex gap-2">
+      <p>{{ product_data.title }}</p>
+      <span>|</span>
+      <p>{{ prettyNum(product_data.price) }}</p>
+    </div>
+    <div class="main-image-block flex gap-2">
+      <div
+        class="product-card__button"
+        :class="{ favourite: productInFavourites }"
+        @click="toggleToFavourites"
+      >
+        <img v-if="!productInFavourites" src="../../assets/images/favourites.svg" alt="" />
+        <img v-if="productInFavourites" src="../../assets/images/favourites-on.svg" alt="" />
+      </div>
+      <div class="main-image-block">
+        <a
+          v-if="product_data.owner_phone"
+          class="product-card__btn product-btn show-phone"
+          :class="{ 'phone-showed': isPhoneShowed }"
+          @click="isPhoneShowed = !isPhoneShowed"
+        >
+          <p v-if="!isPhoneShowed">Показать телефон</p>
+          <p class="product-card__btn product-btn" v-if="isPhoneShowed">
+            {{ product_data.owner_phone }}
+          </p>
+        </a>
+      </div>
+      <div class="main-image-block main-image-btns__message flex items-center">
+        Написать сообщение
+      </div>
+    </div>
+  </div>
 </template>
 <script>
+import { getCurrency } from '@/api/requests'
 import prettyNum from '@/filters/prettyNum.js'
 import ProductCarousel from '../generalComponents/productCarousel.vue'
-import { getCurrency } from '@/api/requests'
 
 export default {
   name: 'vProductCard',

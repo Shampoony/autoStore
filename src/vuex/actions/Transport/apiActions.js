@@ -1,11 +1,7 @@
 import axios from 'axios'
-const user = JSON.parse(localStorage.getItem('user'))
-let accessToken
-if (user) {
-  accessToken = user.access
-}
+import { accessToken } from '@/api/auth'
 export default {
-  GET_PRODUCTS_FROM_API({ commit }) {
+  GET_TRANSPORT_PRODUCTS_FROM_API({ commit }) {
     return axios('http://api.rcarentacar.com/api/transport/transports/', {
       method: 'GET',
       params: {},
@@ -14,7 +10,7 @@ export default {
       }
     })
       .then((recomendations) => {
-        commit('SET_PRODUCTS_TO_STATE', recomendations.data)
+        commit('SET_TRANSPORT_PRODUCTS_TO_STATE', recomendations.data)
       })
       .catch((error) => {
         console.log(error)
@@ -108,20 +104,21 @@ export default {
         alert('Произошла ошибка при получении состояний')
       })
   },
-  async GET_TRANSPORT_FAVOURITES({ commit }) {
-    return axios('http://api.rcarentacar.com/api/transport/favorites/', {
+
+  async GET_TRANSPORT_COMPANIES({ commit }) {
+    return axios('http://api.rcarentacar.com/api/users/auto-company/', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${accessToken}`
       }
     })
-      .then((favourites) => {
-        commit('SET_TRANSPORT_FAVOURITES_TO_STATE', favourites.data)
+      .then((conditions) => {
+        commit('SET_TRANSPORT_COMPANIES_TO_STATE', conditions.data)
       })
       .catch((error) => {
-        console.error('Ошибка при получении состояний:', error)
-        alert('Произошла ошибка при получении состояний')
+        console.error('Ошибка при получении компаний:', error)
+        alert('Произошла ошибка при получении компаний')
       })
   }
 }

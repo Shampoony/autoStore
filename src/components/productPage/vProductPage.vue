@@ -34,6 +34,21 @@
           </li>
         </ul>
       </div>
+      <div class="v-product-page__mob-btns">
+        <a v-if="similarProducts.length > 8" class="product-page__btn product-btn show-phone">
+          Показать все
+        </a>
+        <div class="flex gap-4">
+          <a
+            v-if="product_data.owner_phone"
+            :href="'tel:' + product_data.owner_phone"
+            class="product-page product-btn show-phone"
+          >
+            Позвонить
+          </a>
+          <a class="product-page__btn product-btn write-message"> Написать </a>
+        </div>
+      </div>
     </div>
     <transition name="fade">
       <vModal v-if="modals.barterModal" :show="modals.barterModal">
@@ -105,17 +120,36 @@
         </div>
       </vModal>
     </transition>
+    <div class="flex gap-4 modal-block">
+      <a
+        v-if="product_data.owner_phone"
+        :href="'tel:' + product_data.owner_phone"
+        class="product-page product-btn show-phone"
+      >
+        Позвонить
+      </a>
+      <a class="product-page__btn product-btn write-message"> Написать </a>
+    </div>
   </div>
 </template>
 
 <script>
+/* Компоненты */
+
 import vProductCard from './vProductCard.vue'
-import { getSimilarProducts } from '@/api/requests'
 import VModal from '../generalComponents/v-modal.vue'
 import vHeader from '../generalComponents/v-header.vue'
 import vProduct from '../generalComponents/v-product.vue'
 import vHeaderAlt from '../generalComponents/v-header-alt.vue'
-import { addToFavourites, removeFromFavourites, isProductInFavourites } from '@/utils'
+
+/* Апи запросы */
+
+import {
+  getSimilarProducts,
+  addToFavourites,
+  removeFromFavourites,
+  isProductInFavourites
+} from '@/api/requests'
 
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/swiper-bundle.css'
@@ -162,6 +196,7 @@ export default {
     setThumbsSwiper(swiper) {
       this.thumbsSwiper = swiper
     },
+
     prettyNum(price) {
       return price?.toLocaleString('ru')
     },

@@ -3,8 +3,8 @@
     <div class="v-left-menu__container">
       <div class="v-left-menu__block">
         <div class="v-left-menu__image"></div>
-        <h3 class="v-left-menu__name">Дидар</h3>
-        <div class="v-left-menu__reviews"></div>
+        <h3 class="v-left-menu__name">{{ user_profile.full_name }}</h3>
+        <average-rating />
       </div>
       <div class="v-left-menu__block">
         <div class="v-left-menu__link">
@@ -17,7 +17,7 @@
         </div>
         <div class="v-left-menu__link">
           <img src="../../assets/images/my-reviews.svg" alt="" />
-          <router-link :to="{ name: 'reviews' }">Мои отзывы</router-link>
+          <router-link :to="{ name: 'my_reviews' }">Мои отзывы</router-link>
         </div>
         <div class="v-left-menu__link">
           <img src="../../assets/images/favourites.svg" alt="" />
@@ -27,7 +27,7 @@
       <div class="v-left-menu__block">
         <div class="v-left-menu__link">
           <img src="../../assets/images/messages.svg" alt="" />
-          <a href="">Сообщения</a>
+          <router-link :to="{ name: 'chat' }">Сообщения</router-link>
         </div>
         <div class="v-left-menu__link">
           <img src="../../assets/images/notifications.svg" alt="" />
@@ -56,3 +56,33 @@
     </div>
   </div>
 </template>
+<script>
+import { decodeAccessToken } from '@/utils'
+import { getUserProfile } from '@/api/requests'
+import averageRating from './average-rating.vue'
+
+export default {
+  components: { averageRating },
+  name: 'vLeftMenu',
+  data() {
+    return {
+      user_profile: {}
+    }
+  },
+  computed: {},
+  methods: {
+    setUserInfo() {
+      const decodedToken = decodeAccessToken()
+      if (decodedToken) {
+        const profileId = decodedToken.profile_id
+        getUserProfile(profileId).then((userProfile) => {
+          this.user_profile = userProfile
+        })
+      }
+    }
+  },
+  mounted() {
+    this.setUserInfo()
+  }
+}
+</script>

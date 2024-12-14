@@ -28,7 +28,7 @@ export default {
   name: 'v-registration',
   data() {
     return {
-      registrationLink: null // Изначально null
+      registrationLink: '' // Изначально null
     }
   },
   methods: {
