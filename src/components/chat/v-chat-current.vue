@@ -77,11 +77,41 @@
                 <img src="../../assets/images/message-mark.svg" alt="" />
               </div>
               <div class="message__text" v-if="msg.content">{{ msg.content }}</div>
-              <div class="message__text" v-if="msg.message">{{ msg.message }}</div>
               <div class="message__time">{{ getMessageDate(msg.timestamp) }}</div>
             </li>
           </ul>
-          <form @submit.prevent="sendMessage" class="v-chat-current__send">
+          <form @submit.prevent="sendMessage" class="v-chat-current__send flex items-center gap-8">
+            <div class="input__wrapper">
+              <input
+                name="file"
+                type="file"
+                id="input__file"
+                class="input input__file"
+                multiple
+                @change="handleFileChange"
+              />
+              <label for="input__file" class="input__file-button">
+                <img
+                  class="input__file-icon"
+                  src="../../assets/images/add-file.svg"
+                  alt="Выбрать файл"
+                  width="25"
+                />
+              </label>
+            </div>
+            <div v-if="imagePreview" class="file-upload__preview">
+              <img
+                :src="imagePreview"
+                alt="Превью изображения"
+                class="file-upload__preview-image"
+              />
+              <img
+                src="../../assets/images/cross.svg"
+                alt="cross"
+                class="file-upload__delete-preview"
+                @click="deletePreview"
+              />
+            </div>
             <textarea
               placeholder="Введите сообщение"
               rows="1"
@@ -128,7 +158,9 @@ export default {
       chatName: '',
       number: '',
       numberShowed: false,
-      socketService: null // Экземпляр WebSocketService
+      socketService: null, // Экземпляр WebSocketService
+      imagesAdded: true,
+      imagePreview: null
     }
   },
 
@@ -139,10 +171,33 @@ export default {
       this.socketService.initialize()
     },
 
+    handleFileChange(event) {
+      const file = event.target.files[0]
+      this.isImageAdded = true
+      if (file) {
+        this.previewImage(file) // Отображаем миниатюру выбранного файла
+      }
+    },
+    previewImage(file) {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        this.imagePreview = e.target.result // Устанавливаем URL изображения для превью
+      }
+      reader.readAsDataURL(file)
+    },
+    handleFileDrop(event) {
+      event.preventDefault() // Останавливаем дефолтное поведение браузера
+      const files = event.dataTransfer.files
+      if (files.length) {
+        const file = files[0] // Берем первый файл
+        this.previewImage(file) // Отображаем миниатюру перетащенного файла
+      }
+    },
+
     // Обработка входящих сообщений
     handleIncomingMessage(data) {
       console.log(data)
-      if (data && data.message) {
+      if (data && data.content) {
         this.messages.push(data) // Добавляем новое сообщение в список
       }
     },
@@ -257,3 +312,59 @@ export default {
   }
 }
 </script>
+<style>
+.input__wrapper {
+  width: 20px;
+
+  position: relative;
+  margin: 15px 0;
+  text-align: center;
+}
+
+.input__file {
+  opacity: 0;
+  visibility: hidden;
+  position: absolute;
+}
+
+.input__file-icon-wrapper {
+  height: 20px;
+  width: 20px;
+  margin-right: 15px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+}
+
+.input__file-button-text {
+  line-height: 1;
+  margin-top: 1px;
+}
+
+.input__file-button {
+  width: 100%;
+  max-width: 290px;
+  height: 20px;
+  color: #fff;
+  font-size: 1.125rem;
+  font-weight: 700;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: start;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
+  border-radius: 3px;
+  cursor: pointer;
+  margin: 0 auto;
+}
+</style>
