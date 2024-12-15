@@ -14,14 +14,16 @@
                 <div class="avatar__img-author">
                   <!--   <img src="" alt="" /> -->
                 </div>
-                <div class="avatar__online">
+                <div class="avatar__online" :class="{ online: isOnline }">
                   <!--    <img src="" alt="" /> -->
                 </div>
               </div>
               <div class="flex flex-col gap-2">
                 <div class="flex gap-4">
                   <div class="v-chat-current__header-name user-name">{{ chatName }}</div>
-                  <div class="v-chat-current__header-online">В сети в 20:58</div>
+                  <div class="v-chat-current__header-online">
+                    <span class="user-status" v-if="user2">{{ getUserStatus(user2) }}</span>
+                  </div>
                 </div>
                 <div class="v-chat-current__header-product">Toyota Camry</div>
               </div>
@@ -76,42 +78,40 @@
               <div class="message__mark" v-if="msg.sender == userId">
                 <img src="../../assets/images/message-mark.svg" alt="" />
               </div>
-              <div class="message__text" v-if="msg.content">{{ msg.content }}</div>
+
+              <div class="message__text" v-if="msg.content && !msg.file">{{ msg.content }}</div>
               <div class="message__time">{{ getMessageDate(msg.timestamp) }}</div>
+              <div class="message__content" v-if="msg.content">
+                <img
+                  class="message__image-preview"
+                  v-if="isImage(msg.file)"
+                  :src="msg.file"
+                  alt=""
+                />
+              </div>
+              <div v-if="msg.file && !isImage(msg.file)" class="message__file">
+                <a class="message__file-link flex gap-2" download :href="msg.file">
+                  <img src="../../assets/images/upload.svg" alt="" />
+                  {{ msg.content }}
+                </a>
+              </div>
             </li>
           </ul>
           <form @submit.prevent="sendMessage" class="v-chat-current__send flex items-center gap-8">
-            <div class="input__wrapper">
-              <input
-                name="file"
-                type="file"
-                id="input__file"
-                class="input input__file"
-                multiple
-                @change="handleFileChange"
-              />
-              <label for="input__file" class="input__file-button">
-                <img
-                  class="input__file-icon"
-                  src="../../assets/images/add-file.svg"
-                  alt="Выбрать файл"
-                  width="25"
-                />
-              </label>
-            </div>
-            <div v-if="imagePreview" class="file-upload__preview">
-              <img
-                :src="imagePreview"
-                alt="Превью изображения"
-                class="file-upload__preview-image"
-              />
-              <img
-                src="../../assets/images/cross.svg"
-                alt="cross"
-                class="file-upload__delete-preview"
-                @click="deletePreview"
-              />
-            </div>
+            <file-container ref="addFileComponent" @setFile="setFileData">
+              <div class="input__wrapper">
+                <!-- @click="triggerFileUpload" -->
+                <label class="input__file-button">
+                  <img
+                    class="input__file-icon"
+                    src="../../assets/images/add-file.svg"
+                    alt="Выбрать файл"
+                    width="25"
+                  />
+                </label>
+              </div>
+            </file-container>
+
             <textarea
               placeholder="Введите сообщение"
               rows="1"
@@ -138,10 +138,12 @@ import { fetchChatMessages, fetchChatById, getUserById } from '@/api/requests'
 import VHeader from '../generalComponents/v-header.vue'
 import VLeftMenu from '../generalComponents/v-left-menu.vue'
 import VHeaderAlt from '../generalComponents/v-header-alt.vue'
+import fileContainer from '../generalComponents/file-container.vue'
 
 export default {
   name: 'vChatCurrent',
-  components: { VHeader, VLeftMenu, VHeaderAlt },
+  emits: ['setFile'],
+  components: { VHeader, VLeftMenu, VHeaderAlt, fileContainer },
 
   props: {
     id: {
@@ -153,56 +155,78 @@ export default {
   data() {
     return {
       messages: [],
+      userStatuses: {},
       newMessage: '',
       selectedFile: null,
       chatName: '',
       number: '',
       numberShowed: false,
+
       socketService: null, // Экземпляр WebSocketService
       imagesAdded: true,
-      imagePreview: null
+      imagePreview: null,
+      user2: null,
+      isOnline: false
     }
   },
 
   methods: {
+    handleUserStatus(data) {
+      this.$set(this.userStatuses, data.user_id, {
+        is_online: data.is_online,
+        last_seen: data.last_seen
+      })
+    },
+    setFileData(fileData) {
+      console.log('найс')
+      this.selectedFile = fileData
+    },
     // Инициализация WebSocket
+    // Инициализация WebSocket с учётом нового обработчика
     initializeWebSocket() {
       this.socketService = new WebSocketService(this.chatName, this.handleIncomingMessage)
       this.socketService.initialize()
+
+      // Регистрируем обработчик статуса
+      this.socketService.registerUserStatusCallback(this.handleUserStatus)
+    },
+    getUserStatus(userId) {
+      const status = this.userStatuses[userId]
+      if (status) {
+        return status.is_online ? 'в сети' : `не в сети (был в сети: ${status.last_seen})`
+      }
+      return 'нет данных'
+    },
+    isImage(file) {
+      if (file) {
+        const validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp']
+        const fileExtension = file.split('.').pop().toLowerCase()
+        console.log(fileExtension)
+        return validExtensions.includes(fileExtension)
+      }
     },
 
-    handleFileChange(event) {
-      const file = event.target.files[0]
-      this.isImageAdded = true
-      if (file) {
-        this.previewImage(file) // Отображаем миниатюру выбранного файла
-      }
-    },
-    previewImage(file) {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        this.imagePreview = e.target.result // Устанавливаем URL изображения для превью
-      }
-      reader.readAsDataURL(file)
-    },
-    handleFileDrop(event) {
-      event.preventDefault() // Останавливаем дефолтное поведение браузера
-      const files = event.dataTransfer.files
-      if (files.length) {
-        const file = files[0] // Берем первый файл
-        this.previewImage(file) // Отображаем миниатюру перетащенного файла
+    triggerFileUpload() {
+      console.log('Зашли')
+      // Вызываем метод handleFileChange в дочернем компоненте через ref
+      const fileInput = this.$refs.addFileComponent.$refs.fileInput
+      if (fileInput) {
+        fileInput.click() // Имитируем клик по инпуту для выбора файла
       }
     },
 
     // Обработка входящих сообщений
     handleIncomingMessage(data) {
-      console.log(data)
+      if (data && data.is_online) {
+        this.isOnline = data.is_online
+      }
       if (data && data.content) {
         this.messages.push(data) // Добавляем новое сообщение в список
       }
     },
 
     toPrevPage() {
+      this.socketService.close()
       window.history.back()
     },
 
@@ -246,6 +270,8 @@ export default {
 
         // Запрашиваем данные пользователя
         const userInfo = await getUserById(this.user2)
+        this.isOnline = userInfo.is_online
+        /*  console.log(userInfo.is_online) */
 
         // Обновляем состояние компонента
         this.chatName = userInfo.username
@@ -258,8 +284,7 @@ export default {
       }
     },
 
-    sendMessage() {
-      console.log(this.newMessage)
+    sendMessage(e) {
       if (this.newMessage.trim()) {
         const messageData = {
           message: this.newMessage,
@@ -282,7 +307,9 @@ export default {
           this.selectedFile = null
         }
         reader.readAsDataURL(this.selectedFile)
+        this.$refs.addFileComponent.deletePreview()
       }
+      this.scrollToBottom()
     }
   },
 
@@ -313,6 +340,34 @@ export default {
 }
 </script>
 <style>
+.file-upload__preview {
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  top: -90px;
+  left: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  border: 1px solid #cfcfcf;
+  padding: 10px;
+}
+.file-upload__block {
+  width: 100%;
+}
+.file-upload__name {
+  font-size: 12px;
+}
+.file-upload__delete-preview {
+  position: absolute;
+  top: -14px;
+  right: -15px;
+  background-color: #fff;
+  border: 1px solid #cfcfcf;
+  border-radius: 50%;
+  padding: 5px;
+}
 .input__wrapper {
   width: 20px;
 

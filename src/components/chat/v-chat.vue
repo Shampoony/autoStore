@@ -20,7 +20,7 @@
                   <div class="avatar__img-author">
                     <!--   <img src="" alt="" /> -->
                   </div>
-                  <div class="avatar__online">
+                  <div class="avatar__online" :class="{ online: isUserOnline(chat) }">
                     <!--    <img src="" alt="" /> -->
                   </div>
                 </div>
@@ -43,7 +43,7 @@
   <v-bottom-menu :active-item="'chat'" />
 </template>
 <script>
-import { fetchChats } from '@/api/requests'
+import { fetchChats, getUserById } from '@/api/requests'
 import { getUserId, getPrettyDate } from '@/utils'
 import vHeader from '../generalComponents/v-header.vue'
 import vLeftMenu from '../generalComponents/v-left-menu.vue'
@@ -57,6 +57,11 @@ export default {
       users: {}
     }
   },
+  computed: {
+    userId() {
+      return getUserId()
+    }
+  },
   methods: {
     setChats() {
       fetchChats().then((chats) => {
@@ -64,12 +69,22 @@ export default {
         console.log(chats)
       })
     },
+    isUserOnline(chat) {
+      getUserById(this.getUser2Id(chat)).then((userInfo) => {
+        return userInfo.is_online
+      })
+    },
     getName(chat) {
-      const userId = getUserId()
-      if (chat.user1 != userId) {
+      if (chat.user1 != this.userId) {
         return chat.user1_name
       }
       return chat.user2_name
+    },
+    getUser2Id(chat) {
+      if (chat.user1 != this.userId) {
+        return chat.user1
+      }
+      return chat.user2
     },
     setPrettyDate(timestamp) {
       return getPrettyDate(timestamp)

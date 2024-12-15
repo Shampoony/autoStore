@@ -2266,6 +2266,9 @@ textarea {
     border-radius: 32px;
     border: 1px solid #fff;
   }
+  &__online.online {
+    background-color: #3db460;
+  }
 
   &-mob__img-author {
     width: 40px;
@@ -2451,6 +2454,17 @@ textarea {
   &.my-message &__text {
     order: 1;
     background-color: #e6f6ff;
+  }
+  &__content {
+    max-width: 200px;
+  }
+  &__file {
+    background-color: #2681a1;
+    border-radius: 8px;
+    padding: 10px;
+  }
+  &__file-link {
+    color: #fff;
   }
   &__time {
     font-size: 11px;

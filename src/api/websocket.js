@@ -17,7 +17,13 @@ export class WebSocketService {
 
     this.socket.onmessage = (event) => {
       const data = JSON.parse(event.data)
-      if (this.onMessageCallback) {
+      if (data.type === 'user_status') {
+        console.log(`Пользователь ${data.user_id} ${data.is_online ? 'в сети' : 'не в сети'}`)
+        // Вызываем обработчик для статуса пользователя
+        if (this.onUserStatusCallback) {
+          this.onUserStatusCallback(data)
+        }
+      } else if (this.onMessageCallback) {
         this.onMessageCallback(data)
       }
     }
@@ -37,6 +43,10 @@ export class WebSocketService {
     } else {
       console.error('WebSocket не открыт')
     }
+  }
+  // Новый метод для регистрации обратного вызова статуса пользователя
+  registerUserStatusCallback(callback) {
+    this.onUserStatusCallback = callback
   }
 
   close() {
