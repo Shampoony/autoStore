@@ -8,15 +8,20 @@
 
 <script>
 export default {
+  name: 'vModal',
+  emits: ['close'],
   props: {
     show: {
       type: Boolean,
       default: false
+    },
+    id: {
+      type: String
     }
   },
   methods: {
     close() {
-      this.$emit('close')
+      this.$emit('close', this.id)
     }
   }
 }

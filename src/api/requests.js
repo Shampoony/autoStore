@@ -223,7 +223,6 @@ export async function registerUser(name, form) {
     const responseData = await response.json()
     // Сохраняем токен в localStorage
     localStorage.setItem('user', JSON.stringify(responseData))
-    this.$router.push({ name: 'main' })
   } catch (error) {
     console.error('Ошибка при регистрации:', error)
   }

@@ -31,7 +31,9 @@
                   </div>
                 </div>
               </div>
-              <div class="chat-item__date">16 сентября</div>
+              <div class="chat-item__date" v-if="chat.last_message">
+                {{ setPrettyDate(chat.last_message.timestamp) }}
+              </div>
             </router-link>
           </li>
         </ul>
@@ -41,8 +43,8 @@
   <v-bottom-menu :active-item="'chat'" />
 </template>
 <script>
-import { getUserId } from '@/utils'
 import { fetchChats } from '@/api/requests'
+import { getUserId, getPrettyDate } from '@/utils'
 import vHeader from '../generalComponents/v-header.vue'
 import vLeftMenu from '../generalComponents/v-left-menu.vue'
 import vBottomMenu from '../generalComponents/v-bottom-menu.vue'
@@ -68,6 +70,9 @@ export default {
         return chat.user1_name
       }
       return chat.user2_name
+    },
+    setPrettyDate(timestamp) {
+      return getPrettyDate(timestamp)
     }
   },
   mounted() {

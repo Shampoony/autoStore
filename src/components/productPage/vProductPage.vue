@@ -21,6 +21,7 @@
         :product_data="product_data"
         :productInFavourites="productInFavourites"
         :toggleToFavourites="toggleToFavourites"
+        @toggleBarterModal="toggleModal"
       />
       <div class="v-product-page__similar similar">
         <h2 class="title my-6" v-if="similarProducts.length">Похожие объявления</h2>
@@ -51,7 +52,12 @@
       </div>
     </div>
     <transition name="fade">
-      <vModal v-if="modals.barterModal" :show="modals.barterModal">
+      <vModal
+        v-if="modals.barterModal"
+        :show="modals.barterModal"
+        :id="'barterModal'"
+        @close="toggleModal"
+      >
         <div class="modalBarter">
           <div class="modalBarter__menu flex justify-between">
             <h2 class="modalBarter__title">Предложить бартер</h2>
@@ -155,6 +161,7 @@ import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/swiper-bundle.css'
 
 export default {
+  name: 'vProductPage',
   components: { vHeader, VModal, Swiper, SwiperSlide, vHeaderAlt, vProductCard, vProduct },
   data() {
     return {
@@ -219,6 +226,7 @@ export default {
       }
     },
     toggleModal(modalId) {
+      console.log('В v-product-page', modalId)
       this.modals[modalId] = !this.modals[modalId]
     },
     triggerFileInput() {

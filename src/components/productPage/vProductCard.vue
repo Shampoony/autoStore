@@ -98,7 +98,7 @@
             <p>Отвечает за несколько минут</p>
           </a>
           <button
-            @click="toggleModal('barterModal')"
+            @click="toggleBarterModal()"
             class="product-card__btn product-btn barter-btn"
             v-if="!product_data.barter_bool"
           >
@@ -237,6 +237,7 @@ import ProductCarousel from '../generalComponents/productCarousel.vue'
 
 export default {
   name: 'vProductCard',
+  emits: ['toggleBarterModal'],
   components: { ProductCarousel },
   props: {
     product_data: {
@@ -274,6 +275,10 @@ export default {
     },
     maskNumber(number) {
       return number.replace(/^(.{7}).*$/, '$1' + '*'.repeat(number.length - 3))
+    },
+    toggleBarterModal() {
+      console.log('зАшли')
+      this.$emit('toggleBarterModal', 'barterModal')
     }
   },
   mounted() {

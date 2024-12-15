@@ -112,6 +112,12 @@ export default {
   methods: {
     register() {
       registerUser('users', this.form)
+        .then(() => {
+          this.$router.push({ name: 'main' })
+        })
+        .catch((err) => {
+          console.error('Ошибка регистрации')
+        })
     }
   }
 }

@@ -25,6 +25,29 @@ export function filterReviews(reviews) {
   }
   return targetReviews
 }
+export function getPrettyDate(timestamp) {
+  const date = new Date(timestamp)
+  const today = new Date()
+
+  const isToday = date.toDateString() === today.toDateString() // Простая проверка на совпадение дат
+
+  const isThisYear = date.getFullYear() === today.getFullYear() // Проверка на совпадение года
+
+  if (isToday) {
+    return date.toLocaleTimeString('ru-RU', {
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  }
+
+  return date.toLocaleString('ru-RU', {
+    day: '2-digit',
+    month: 'long',
+    year: isThisYear ? undefined : 'numeric', // Год включается только если он не текущий
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+}
 
 export function getQuantityOfReviews() {
   /*  const userId = decodeAccessToken().user_id

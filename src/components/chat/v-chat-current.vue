@@ -76,7 +76,8 @@
               <div class="message__mark" v-if="msg.sender == userId">
                 <img src="../../assets/images/message-mark.svg" alt="" />
               </div>
-              <div class="message__text">{{ msg.content }}</div>
+              <div class="message__text" v-if="msg.content">{{ msg.content }}</div>
+              <div class="message__text" v-if="msg.message">{{ msg.message }}</div>
               <div class="message__time">{{ getMessageDate(msg.timestamp) }}</div>
             </li>
           </ul>
@@ -100,7 +101,8 @@
   </div>
 </template>
 <script>
-import { getUserId } from '@/utils'
+import { getUserId, getPrettyDate } from '@/utils'
+import { WebSocketService } from '@/api/websocket'
 import { fetchChatMessages, fetchChatById, getUserById } from '@/api/requests'
 
 import VHeader from '../generalComponents/v-header.vue'
@@ -120,174 +122,137 @@ export default {
 
   data() {
     return {
-      message: '',
       messages: [],
-      chatName: '',
-      number: '',
-      numberContent: 'Показать телефон',
-      numberShowed: false,
-      user2: '',
-
-      socket: null,
       newMessage: '',
       selectedFile: null,
-      user2Username: this.$route.params.user2Username // Получаем имя собеседника из URL
+      chatName: '',
+      number: '',
+      numberShowed: false,
+      socketService: null // Экземпляр WebSocketService
     }
   },
+
   methods: {
-    handleEnterKey(event) {
-      if (event.shiftKey) {
-        // Shift + Enter: добавление новой строки
-        return
-      }
-      // Просто Enter: отправить сообщение
-      this.sendMessage()
-      event.preventDefault() // Предотвращает добавление новой строки
+    // Инициализация WebSocket
+    initializeWebSocket() {
+      this.socketService = new WebSocketService(this.chatName, this.handleIncomingMessage)
+      this.socketService.initialize()
     },
+
+    // Обработка входящих сообщений
+    handleIncomingMessage(data) {
+      console.log(data)
+      if (data && data.message) {
+        this.messages.push(data) // Добавляем новое сообщение в список
+      }
+    },
+
     toPrevPage() {
       window.history.back()
     },
+
+    scrollToBottom() {
+      const container = this.$refs.messagesContainer
+      container.scrollTop = container.scrollHeight + 45 // Прокрутка в самый низ с небольшим отступом
+    },
+
     autoResize() {
       const textarea = this.$refs.messageInput
       textarea.style.height = 'auto' // Сбрасываем высоту, чтобы рассчитать новую
       textarea.style.height = textarea.scrollHeight + 'px' // Устанавливаем новую высоту
     },
+
     setChatMessage() {
       fetchChatMessages(this.$route.params.id).then((messages) => {
         this.messages = messages
-        this.userId = getUserId()
         this.scrollToBottom()
       })
     },
+
     getMessageDate(timestamp) {
-      const date = new Date(timestamp)
-      const today = new Date()
-
-      // Проверяем, совпадает ли дата
-      const isToday =
-        date.getDate() === today.getDate() &&
-        date.getMonth() === today.getMonth() &&
-        date.getFullYear() === today.getFullYear()
-
-      if (isToday) {
-        // Если сегодня, возвращаем только время
-        return date.toLocaleTimeString('ru-RU', {
-          hour: '2-digit',
-          minute: '2-digit'
-        })
-      } else {
-        // Если не сегодня, возвращаем дату и время
-        return date.toLocaleString('ru-RU', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
-        })
-      }
-    },
-    initializeWebSocket() {
-      const accessToken =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM1NzQwODQxLCJpYXQiOjE3MzMxNDg4NDEsImp0aSI6ImEyMWU4YjljMGIzOTRjNmM4ZDY2NjBmZTliYjZhZjNlIiwidXNlcl9pZCI6Miwic3RhdHVzIjoidXNlciIsInByb2ZpbGVfaWQiOjV9.D-hf4sLhsssb_e1v5fXu5iL1MVRmWoBMWqE7-ODTFTU'
-      const wsUrl = ` ws://api.rcarentacar.com/ws/chat/${this.chatName}/?token=${accessToken}`
-      this.socket = new WebSocket(wsUrl)
-
-      this.socket.onopen = () => {
-        console.log('WebSocket соединение установлено')
-      }
-
-      this.socket.onmessage = (event) => {
-        const data = JSON.parse(event.data)
-        console.log(data)
-        this.messages.push({
-          sender: data.sender,
-          content: data.message || data.file,
-          timestamp: data.timestamp,
-          type: data.message ? 'text' : 'file'
-        })
-      }
-
-      this.socket.onerror = (error) => {
-        console.error('WebSocket ошибка:', error)
-      }
-    },
-    setUserInfo() {
-      fetchChatById(this.$route.params.id).then((chatInfo) => {
-        console.log(chatInfo)
-        if (chatInfo.user1 != this.user1Id) {
-          this.user2 = chatInfo.user1
-        } else {
-          this.user2 = chatInfo.user2
-        }
-        getUserById(this.user2).then((userInfo) => {
-          this.chatName = userInfo.username
-          this.number = userInfo.user_profile.phone
-          this.initializeWebSocket()
-        })
-      })
-      console.log(this.chatName)
+      return getPrettyDate(timestamp)
     },
 
-    // Отправка сообщения (текстового или файла)
+    handleEnterKey(event) {
+      if (event.shiftKey) {
+        return
+      }
+      this.sendMessage()
+      event.preventDefault()
+    },
+
+    async setUserInfo() {
+      try {
+        // Запрашиваем данные о чате
+        const chatInfo = await fetchChatById(this.$route.params.id)
+
+        // Определяем второго участника
+        this.user2 = chatInfo.user1 !== this.userId ? chatInfo.user1 : chatInfo.user2
+
+        // Запрашиваем данные пользователя
+        const userInfo = await getUserById(this.user2)
+
+        // Обновляем состояние компонента
+        this.chatName = userInfo.username
+        this.number = userInfo.user_profile.phone
+
+        // Инициализируем WebSocket
+        this.initializeWebSocket()
+      } catch (error) {
+        console.error('Ошибка при загрузке информации о чате:', error)
+      }
+    },
+
     sendMessage() {
-      if (this.socket.readyState !== WebSocket.OPEN) {
-        console.error('WebSocket не открыт')
-        return // Прерываем выполнение, если WebSocket не открыт
-      }
-
+      console.log(this.newMessage)
       if (this.newMessage.trim()) {
         const messageData = {
           message: this.newMessage,
-          type: 'text' // Тип сообщения — текст
+          type: 'text'
         }
-        this.socket.send(JSON.stringify(messageData))
+        this.socketService.sendMessage(messageData)
         this.newMessage = ''
       }
 
       if (this.selectedFile) {
         const reader = new FileReader()
         reader.onload = () => {
-          const fileData = reader.result.split(',')[1] // base64 кодировка
+          const fileData = reader.result.split(',')[1]
           const fileMessageData = {
             file: fileData,
             file_name: this.selectedFile.name,
-            type: 'file' // Тип сообщения — файл
+            type: 'file'
           }
-          this.socket.send(JSON.stringify(fileMessageData))
-          this.selectedFile = null // Очищаем выбранный файл
+          this.socketService.sendMessage(fileMessageData)
+          this.selectedFile = null
         }
         reader.readAsDataURL(this.selectedFile)
       }
-
-      // Прокрутка каждого нового сообщения в видимую область
-      this.$nextTick(() => {
-        const lastMessage = this.$refs.messagesContainer.lastElementChild
-        lastMessage.scrollIntoView({ behavior: 'smooth' })
-      })
-    },
-    scrollToBottom() {
-      const container = this.$refs.messagesContainer
-      container.scrollTop = container.scrollHeight + 45 // Прокрутка в самый низ с небольшим отступом
     }
   },
+
   computed: {
-    user1Id() {
+    userId() {
       return getUserId()
     }
   },
-  mounted() {
-    this.setChatMessage()
-    this.setUserInfo()
 
-    /*  this.setChatName() */
-    console.log(this.$route)
+  async mounted() {
+    this.setChatMessage()
+    await this.setUserInfo()
   },
+
   watch: {
-    // Если сообщения обновляются, прокручиваем в низ
-    messages: function () {
+    messages() {
       this.$nextTick(() => {
         this.scrollToBottom()
       })
+    }
+  },
+
+  destroyed() {
+    if (this.socketService) {
+      this.socketService.close() // Закрытие WebSocket при уничтожении компонента
     }
   }
 }
