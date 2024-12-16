@@ -133,7 +133,6 @@ export default {
           image.image = this.apiUrl + image.image // Обновляем свойство image объекта напрямую
         }
       }
-      console.log('images', this.product_data.images)
       if (Array.isArray(this.product_data.images)) {
         if (this.product_data.images.length > 4) {
           return this.product_data.images.slice(0, 4)
@@ -180,12 +179,10 @@ export default {
     toggleToFavourites() {
       if (!this.productInFavourites) {
         addToFavourites(this.type_of_product + '_id', this.product_data.id).then(() => {
-          console.log('Добавили в избранное')
           this.productInFavourites = true
         })
       } else {
         removeFromFavourites(this.type_of_product + '_id', this.product_data.id).then(() => {
-          console.log('Удалили из избранного')
           this.productInFavourites = false
         })
       }
@@ -199,7 +196,6 @@ export default {
   mounted() {
     this.checkIfProductInFavourites()
     this.setCurrency()
-    console.log(this.product_data)
   }
 }
 </script>

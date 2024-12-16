@@ -17,9 +17,14 @@ export class WebSocketService {
 
     this.socket.onmessage = (event) => {
       const data = JSON.parse(event.data)
-      if (data.type === 'user_status') {
+
+      if (data.type === 'read_receipt') {
+        console.log(`Сообщение ${data.message_id} было прочитано пользователем ${data.user_id}`)
+        if (this.onReadReceiptCallback) {
+          this.onReadReceiptCallback(data)
+        }
+      } else if (data.type === 'user_status') {
         console.log(`Пользователь ${data.user_id} ${data.is_online ? 'в сети' : 'не в сети'}`)
-        // Вызываем обработчик для статуса пользователя
         if (this.onUserStatusCallback) {
           this.onUserStatusCallback(data)
         }
@@ -44,9 +49,25 @@ export class WebSocketService {
       console.error('WebSocket не открыт')
     }
   }
+
+  // Метод для прочтения сообщений
+  sendReadReceipt(messageId) {
+    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+      const receiptData = {
+        type: 'read_receipt',
+        message_id: messageId
+      }
+      this.socket.send(JSON.stringify(receiptData))
+    }
+  }
+
   // Новый метод для регистрации обратного вызова статуса пользователя
   registerUserStatusCallback(callback) {
     this.onUserStatusCallback = callback
+  }
+
+  registerReadReceiptCallback(callback) {
+    this.onReadReceiptCallback = callback
   }
 
   close() {

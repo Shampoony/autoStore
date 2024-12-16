@@ -2,8 +2,12 @@
   <div class="v-left-menu">
     <div class="v-left-menu__container">
       <div class="v-left-menu__block">
-        <div class="v-left-menu__image"></div>
-        <h3 class="v-left-menu__name">{{ user_profile.full_name }}</h3>
+        <div class="v-left-menu__image" v-if="user.photo">
+          <img :src="user.photo" alt="" />
+        </div>
+        <h3 class="v-left-menu__name" v-if="user.user_profile">
+          {{ user.user_profile.full_name }}
+        </h3>
         <average-rating />
       </div>
       <div class="v-left-menu__block">
@@ -58,7 +62,7 @@
 </template>
 <script>
 import { decodeAccessToken } from '@/utils'
-import { getUserProfile } from '@/api/requests'
+import { getUserById } from '@/api/requests'
 import averageRating from './average-rating.vue'
 
 export default {
@@ -66,23 +70,24 @@ export default {
   name: 'vLeftMenu',
   data() {
     return {
-      user_profile: {}
+      user: {}
     }
   },
   computed: {},
   methods: {
-    setUserInfo() {
+    setUser() {
       const decodedToken = decodeAccessToken()
       if (decodedToken) {
-        const profileId = decodedToken.profile_id
-        getUserProfile(profileId).then((userProfile) => {
-          this.user_profile = userProfile
+        const userId = decodedToken.user_id
+        getUserById(userId).then((user) => {
+          this.user = user
+          console.log()
         })
       }
     }
   },
   mounted() {
-    this.setUserInfo()
+    this.setUser()
   }
 }
 </script>

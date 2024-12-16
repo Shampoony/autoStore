@@ -4,7 +4,7 @@
     <div class="v-chat-current__container container flex">
       <v-left-menu />
       <div class="v-chat-current__content">
-        <div class="v-chat-current__header flex justify-between">
+        <div class="v-chat-current__header flex justify-between" v-if="user2Info">
           <div class="flex">
             <div class="v-chat-current__header-back mr-6 flex items-center" @click="toPrevPage">
               <img src="../../assets/images/back.svg" alt="" />
@@ -12,7 +12,7 @@
             <div class="flex gap-7">
               <div class="v-chat-current__header-img avatar">
                 <div class="avatar__img-author">
-                  <!--   <img src="" alt="" /> -->
+                  <img v-if="user2Info.photo" :src="user2Info.photo" alt="" />
                 </div>
                 <div class="avatar__online" :class="{ online: isOnline }">
                   <!--    <img src="" alt="" /> -->
@@ -20,19 +20,22 @@
               </div>
               <div class="flex flex-col gap-2">
                 <div class="flex gap-4">
-                  <div class="v-chat-current__header-name user-name">{{ chatName }}</div>
+                  <div class="v-chat-current__header-name user-name" v-if="user2Info">
+                    {{ user2Info.username }}
+                  </div>
                   <div class="v-chat-current__header-online">
-                    <span class="user-status" v-if="user2">{{ getUserStatus(user2) }}</span>
+                    <span class="user-status" v-if="user2">{{ userStatus }}</span>
                   </div>
                 </div>
                 <div class="v-chat-current__header-product">Toyota Camry</div>
+                {{ user2Info.photo }}
               </div>
             </div>
           </div>
           <button
             :class="{ hide: numberShowed }"
             class="v-chat-current__header-button"
-            v-if="number"
+            v-if="user2Info.user_profile.phone"
             @click="numberShowed = !numberShowed"
           >
             Показать телефон
@@ -40,10 +43,10 @@
           <button
             :class="{ show: numberShowed }"
             class="v-chat-current__header-number"
-            v-if="number"
+            v-if="user2Info.user_profile.phone"
             @click="numberShowed = !numberShowed"
           >
-            {{ number }}
+            {{ user2Info.user_profile.phone }}
           </button>
         </div>
         <div class="v-chat-current__header-mob flex justify-between">
@@ -68,7 +71,11 @@
           </button>
         </div>
         <div class="v-chat-current__messages">
-          <ul class="v-chat-current__messages-list styled-scrollbar" ref="messagesContainer">
+          <ul
+            class="v-chat-current__messages-list styled-scrollbar"
+            ref="messagesContainer"
+            @scroll="checkVisibleMessages"
+          >
             <li
               class="v-chat-current__messages-list-item message"
               v-for="msg in messages"
@@ -158,19 +165,68 @@ export default {
       userStatuses: {},
       newMessage: '',
       selectedFile: null,
-      chatName: '',
-      number: '',
+      nextUrl: '',
       numberShowed: false,
 
       socketService: null, // Экземпляр WebSocketService
       imagesAdded: true,
       imagePreview: null,
       user2: null,
+      user2Info: null,
       isOnline: false
     }
   },
 
   methods: {
+    markMessageAsRead(messageId) {
+      if (this.socketService) {
+        this.socketService.sendReadReceipt(messageId)
+      }
+    },
+    checkVisibleMessages() {
+      const container = this.$refs.messagesContainer
+      const currentScrollTop = container.scrollTop
+      const containerHeight = container.offsetHeight
+
+      // Если прокрутка достигла верхней части контейнера, загружаем новые сообщения
+      if (currentScrollTop === 0 && this.nextUrl) {
+        // Сохраняем текущую позицию прокрутки
+        const scrollPositionBeforeLoad = container.scrollTop
+
+        // Загружаем новые сообщения
+        fetchChatMessages(this.$route.params.id, this.nextUrl).then((messages) => {
+          // Объединяем новые и старые сообщения
+          const allMessages = messages.results.concat(this.messages)
+          this.messages = allMessages
+          this.nextUrl = messages.next || null
+
+          // Восстанавливаем позицию прокрутки после загрузки сообщений
+          this.$nextTick(() => {
+            // Важно восстанавливать позицию после того, как DOM обновится
+            container.scrollTop = scrollPositionBeforeLoad + containerHeight
+          })
+        })
+      }
+
+      /*  const container = this.$refs.messagesContainer
+      const visibleHeight = container.offsetHeight
+      const scrollTop = container.scrollTop
+      const scrollBottom = scrollTop + visibleHeight
+
+      this.messages.forEach((message) => {
+        const messageElement = this.$refs[`message-${message.id}`]
+        if (messageElement) {
+          const messageTop = messageElement.offsetTop
+          const messageBottom = messageTop + messageElement.offsetHeight
+
+          if (messageTop >= scrollTop && messageBottom <= scrollBottom && !message.read) {
+            this.markMessageAsRead(message.id)
+            message.read = true // Локально помечаем как прочитанное
+          }
+        }
+      }) */
+    },
+
     handleUserStatus(data) {
       this.isOnline = data.is_online
       /*   if (!this.userStatuses[data.user_id]) {
@@ -183,24 +239,24 @@ export default {
     },
 
     setFileData(fileData) {
-      console.log('найс')
       this.selectedFile = fileData
     },
     // Инициализация WebSocket
     // Инициализация WebSocket с учётом нового обработчика
     initializeWebSocket() {
-      this.socketService = new WebSocketService(this.chatName, this.handleIncomingMessage)
+      this.socketService = new WebSocketService(this.user2Info.username, this.handleIncomingMessage)
       this.socketService.initialize()
 
+      this.socketService.registerReadReceiptCallback(this.handleReadReceipt)
       // Регистрируем обработчик статуса
       this.socketService.registerUserStatusCallback(this.handleUserStatus)
     },
     getUserStatus(userId) {
       const status = this.userStatuses[userId]
       if (status) {
-        return status.is_online ? 'в сети' : `не в сети (был в сети: ${status.last_seen})`
+        return status.is_online ? 'в сети' : `был в сети: ${status.last_seen})`
       }
-      return 'нет данных'
+      return 'не в сети'
     },
     isImage(file) {
       if (file) {
@@ -236,6 +292,7 @@ export default {
     },
 
     scrollToBottom() {
+      console.log('Зашли')
       const container = this.$refs.messagesContainer
       container.scrollTop = container.scrollHeight + 45 // Прокрутка в самый низ с небольшим отступом
     },
@@ -248,8 +305,8 @@ export default {
 
     setChatMessage() {
       fetchChatMessages(this.$route.params.id).then((messages) => {
-        this.messages = messages
-        this.scrollToBottom()
+        this.nextUrl = messages.next
+        this.messages = messages.results
       })
     },
 
@@ -275,12 +332,9 @@ export default {
 
         // Запрашиваем данные пользователя
         const userInfo = await getUserById(this.user2)
+        this.user2Info = userInfo
         this.isOnline = userInfo.is_online
         /*  console.log(userInfo.is_online) */
-
-        // Обновляем состояние компонента
-        this.chatName = userInfo.username
-        this.number = userInfo.user_profile.phone
 
         // Инициализируем WebSocket
         this.initializeWebSocket()
@@ -321,21 +375,25 @@ export default {
   computed: {
     userId() {
       return getUserId()
+    },
+    userStatus() {
+      return this.isOnline ? 'в сети' : `не в сети`
     }
   },
 
   async mounted() {
     this.setChatMessage()
     await this.setUserInfo()
+    this.scrollToBottom()
   },
 
-  watch: {
+  /* watch: {
     messages() {
       this.$nextTick(() => {
         this.scrollToBottom()
       })
     }
-  },
+  }, */
 
   destroyed() {
     if (this.socketService) {

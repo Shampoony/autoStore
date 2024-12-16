@@ -271,9 +271,11 @@ export async function getCompanyById(companyId) {
 
 /* Чат */
 
-export async function fetchChatMessages(chatId) {
+export async function fetchChatMessages(chatId, url = null) {
+  console.log(url)
   try {
-    const response = await fetch(`http://api.rcarentacar.com/api/chats/chats/${chatId}/messages`, {
+    let fetchUrl = url ? url : `http://api.rcarentacar.com/api/chats/chats/${chatId}/messages`
+    const response = await fetch(fetchUrl, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
