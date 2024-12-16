@@ -172,11 +172,16 @@ export default {
 
   methods: {
     handleUserStatus(data) {
-      this.$set(this.userStatuses, data.user_id, {
+      this.isOnline = data.is_online
+      /*   if (!this.userStatuses[data.user_id]) {
+        this.userStatuses[data.user_id] = {}
+      }
+      this.userStatuses[data.user_id] = {
         is_online: data.is_online,
         last_seen: data.last_seen
-      })
+      } */
     },
+
     setFileData(fileData) {
       console.log('найс')
       this.selectedFile = fileData
