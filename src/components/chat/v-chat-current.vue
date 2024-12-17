@@ -28,7 +28,6 @@
                   </div>
                 </div>
                 <div class="v-chat-current__header-product">Toyota Camry</div>
-                {{ user2Info.photo }}
               </div>
             </div>
           </div>
@@ -61,8 +60,10 @@
                 </div>
               </div>
               <div class="flex flex-col gap-1">
-                <div class="v-chat-current__header-mob-name user-name">Оля</div>
-                <div class="v-chat-current__header-mob-online">В сети в 20:58</div>
+                <div class="v-chat-current__header-mob-name user-name" v-if="user2Info">
+                  {{ user2Info.username }}
+                </div>
+                <div class="v-chat-current__header-mob-online">{{ isOnline }}</div>
               </div>
             </div>
           </div>
@@ -82,8 +83,9 @@
               :key="msg.id"
               :class="{ 'my-message': msg.sender == userId }"
             >
-              <div class="message__mark" v-if="msg.sender == userId">
+              <div class="message__mark" v-if="msg.sender == userId && (msg.is_read || userRead)">
                 <img src="../../assets/images/message-mark.svg" alt="" />
+                {{ msg.id }}
               </div>
 
               <div class="message__text" v-if="msg.content && !msg.file">{{ msg.content }}</div>
@@ -167,6 +169,7 @@ export default {
       selectedFile: null,
       nextUrl: '',
       numberShowed: false,
+      userRead: false,
 
       socketService: null, // Экземпляр WebSocketService
       imagesAdded: true,
@@ -196,8 +199,10 @@ export default {
         // Загружаем новые сообщения
         fetchChatMessages(this.$route.params.id, this.nextUrl).then((messages) => {
           // Объединяем новые и старые сообщения
+          messages.results.reverse()
           const allMessages = messages.results.concat(this.messages)
           this.messages = allMessages
+          console.log(messages)
           this.nextUrl = messages.next || null
 
           // Восстанавливаем позицию прокрутки после загрузки сообщений
@@ -236,6 +241,11 @@ export default {
         is_online: data.is_online,
         last_seen: data.last_seen
       } */
+    },
+    handleReadReceipt(data) {
+      if (data.user_id === this.user2) {
+        this.userRead = true
+      }
     },
 
     setFileData(fileData) {
@@ -306,7 +316,7 @@ export default {
     setChatMessage() {
       fetchChatMessages(this.$route.params.id).then((messages) => {
         this.nextUrl = messages.next
-        this.messages = messages.results
+        this.messages = messages.results.reverse()
       })
     },
 

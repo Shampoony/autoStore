@@ -1,5 +1,5 @@
-import store from './vuex/store'
 import { accessToken } from './api/auth'
+import { getFilteredProducts } from './api/requests'
 
 export function decodeAccessToken() {
   const payload = accessToken.split('.')[1]
@@ -46,6 +46,24 @@ export function getPrettyDate(timestamp) {
     year: isThisYear ? undefined : 'numeric', // Год включается только если он не текущий
     hour: '2-digit',
     minute: '2-digit'
+  })
+}
+export function filterProducts(url, form) {
+  const filledFields = Object.fromEntries(
+    Object.entries(form).filter(([_, value]) => value) // Убираем пустые значения
+  )
+  console.log(filledFields, form)
+
+  // Генерируем строку запроса
+  const queryParams = new URLSearchParams(filledFields).toString()
+  console.log(decodeURIComponent(queryParams))
+  const queryURL = `${url}?${decodeURIComponent(queryParams)}`
+  console.log(queryURL)
+  window.location.search = decodeURIComponent(queryParams)
+  getFilteredProducts(queryURL).then((products) => {
+    if (products) {
+      return products
+    }
   })
 }
 
