@@ -85,7 +85,6 @@
             >
               <div class="message__mark" v-if="msg.sender == userId && (msg.is_read || userRead)">
                 <img src="../../assets/images/message-mark.svg" alt="" />
-                {{ msg.id }}
               </div>
 
               <div class="message__text" v-if="msg.content && !msg.file">{{ msg.content }}</div>
@@ -212,35 +211,10 @@ export default {
           })
         })
       }
-
-      /*  const container = this.$refs.messagesContainer
-      const visibleHeight = container.offsetHeight
-      const scrollTop = container.scrollTop
-      const scrollBottom = scrollTop + visibleHeight
-
-      this.messages.forEach((message) => {
-        const messageElement = this.$refs[`message-${message.id}`]
-        if (messageElement) {
-          const messageTop = messageElement.offsetTop
-          const messageBottom = messageTop + messageElement.offsetHeight
-
-          if (messageTop >= scrollTop && messageBottom <= scrollBottom && !message.read) {
-            this.markMessageAsRead(message.id)
-            message.read = true // Локально помечаем как прочитанное
-          }
-        }
-      }) */
     },
 
     handleUserStatus(data) {
       this.isOnline = data.is_online
-      /*   if (!this.userStatuses[data.user_id]) {
-        this.userStatuses[data.user_id] = {}
-      }
-      this.userStatuses[data.user_id] = {
-        is_online: data.is_online,
-        last_seen: data.last_seen
-      } */
     },
     handleReadReceipt(data) {
       if (data.user_id === this.user2) {
