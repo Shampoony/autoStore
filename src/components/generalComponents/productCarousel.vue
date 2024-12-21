@@ -21,6 +21,10 @@
 
     <!-- FsLightbox -->
     <FsLightbox :toggler="toggler" :sources="imageSources" :slide="activeSlide + 1" />
+
+    <div class="custom-close" @click="toggleLightbox">
+      <img src="../../assets/images/close.svg" alt="" />
+    </div>
     <!-- <swiper
       ref="swiperRef"
       class="product-carousel__images"

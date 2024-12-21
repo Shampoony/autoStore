@@ -9,7 +9,7 @@
             type="text"
             class="filter__input search-input"
             placeholder="Что ищем?"
-            v-model="form.title"
+            v-model="form.title.value"
           />
           <div class="form_toggle">
             <div class="form_toggle-item item-1">
@@ -17,7 +17,7 @@
                 id="condition-all"
                 type="radio"
                 name="condition"
-                v-model="form.condition"
+                v-model="form.condition.value"
                 value="Все"
               />
               <label for="condition-all">Все</label>
@@ -28,7 +28,7 @@
                 type="radio"
                 name="condition"
                 value="Новые"
-                v-model="form.condition"
+                v-model="form.condition.value"
               />
               <label for="condition-new">Новые</label>
             </div>
@@ -37,7 +37,7 @@
                 id="condition-mil"
                 type="radio"
                 name="condition"
-                v-model="form.condition"
+                v-model="form.condition.value"
                 value="С пробегом"
               />
               <label for="condition-mil">С пробегом</label>
@@ -49,7 +49,7 @@
                 id="availability-status-in"
                 type="radio"
                 name="availability_status"
-                v-model="form.availability_status"
+                v-model="form.availability_status.value"
                 value="В наличии"
               />
               <label for="availability-status-in">В наличии</label>
@@ -60,7 +60,7 @@
                 type="radio"
                 name="availability_status"
                 value="Новые"
-                v-model="form.availability_status"
+                v-model="form.availability_status.value"
               />
               <label for="availability-status-on">На заказ</label>
             </div>
@@ -72,7 +72,7 @@
               name="price_min"
               id="price_min"
               placeholder="Цена от"
-              v-model="form.price_min"
+              v-model="form.price_min.value"
             />
             <input
               type="text"
@@ -80,12 +80,17 @@
               name="price_min"
               id="price_max"
               placeholder="до"
-              v-model="form.price_max"
+              v-model="form.price_max.value"
             />
           </div>
           <div class="flex gap-4">
             <v-select-styled :options="brand" />
-            <input type="text" class="filter__input" placeholder="Модель " v-model="form.model" />
+            <input
+              type="text"
+              class="filter__input"
+              placeholder="Модель "
+              v-model="form.model.value"
+            />
           </div>
         </div>
 
@@ -124,12 +129,14 @@
   </main>
 </template>
 <script>
+import { setQueryParams } from '@/utils'
 import { mapGetters, mapActions } from 'vuex'
+import { filterProducts, getSelectOptions, getFilteredProducts } from '@/api/requests'
+
 import VSelectStyled from '../v-select-styled.vue'
 import vHeader from '../generalComponents/v-header.vue'
 import vProduct from '../generalComponents/v-product.vue'
 import VBottomMenu from '../generalComponents/v-bottom-menu.vue'
-import { getFilteredProducts, getSelectOptions } from '@/api/requests'
 export default {
   components: { vHeader, VBottomMenu, VSelectStyled, vProduct },
   name: 'vSpareParts',
@@ -138,10 +145,12 @@ export default {
       filteredSpareParts: [],
       isFilteredProductsFound: false,
       form: {
-        condition: 'Все',
-        availability_status: 'В наличии',
-        model: '',
-        title: ''
+        condition: { value: 'Все', default: 'Все' },
+        availability_status: { value: 'В наличии', default: 'В наличии' },
+        model: { value: '', default: '' },
+        title: { value: '', default: '' },
+        price_min: { value: '', default: '' },
+        price_max: { value: '', default: '' }
       },
       brand: {
         name: 'brand',
@@ -159,40 +168,35 @@ export default {
         this.brand.options = options
       })
     },
-    setFiltersFromURL() {
-      const queryParams = window.location.search
-      if (queryParams) {
-        const params = new URLSearchParams(queryParams)
-        for (const [key, value] of params.entries()) {
-          if (key in this.form) {
-            this.form[key] = value
-          }
-        }
-      }
-    },
 
-    onSubmit(e) {
+    async onSubmit(e) {
       e.preventDefault()
-
-      // Формируем объект с заполненными полями
-      const filledFields = Object.fromEntries(
-        Object.entries(this.form).filter(([_, value]) => value) // Убираем пустые значения
-      )
-
-      // Генерируем строку запроса
-      const queryParams = new URLSearchParams(filledFields).toString()
-
       // Полный URL с фильтром
-      const queryURL = `http://api.rcarentacar.com/api/spare-parts/filter?${decodeURIComponent(queryParams)}`
+      const queryURL = `http://api.rcarentacar.com/api/spare-parts/filter`
 
-      window.location.search = decodeURIComponent(queryParams)
-      // Выполняем запрос
-      getFilteredProducts(queryURL).then((products) => {
+      try {
+        // Дожидаемся выполнения filterProducts
+        const products = await filterProducts(queryURL, this.form, this.$refs)
+
         if (products) {
           this.filteredSpareParts = products
           this.isFilteredProductsFound = true
         }
-      })
+      } catch (error) {
+        console.error('Ошибка при получении данных:', error)
+      }
+    },
+    setFilteredProducts() {
+      const queryParams = window.location.search
+      if (queryParams) {
+        getFilteredProducts(`http://api.rcarentacar.com/api/spare-parts/filter${queryParams}`).then(
+          (products) => {
+            this.filteredSpareParts = products || []
+            console.log(this.filteredSpareParts)
+            this.isFilteredProductsFound = true
+          }
+        )
+      }
     }
   },
   computed: {
@@ -200,8 +204,10 @@ export default {
   },
   mounted() {
     this.getBrandOptions()
+    setQueryParams(this.form, this.$refs)
+    this.setFilteredProducts()
+
     this.GET_SPARE_PARTS_FROM_API()
-    this.setFiltersFromURL()
     console.log(this.SPARE_PARTS)
   }
 }

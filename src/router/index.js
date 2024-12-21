@@ -1,3 +1,4 @@
+import MapTest from '../components/generalComponents/MapTest.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const vReviews = () => import('@/components/reviewsPage/v-reviews.vue')
@@ -20,6 +21,9 @@ const test = () => import('@/components/chat/test.vue')
 // Ленивая загрузка компонентов
 const vCars = () => import('@/components/v-cars.vue')
 const vMainPage = () => import('@/components/mainPage/v-main-page.vue')
+
+/* Сравнение */
+const VCompare = () => import('@/components/comparePage/v-compare.vue')
 
 /* Чат */
 const vChat = () => import('@/components/chat/v-chat.vue')
@@ -126,6 +130,11 @@ const transportRoutes = [
     path: 'salons/:id?',
     name: 'salon-page',
     component: VSalonPage
+  },
+  {
+    path: 'compare/:id?',
+    name: 'transport-compare',
+    component: VCompare
   }
 ]
 
@@ -173,6 +182,11 @@ const routes = [
     path: '/chat/:chatId/:user2Username',
     name: 'Chat',
     component: test
+  },
+  {
+    path: '/map-test/',
+    name: 'map-test',
+    component: MapTest
   }
 ]
 

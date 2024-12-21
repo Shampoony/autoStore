@@ -3,15 +3,16 @@
   <div class="v-salon-page">
     <div class="v-salon-page__container container">
       <div class="v-salon-page__banner"><img src="" alt="" /></div>
-      <div class="v-salon-page__info">
-        <img class="v-salon-page__image" src="" alt="" />
+      <div class="v-salon-page__info" v-if="user && company_info">
+        <img v-if="user.photo" class="v-salon-page__image" :src="user.photo" alt="" />
+        <img v-else class="v-salon-page__image" src="../../assets/images/default.png" alt="" />
         <div class="v-salon-page__content">
           <h3 class="v-salon-page__title">{{ company_info.company_name }}</h3>
           <averageRating />
           <p class="v-salon-page__descriptio">
             Официальный дилер автомобилей Hyundai в Азербайджане. Hyundai в Азербайджане.
           </p>
-          <a href="" class="v-salon-page__address">{{ address }}</a>
+          <a href="" class="v-salon-page__address">{{ company_info.address }}</a>
           <a href="" class="v-salon-page__button flex justify-center">Написать</a>
         </div>
         <div class="v-salon-page__content">
@@ -37,9 +38,9 @@
   </div>
 </template>
 <script>
-import { getCompanyById } from '@/api/requests'
 import vHeader from '../generalComponents/v-header.vue'
 import vProduct from '../generalComponents/v-product.vue'
+import { getCompanyById, getUserById } from '@/api/requests'
 import averageRating from '../generalComponents/average-rating.vue'
 export default {
   name: 'vSalonPage',
@@ -50,14 +51,17 @@ export default {
   },
   data() {
     return {
-      company_info: {}
+      company_info: {},
+      user: null
     }
   },
   methods: {
     setCompanyInfo() {
       getCompanyById(this.$route.params.id).then((company) => {
         this.company_info = company
-        console.log(company)
+        getUserById(company.user_id).then((user) => {
+          this.user = user
+        })
       })
     }
   },

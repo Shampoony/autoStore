@@ -48,24 +48,76 @@ export function getPrettyDate(timestamp) {
     minute: '2-digit'
   })
 }
-export function filterProducts(url, form) {
+export async function filterProducts(url, form, selectsRefs) {
   const filledFields = Object.fromEntries(
-    Object.entries(form).filter(([_, value]) => value) // Убираем пустые значения
+    Object.entries(form)
+      .filter(([_, field]) => field.value) // Оставляем поля, у которых value не пустое
+      .map(([key, field]) => [key, field.value]) // Разворачиваем объект { value, default } -> value
   )
-  console.log(filledFields, form)
+  console.log('Зашли', filledFields)
 
-  // Генерируем строку запроса
-  const queryParams = new URLSearchParams(filledFields).toString()
-  console.log(decodeURIComponent(queryParams))
-  const queryURL = `${url}?${decodeURIComponent(queryParams)}`
-  console.log(queryURL)
-  window.location.search = decodeURIComponent(queryParams)
-  getFilteredProducts(queryURL).then((products) => {
-    if (products) {
-      return products
+  // Дополняем filledFields значениями из selectsRefs
+  for (let select in selectsRefs) {
+    if (selectsRefs[select].selectedValue) {
+      filledFields[selectsRefs[select].options.name] = selectsRefs[select].selectedValue
     }
-  })
+  }
+
+  const queryParams = new URLSearchParams(filledFields).toString()
+  const queryURL = `${url}?${decodeURIComponent(queryParams)}`
+
+  window.location.search = queryURL
+
+  console.log('Запрос:', queryURL)
+
+  // Дожидаемся ответа от сервера
+  const products = await getFilteredProducts(queryURL)
+  console.log('Полученные продукты:', products)
+
+  return products // Возвращаем полученные данные
 }
+
+export function setQueryParams(form, selectsRefs) {
+  const queryParams = window.location.search
+  if (queryParams) {
+    const params = new URLSearchParams(queryParams)
+    for (const [key, value] of params.entries()) {
+      if (key in form) {
+        console.log(form[key])
+        form[key].value = value
+      } else if (key in selectsRefs) {
+        selectsRefs[key].selectOption(value)
+      }
+    }
+  }
+}
+// Функция для сброса фильтров
+export function resetFilter(form, selectsRefs) {
+  for (let key in form) {
+    if (form[key].default !== undefined) {
+      form[key].value = form[key].default // Сбрасываем значение на default
+    }
+  }
+  // Сбрасываем селекты через их refs
+  if (selectsRefs) {
+    for (let selectName in selectsRefs) {
+      selectsRefs[selectName]?.resetOption?.()
+    }
+  }
+}
+/* export function setQueryParams(form) {
+  console.log(form)
+  const queryParams = window.location.search
+  if (queryParams) {
+    const params = new URLSearchParams(queryParams)
+    for (const [key, value] of params.entries()) {
+      if (key in form) {
+        form[key] = value
+      }
+    }
+    return form
+  }
+} */
 
 export function getQuantityOfReviews() {
   /*  const userId = decodeAccessToken().user_id

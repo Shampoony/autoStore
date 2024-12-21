@@ -8,7 +8,12 @@
           <v-select-styled ref="transport_type" :options="selects.transport_type" />
           <v-select-styled ref="brand" :options="selects.brand" />
           <div class="flex">
-            <input type="text" class="filter__input" placeholder="Модель " v-model="form.model" />
+            <input
+              type="text"
+              class="filter__input"
+              placeholder="Модель "
+              v-model="form.model.value"
+            />
           </div>
 
           <div class="flex price-input">
@@ -18,7 +23,7 @@
               name="price_min"
               id="price_min"
               placeholder="Стоимость от"
-              v-model="form.price_min"
+              v-model="form.price_min.value"
             />
             <input
               type="text"
@@ -26,85 +31,88 @@
               name="price_min"
               id="price_max"
               placeholder="до"
-              v-model="form.price_max"
+              v-model="form.price_max.value"
             />
           </div>
           <div class="form_toggle">
             <div class="form_toggle-item item-1">
               <input
-                id="condition-all"
+                id="operator-1"
                 type="radio"
                 name="operator"
-                v-model="form.operator"
-                value="true"
+                v-model="form.operator.value"
+                value="True"
               />
-              <label for="condition-all">С оператором</label>
+              <label for="operator-1">С оператором</label>
             </div>
 
             <div class="form_toggle-item item-2">
               <input
-                id="condition-mil"
+                id="operator-0"
                 type="radio"
                 name="operator"
-                v-model="form.operator"
-                value="false"
+                v-model="form.operator.value"
+                value="False"
               />
-              <label for="condition-mil">Нет</label>
+              <label for="operator-0">Нет</label>
             </div>
           </div>
           <div class="form_toggle">
             <div class="form_toggle-item item-1">
               <input
-                id="condition-all"
+                id="time-hour"
                 type="radio"
                 name="time"
-                v-model="form.time"
+                v-model="form.time.value"
                 value="За час"
               />
-              <label for="condition-all">За час</label>
+              <label for="time-hour">За час</label>
             </div>
             <div class="form_toggle-item item-mid">
               <input
-                id="condition-new"
+                id="time-day"
                 type="radio"
                 name="time"
                 value="За день"
-                v-model="form.time"
+                v-model="form.time.value"
               />
-              <label for="condition-new">За день</label>
+              <label for="time-day">За день</label>
             </div>
             <div class="form_toggle-item item-2">
               <input
-                id="condition-mil"
+                id="time-change"
                 type="radio"
                 name="time"
-                v-model="form.time"
+                v-model="form.time.value"
                 value="За смену"
               />
-              <label for="condition-mil">За смену</label>
+              <label for="time-change">За смену</label>
             </div>
           </div>
         </div>
 
         <div class="filter__block flex justify-end">
           <div class="flex items-center w-1/2 gap-12 max-md:gap-2 justify-end">
-            <div class="filter__reset" @click="resetFilter">Сбросить</div>
+            <div class="filter__reset" @click="resetForm">Сбросить</div>
             <div class="filter__component flex items-center gap-10">
               <button class="filter__btn btn" type="submit">Показать объявления</button>
             </div>
           </div>
         </div>
       </form>
-      <div class="v-rent-cars__products" v-if="filteredRents.length">
+      <div class="v-rent-cars__products products-container" v-if="filteredRents.length">
         <v-product v-for="product in filteredRents" :key="product.id" :product_data="product" />
       </div>
-      <div class="v-rent-cars__products" v-if="!filteredRents.length && !isFilteredProductsFound">
+      <div
+        class="v-rent-cars__products products-container"
+        v-if="!filteredRents.length && !isFilteredProductsFound"
+      >
         <v-product
-          v-for="product in []"
+          v-for="product in RENT_TRANSPORT"
           :key="product.id"
           :product_data="product"
-          :products_length="SPARE_PARTS.length"
-          :type_of_product="'spare-transport'"
+          :products_length="RENT_TRANSPORT.length"
+          :type_of_product="'rent-transport'"
         />
       </div>
       <div v-if="!filteredRents.length && isFilteredProductsFound">
@@ -114,8 +122,10 @@
   </main>
 </template>
 <script>
+import { resetFilter } from '@/utils'
 import { filterProducts } from '@/utils'
-import { getSelectOptions } from '@/api/requests'
+import { mapActions, mapGetters } from 'vuex'
+import { getSelectOptions, getFilteredProducts } from '@/api/requests'
 
 import VSelectStyled from '../v-select-styled.vue'
 import vHeader from '../generalComponents/v-header.vue'
@@ -130,12 +140,12 @@ export default {
       isFilteredProductsFound: false,
 
       form: {
-        operator: true,
-        time: 'За час',
-        model: '',
-        title: '',
-        price_min: '',
-        price_max: ''
+        operator: { value: 'True', default: 'True' },
+        time: { value: 'За час', default: 'За час' },
+        model: { value: '', default: '' },
+        title: { value: '', default: '' },
+        price_min: { value: '', default: '' },
+        price_max: { value: '', default: '' }
       },
       selects: {
         brand: {
@@ -156,71 +166,55 @@ export default {
     }
   },
   methods: {
-    getBrandOptions() {
-      getSelectOptions('brands').then((options) => {
-        this.selects.brand.options = options
-      })
+    ...mapActions(['GET_RENT_TRANSPORT_FROM_API']),
+    resetForm() {
+      resetFilter(this.form, this.$refs)
     },
-    onSubmit(e) {
-      e.preventDefault()
-      const queryURL = `http://api.rcarentacar.com/api/spare-parts/filter`
-      const filtered = filterProducts(queryURL, this.form)
-      this.filteredRents = filtered ? filtered : []
-    },
-    resetFilter() {
-      for (let key in this.form) {
-        this.form[key] = ''
-      }
-      for (let select_name in this.selects) {
-        /* this.$refs[select_name].resetOption() */
-      }
-    }
-
-    // Полный URL с фильтром
-    /*
-
-
-      // Выполняем запрос
-
-    /* setFiltersFromURL() {
+    setFiltersFromURL() {
       const queryParams = window.location.search
       if (queryParams) {
         const params = new URLSearchParams(queryParams)
         for (const [key, value] of params.entries()) {
           if (key in this.form) {
-            this.form[key] = value
+            this.form[key].value = value
+          } else if (key in this.selects) {
+            this.$refs[key].selectOption(value)
           }
         }
       }
     },
- */
-    /* onSubmit(e) {
-      e.preventDefault()
-
-      // Формируем объект с заполненными полями
-      const filledFields = Object.fromEntries(
-        Object.entries(this.form).filter(([_, value]) => value) // Убираем пустые значения
-      )
-
-      // Генерируем строку запроса
-      const queryParams = new URLSearchParams(filledFields).toString()
-
-      // Полный URL с фильтром
-      const queryURL = `http://api.rcarentacar.com/api/spare-parts/filter?${decodeURIComponent(queryParams)}`
-
-      window.location.search = decodeURIComponent(queryParams)
-      // Выполняем запрос
-      getFilteredProducts(queryURL).then((products) => {
-        if (products) {
-          this.filteredSpareParts = products
-          this.isFilteredProductsFound = true
-        }
+    getBrandOptions() {
+      getSelectOptions('brands').then((options) => {
+        this.selects.brand.options = options
       })
-    } */
+    },
+    setFilteredProducts() {
+      const queryParams = window.location.search
+      if (queryParams) {
+        getFilteredProducts(`http://api.rcarentacar.com/api/spare-parts/filter${queryParams}`).then(
+          (products) => {
+            this.filteredSpareParts = products || []
+            console.log(this.filteredSpareParts)
+            this.isFilteredProductsFound = true
+          }
+        )
+      }
+    },
+    onSubmit(e) {
+      e.preventDefault()
+      const queryURL = `http://api.rcarentacar.com/api/rent-transport/filter/`
+      const filtered = filterProducts(queryURL, this.form, this.$refs)
+      this.filteredRents = filtered ? filtered : []
+    }
   },
-  computed: {},
+  computed: {
+    ...mapGetters(['RENT_TRANSPORT'])
+  },
   mounted() {
     this.getBrandOptions()
+    this.setFiltersFromURL()
+    this.setFilteredProducts()
+    this.GET_RENT_TRANSPORT_FROM_API()
   }
 }
 </script>

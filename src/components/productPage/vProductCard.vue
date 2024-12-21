@@ -13,7 +13,7 @@
         <img v-if="productInFavourites" src="../../assets/images/favourites-on.svg" alt="" />
         Добавить в избранное
       </div>
-      <div class="product-card__button">
+      <div class="product-card__button" @click="compareProduct">
         <img src="../../assets/images/scales.svg" alt="" />
         Сравнить
       </div>
@@ -53,8 +53,21 @@
           <div class="product-card__location">
             <h2 class="product-title">Расположение</h2>
             <div class="product-card__block">
-              <p>{{ product_data.city }}, {{ product_data.address }}</p>
-              <div class="product-card__show-map button">Показать карту</div>
+              <div class="flex justify-between">
+                <div>
+                  <p v-if="product_data.city">{{ product_data.city }},</p>
+                  <p>{{ product_data.address }}</p>
+                </div>
+                <div
+                  class="product-card__show-map button flex gap-2"
+                  @click="mapShowed = !mapShowed"
+                >
+                  <p>Показать карту</p>
+                  <img v-if="!mapShowed" src="../../assets/images/arrow-down.svg" alt="" />
+                  <img v-if="mapShowed" src="../../assets/images/arrow-up.svg" alt="" />
+                </div>
+              </div>
+              <mapView v-if="mapShowed" :coordinates="coordinates" />
             </div>
           </div>
           <div class="product-card__description">
@@ -105,14 +118,13 @@
             Предложить бартер
             <p>На квартиру или участок</p>
           </button>
-          <div class="product-card__owner flex gap-4 mb-4">
-            <img src="" alt="profile" />
-            <div class="product-card__owner-info flex flex-col">
-              <a href="">{{ product_data.owner }}</a>
+          <div class="product-card__owner flex gap-4 mb-4" v-if="user && user.user_profile">
+            <img v-if="user.photo" :src="user.photo" alt="profile" />
+            <div v-if="user.user_profile.full_name" class="product-card__owner-info flex flex-col">
+              <a href="">{{ user.user_profile.full_name }}</a>
               Частное лицо
             </div>
           </div>
-          <a href="" class="owner-ads"> 3 объявления продавца </a>
         </div>
       </div>
       <div class="product-card__container mob">
@@ -151,8 +163,13 @@
           <div class="product-card__location">
             <h2 class="product-title">Расположение</h2>
             <div class="product-card__block">
-              <p>{{ product_data.city }}, {{ product_data.address }}</p>
-              <div class="product-card__show-map button">Показать карту</div>
+              <div class="flex">
+                <p>{{ product_data.city }}, {{ product_data.address }}</p>
+                <div class="product-card__show-map button" @click="mapShowed = !mapShowed">
+                  Показать карту
+                </div>
+              </div>
+              <mapView :coordinates="coordinates" />
             </div>
           </div>
           <div class="product-card__description">
@@ -229,16 +246,35 @@
       </div>
     </div>
   </div>
+  <div class="compare-win flex" :class="{ hidden: !isCompared }">
+    <div class="flex gap-2 items-center">
+      <img
+        v-if="product_data.images.length"
+        :src="product_data.images[0]['image']"
+        alt=""
+        class="compare-win__image"
+      />
+      <div class="compare-win__content gap-2">
+        <h3 class="compare-win__title">Товар добавлен к сравнению</h3>
+        <h3 class="compare-win__subtitle">В списке 5 объявлений</h3>
+      </div>
+    </div>
+    <router-link class="compare-win__link" :to="{ name: 'transport-compare' }"
+      >Перейти к списку</router-link
+    >
+  </div>
 </template>
 <script>
-import { getCurrency } from '@/api/requests'
+import { getUserId } from '@/utils'
 import prettyNum from '@/filters/prettyNum.js'
+import mapView from '../generalComponents/mapView.vue'
 import ProductCarousel from '../generalComponents/productCarousel.vue'
+import { addProductToCompare, getCurrency, getUserById } from '@/api/requests'
 
 export default {
   name: 'vProductCard',
   emits: ['toggleBarterModal'],
-  components: { ProductCarousel },
+  components: { ProductCarousel, mapView },
   props: {
     product_data: {
       type: Object
@@ -253,7 +289,11 @@ export default {
   data() {
     return {
       currency: '',
-      isPhoneShowed: false
+      isPhoneShowed: false,
+      mapShowed: false,
+      user: null,
+      isCompared: false,
+      coordinates: { lat: 51.505, lng: -0.09 }
     }
   },
   computed: {
@@ -267,10 +307,24 @@ export default {
   methods: {
     prettyNum,
     getCurrency,
+    setUser() {
+      getUserById(this.product_data.owner).then((user) => {
+        this.user = user
+        console.log(this.user)
+      })
+    },
     setCurrency() {
       getCurrency(this.product_data.currency).then((currency) => {
         console.log('Валюта', currency)
         this.currency = currency.currency
+      })
+    },
+    compareProduct() {
+      addProductToCompare(this.$route.params.id, getUserId()).then(() => {
+        this.isCompared = true
+        setTimeout(() => {
+          this.isCompared = false
+        }, 5000)
       })
     },
     maskNumber(number) {
@@ -282,8 +336,8 @@ export default {
     }
   },
   mounted() {
-    console.log(this.product_data.descriptions)
     this.setCurrency()
+    this.setUser()
   }
 }
 </script>

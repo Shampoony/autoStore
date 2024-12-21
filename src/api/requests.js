@@ -72,6 +72,41 @@ export async function getSelectOptions(title, name) {
     console.error(`Ошибка при получении ${title}:`, error)
   }
 }
+export async function getOptionsById(title, id) {
+  try {
+    const response = await fetch(`http://api.rcarentacar.com/api/transport/${title}/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
+
+    const responseData = await response.json()
+
+    /*  if (title == 'brands') {
+      for (let option of responseData.results) {
+        options.push({
+          id: option.id,
+          value: option['title'],
+          name: option['title']
+        })
+      }
+    } else {
+      for (let option of responseData.results) {
+        options.push({
+          id: option.id,
+          value: option[name],
+          name: option[name]
+        })
+      }
+    } */
+
+    return responseData
+  } catch (error) {
+    console.error(`Ошибка при получении ${title}:`, error)
+  }
+}
 
 export async function getCurrency(currencyId) {
   try {
@@ -269,6 +304,100 @@ export async function getCompanyById(companyId) {
   }
 }
 
+/* Сравнение */
+
+export async function getComparedProducts() {
+  try {
+    const response = await fetch(
+      `http://api.rcarentacar.com/api/transport/comparison-transports/`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`
+        }
+      }
+    )
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    const responseData = await response.json()
+    console.log(responseData)
+    return responseData
+  } catch (error) {
+    console.error('Ошибка при загрузке сообщений:', error)
+  }
+}
+export async function deleteComparedProduct(id) {
+  try {
+    const response = await fetch(
+      `http://api.rcarentacar.com/api/transport/comparison-transports/${id}/`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`
+        }
+      }
+    )
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    const responseData = await response.json()
+    console.log(responseData)
+    return responseData
+  } catch (error) {
+    console.error('Ошибка при загрузке сообщений:', error)
+  }
+}
+
+export async function addProductToCompare(transport_id, owner) {
+  console.log(JSON.stringify({ transport: transport_id, owner: owner }))
+  try {
+    const response = await fetch(
+      `http://api.rcarentacar.com/api/transport/comparison-transports/`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`
+        },
+        body: JSON.stringify({ transport: transport_id, owner: owner })
+      }
+    )
+    if (!response.ok) {
+      throw new Error('Ошибка полчения данных о компании')
+    }
+
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.error('Ошибка при получении данных о компании:', error)
+  }
+}
+
+export async function getTransportById(transport_id) {
+  try {
+    const response = await fetch(
+      `http://api.rcarentacar.com/api/transport/transports/${transport_id}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`
+        }
+      }
+    )
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    const responseData = await response.json()
+    console.log(responseData)
+    return responseData
+  } catch (error) {
+    console.error('Ошибка при загрузке траспорта:', error)
+  }
+}
 /* Чат */
 
 export async function fetchChatMessages(chatId, url = null) {
@@ -329,4 +458,31 @@ export async function fetchChatById(chatId) {
   } catch (error) {
     console.error('Ошибка при загрузке чата:', error)
   }
+}
+
+export async function filterProducts(url, form, selectsRefs) {
+  const filledFields = Object.fromEntries(
+    Object.entries(form)
+      .filter(([_, field]) => field.value) // Оставляем поля, у которых value не пустое
+      .map(([key, field]) => [key, field.value]) // Разворачиваем объект { value, default } -> value
+  )
+  console.log('Зашли', filledFields)
+
+  // Дополняем filledFields значениями из selectsRefs
+  for (let select in selectsRefs) {
+    if (selectsRefs[select].selectedValue) {
+      filledFields[selectsRefs[select].options.name] = selectsRefs[select].selectedValue
+    }
+  }
+
+  const queryParams = new URLSearchParams(filledFields).toString()
+  const queryURL = `${url}?${decodeURIComponent(queryParams)}`
+
+  console.log('Запрос:', queryURL)
+
+  // Дожидаемся ответа от сервера
+  const products = await getFilteredProducts(queryURL)
+  console.log('Полученные продукты:', products)
+
+  return products // Возвращаем полученные данные
 }

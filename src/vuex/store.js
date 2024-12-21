@@ -16,26 +16,32 @@ import sparePartsGetters from './getters/sparePartsGetters'
 import sparePartsMutations from './mutations/sparePartsMutations'
 import sparePartsApiActions from './actions/Spare-parts/sparePartsApiActions'
 
+/* Аренда */
+import rentActions from './actions/Rent/rentActions'
+import rentMutations from './mutations/rentMutations'
+import rentGetters from './getters/rentGetters'
+
 const allActions = {
-  ...commandActions,
   ...apiActions,
-  ...sparePartsApiActions,
-  ...generalActions
+  ...rentActions,
+  ...commandActions,
+  ...generalActions,
+  ...sparePartsApiActions
 }
 
 const allMutations = {
-  ...sparePartsMutations,
+  ...mutations,
+  ...rentMutations,
   ...transportMutations,
-  ...mutations
+  ...sparePartsMutations
 }
 
 const allGetters = {
-  ...sparePartsGetters,
+  ...getters,
+  ...rentGetters,
   ...transportGetters,
-  ...getters
+  ...sparePartsGetters
 }
-
-console.log(allGetters)
 
 let store = createStore({
   state: {
@@ -43,6 +49,7 @@ let store = createStore({
     companies: {
       transport: []
     },
+    rent_transport: [],
     products: {
       transport: [],
       spare_parts: []

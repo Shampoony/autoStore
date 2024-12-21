@@ -1,76 +1,75 @@
 <template>
-  <div class="v-product">
-    <swiper
-      ref="swiperRef"
-      class="v-product__images"
-      @mouseover="isPagination = true"
-      @mouseleave="isPagination = false"
-      :slides-per-view="1"
-      :space-between="0"
-      :pagination="isPagination"
-      :modules="modules"
-    >
-      <swiper-slide v-for="image in getImages" :key="image.id">
-        <img :src="image.image" class="v-product__image" alt="product" />
-        <img :src="image.image" class="product-image-overlay" alt="product" />
-      </swiper-slide>
-      <swiper-slide v-if="checkImagesLength">
-        <img :src="getImages[0]?.image || 'default-image-path.jpg'" alt="product" />
-        <a href="#!" class="last-slide__overlay flex items-center justify-center">
-          <span>Ещё {{ countOfImages }} фото</span>
-        </a>
-      </swiper-slide>
-    </swiper>
+  <router-link :to="{ name: 'transport-item', params: { id: product_data.id } }">
+    <div class="v-product">
+      <swiper
+        ref="swiperRef"
+        class="v-product__images"
+        @mouseover="isPagination = true"
+        @mouseleave="isPagination = false"
+        :slides-per-view="1"
+        :space-between="0"
+        :pagination="isPagination"
+        :modules="modules"
+      >
+        <swiper-slide v-for="image in getImages" :key="image.id">
+          <img :src="image.image" class="v-product__image" alt="product" />
+          <img :src="image.image" class="product-image-overlay" alt="product" />
+        </swiper-slide>
+        <swiper-slide v-if="checkImagesLength">
+          <img :src="getImages[0]?.image || 'default-image-path.jpg'" alt="product" />
+          <a href="#!" class="last-slide__overlay flex items-center justify-center">
+            <span>Ещё {{ countOfImages }} фото</span>
+          </a>
+        </swiper-slide>
+      </swiper>
 
-    <div class="v-product__content">
-      <div class="v-product__block flex justify-between">
-        <div class="v-product__price flex items-center" :class="{ vip: product_data.vip }">
-          {{ prettyNum(product_data.price) }} {{ currency }}
-        </div>
-        <img
-          @click="toggleToFavourites"
-          v-if="!productInFavourites"
-          src="../../assets/images/favourites.svg"
-          alt=""
-        />
-        <img
-          @click="toggleToFavourites"
-          v-if="productInFavourites"
-          src="../../assets/images/favourites-on.svg"
-          alt=""
-        />
-      </div>
-      <div class="v-product__block">
-        <router-link
-          class="v-product__title"
-          :to="{ name: 'transport-item', params: { id: product_data.id } }"
-        >
-          {{ product_data.title }}
-        </router-link>
-      </div>
-      <div class="v-product__block">
-        <div class="v-product__description flex">
-          <div v-if="product_data.year_of_release">{{ product_data.year_of_release }}г</div>
-          <div v-if="product_data.engine_volume">
-            , {{ prettyNum(product_data.engine_volume) }}л
+      <div class="v-product__content">
+        <div class="v-product__block flex justify-between">
+          <div class="v-product__price flex items-center" :class="{ vip: product_data.vip }">
+            {{ prettyNum(product_data.price) }} {{ currency }}
           </div>
-          <div v-if="product_data.mileage">, {{ product_data.mileage }}км</div>
+          <img
+            @click="toggleToFavourites"
+            v-if="!productInFavourites"
+            src="../../assets/images/favourites.svg"
+            alt=""
+          />
+          <img
+            @click="toggleToFavourites"
+            v-if="productInFavourites"
+            src="../../assets/images/favourites-on.svg"
+            alt=""
+          />
         </div>
-      </div>
-      <div class="v-product__block">
-        <div class="v-product__location flex gap-2">
-          <div v-if="product_data.city">{{ product_data.city }}</div>
-          <div v-if="product_data.created_at">
-            {{ formattedDateTime.date }} {{ formattedDateTime.time }}
+        <div class="v-product__block">
+          <p class="v-product__title">
+            {{ product_data.title }}
+          </p>
+        </div>
+        <div class="v-product__block">
+          <div class="v-product__description flex">
+            <div v-if="product_data.year_of_release">{{ product_data.year_of_release }}г</div>
+            <div v-if="product_data.engine_volume">
+              , {{ prettyNum(product_data.engine_volume) }}л
+            </div>
+            <div v-if="product_data.mileage">, {{ product_data.mileage }}км</div>
+          </div>
+        </div>
+        <div class="v-product__block">
+          <div class="v-product__location flex gap-2">
+            <div v-if="product_data.city">{{ product_data.city }},</div>
+            <div v-if="product_data.created_at">
+              {{ formattedDateTime.time }}
+            </div>
           </div>
         </div>
       </div>
+      <div v-if="product_data.is_viewed" class="v-product__viewed">Просмотрено</div>
+      <div v-if="product_data.company" class="v-product__mark flex items-center justify-center">
+        Салон
+      </div>
     </div>
-    <div v-if="product_data.is_viewed" class="v-product__viewed">Просмотрено</div>
-    <div v-if="product_data.company" class="v-product__mark flex items-center justify-center">
-      Салон
-    </div>
-  </div>
+  </router-link>
 </template>
 
 <script>
@@ -172,9 +171,11 @@ export default {
   methods: {
     prettyNum,
     setCurrency() {
-      getCurrency(this.product_data.currency).then((currency) => {
-        this.currency = currency.currency
-      })
+      if (this.product_data.currency) {
+        getCurrency(this.product_data.currency).then((currency) => {
+          this.currency = currency.currency
+        })
+      }
     },
     toggleToFavourites() {
       if (!this.productInFavourites) {

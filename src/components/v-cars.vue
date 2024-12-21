@@ -859,7 +859,6 @@ export default {
     },
     toggleFilterMenu() {
       this.filterMenuOpen = !this.filterMenuOpen
-      console.log('Звшли', this.filterMenuOpen)
     },
     onSubmit(e) {
       e.preventDefault()

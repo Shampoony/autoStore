@@ -1,0 +1,388 @@
+<template>
+  <vHeader class="alt" />
+  <v-header-alt />
+  <main class="v-compare">
+    <div class="v-compare__container container">
+      <h1 class="v-compare__title">Список сравнения</h1>
+      <div class="v-compare__wrapper">
+        <!-- Слайдер продуктов -->
+        <swiper
+          ref="swiperRef"
+          class="v-compare__products"
+          :slides-per-view="4"
+          :space-between="10"
+          @swiper="onProductsSwiperInit"
+          @slideChange="onProductSlideChange"
+          :breakpoints="{
+            320: { slidesPerView: 2 },
+            920: { slidesPerView: 3 },
+            1200: { slidesPerView: 4 }
+          }"
+          v-if="comparedProducts"
+        >
+          <swiper-slide
+            class="v-compare__item"
+            v-for="product in comparedProducts"
+            :key="product.id"
+          >
+            <v-product
+              :product_data="product"
+              :products_length="comparedProducts.length"
+              :type_of_product="'transport'"
+            />
+            <img class="v-compare__item-delete" src="../../assets/images/trash.svg" alt="" />
+          </swiper-slide>
+        </swiper>
+        <div class="v-compare__button flex gap-2">
+          <label class="switch">
+            <input type="checkbox" v-model="isChecked" @change="onChangeStatus" />
+            <span class="slider"></span>
+          </label>
+          <span class="label-text">Показать только отличия</span>
+        </div>
+        <!-- Слайдер характеристик -->
+        <swiper
+          ref="optionsSwiperRef"
+          class="v-compare__options"
+          :slides-per-view="4"
+          :space-between="10"
+          @slideChange="onOptionsSlideChange"
+          @swiper="onOptionsSwiperInit"
+          :breakpoints="{
+            320: { slidesPerView: 2 },
+            920: { slidesPerView: 3 },
+            1200: { slidesPerView: 4 }
+          }"
+          v-if="comparedProducts"
+        >
+          <swiper-slide v-for="product in comparedProducts" :key="product.id">
+            <div class="compare-options">
+              <div
+                class="compare-options__item"
+                :class="{ hidden: product[`hide_title`] && isChecked }"
+                v-if="product.title"
+              >
+                <p class="compare-options__item-title">Марка</p>
+                <span class="compare-options__item-option">{{ product.title }}</span>
+              </div>
+              <div
+                class="compare-options__item"
+                :class="{ hidden: product[`hide_model`] && isChecked }"
+                v-if="product.model"
+              >
+                <p class="compare-options__item-title">Модель</p>
+                <span class="compare-options__item-option">{{ product.model }}</span>
+              </div>
+              <div
+                class="compare-options__item"
+                :class="{ hidden: product[`hide_year`] && isChecked }"
+                v-if="product.year_of_release"
+              >
+                <p class="compare-options__item-title">Год</p>
+                <span class="compare-options__item-option">{{ product.year_of_release }}</span>
+              </div>
+              <div
+                class="compare-options__item"
+                :class="{ hidden: product[`hide_body`] && isChecked }"
+                v-if="product.body_type"
+              >
+                <p class="compare-options__item-title">Тип кузова</p>
+                <span class="compare-options__item-option">{{
+                  optionsCache[`body-type-${product.body_type}`]?.body_type || 'Загрузка...'
+                }}</span>
+              </div>
+              <div
+                class="compare-options__item"
+                :class="{ hidden: product[`hide_color`] && isChecked }"
+                v-if="product.color"
+              >
+                <p class="compare-options__item-title">Цвет</p>
+                <span class="compare-options__item-option">
+                  {{ optionsCache[`color-${product.color}`]?.color || 'Загрузка...' }}
+                </span>
+              </div>
+              <div
+                class="compare-options__item"
+                :class="{ hidden: product[`hide_engine`] && isChecked }"
+                v-if="product.engine_volume && product.engine_type"
+              >
+                <p class="compare-options__item-title">Двигатель</p>
+                <span class="compare-options__item-option">
+                  <span v-if="product.engine_volume">{{ product.engine_volume }}л</span>
+                  <span v-if="product.engine_volume && product.engine_type">/</span>
+                  <span v-if="product.engine_type">{{
+                    optionsCache[`engine-type-${product.engine_type}`]?.engine_type || 'Загрузка...'
+                  }}</span>
+                </span>
+              </div>
+              <div
+                class="compare-options__item"
+                :class="{ hidden: product[`hide_mileage`] && isChecked }"
+                v-if="product.mileage"
+              >
+                <p class="compare-options__item-title">Пробег</p>
+                <span class="compare-options__item-option">{{ product.mileage }}</span>
+              </div>
+              <div
+                class="compare-options__item"
+                :class="{ hidden: product[`hide_transmission`] && isChecked }"
+                v-if="product.transmission"
+              >
+                <p class="compare-options__item-title">Коробка передач</p>
+                <span class="compare-options__item-option">{{
+                  optionsCache[`transmission-${product.transmission}`]?.transmission ||
+                  'Загрузка...'
+                }}</span>
+              </div>
+              <div
+                class="compare-options__item"
+                :class="{ hidden: product[`hide_drive`] && isChecked }"
+                v-if="product.drive"
+              >
+                <p class="compare-options__item-title">Привод</p>
+                <span class="compare-options__item-option">{{
+                  optionsCache[`drive-${product.drive}`]?.drive || 'Загрузка...'
+                }}</span>
+              </div>
+              <div
+                class="compare-options__item"
+                :class="{ hidden: product[`hide_owners`] && isChecked }"
+                v-if="product.owners_count"
+              >
+                <p class="compare-options__item-title">Владельцы</p>
+                <span class="compare-options__item-option">{{ product.owners_count }}</span>
+              </div>
+              <div
+                class="compare-options__item"
+                :class="{ hidden: product[`hide_condition`] && isChecked }"
+                v-if="product.condition"
+              >
+                <p class="compare-options__item-title">Состояние</p>
+                <span class="compare-options__item-option">
+                  {{ optionsCache[`condition-${product.condition}`]?.condition || 'Загрузка...' }}
+                </span>
+              </div>
+              <div
+                class="compare-options__item"
+                :class="{ hidden: product[`hide_market_version`] && isChecked }"
+                v-if="product.market_version"
+              >
+                <p class="compare-options__item-title">Версия для рынка</p>
+                <span class="compare-options__item-option">{{
+                  optionsCache[`market-version-${product.market_version}`]?.market_version ||
+                  'Загрузка...'
+                }}</span>
+              </div>
+            </div>
+          </swiper-slide>
+        </swiper>
+      </div>
+    </div>
+  </main>
+  <v-bottom-menu :activeItem="'main'" />
+</template>
+
+<script>
+import { mapActions, mapGetters } from 'vuex'
+import { getOptionsById } from '@/api/requests'
+import { Swiper, SwiperSlide } from 'swiper/vue'
+import { getComparedProducts, getTransportById } from '@/api/requests'
+
+import 'swiper/swiper-bundle.css'
+
+import vHeader from '../generalComponents/v-header.vue'
+import vProduct from '../generalComponents/v-product.vue'
+import vHeaderAlt from '../generalComponents/v-header-alt.vue'
+import VBottomMenu from '../generalComponents/v-bottom-menu.vue'
+export default {
+  name: 'vCompare',
+  components: { vHeader, VBottomMenu, Swiper, SwiperSlide, vProduct, vHeaderAlt },
+  data() {
+    return {
+      optionsSwiper: null,
+      productsSwiper: null,
+      comparedProducts: [],
+      optionsCache: {},
+      accessableNames: [
+        'body-type',
+        'color',
+        'engine-type',
+        'transmission',
+        'drive',
+        'condition',
+        'market-version'
+      ],
+      isChecked: false // Состояние переключателя
+    }
+  },
+  methods: {
+    onChangeStatus() {
+      if (this.isChecked) {
+        console.log('Зашли')
+        // Определяем все свойства для сравнения
+        const keysToCompare = [
+          'title',
+          'model',
+          'year_of_release',
+          'body_type',
+          'color',
+          'engine_volume',
+          'engine_type',
+          'mileage',
+          'transmission',
+          'drive',
+          'owners_count',
+          'condition',
+          'market_version'
+        ]
+
+        // Сравниваем значения этих свойств между всеми продуктами
+        keysToCompare.forEach((key) => {
+          const uniqueValues = new Set(this.TRANSPORT_PRODUCTS.map((product) => product[key]))
+          this.TRANSPORT_PRODUCTS.forEach((product) => {
+            if (uniqueValues.size === 1) {
+              // Если значение одинаковое у всех продуктов, удаляем его
+              product[`hide_${key}`] = true
+            } else {
+              product[`hide_${key}`] = false
+            }
+            console.log(product)
+          })
+        })
+      } else {
+        // Сбрасываем скрытые свойства, если переключатель выключен
+        this.TRANSPORT_PRODUCTS.forEach((product) => {
+          Object.keys(product).forEach((key) => {
+            if (key.startsWith('hide_')) {
+              product[key] = false
+            }
+          })
+        })
+      }
+    },
+    onOptionsSwiperInit(swiper) {
+      this.optionsSwiper = swiper
+    },
+    onProductsSwiperInit(swiper) {
+      console.log(swiper)
+      this.productsSwiper = swiper
+    },
+    ...mapActions(['GET_TRANSPORT_PRODUCTS_FROM_API']),
+    onProductSlideChange() {
+      if (this.optionsSwiper) {
+        const activeIndex = this.productsSwiper.activeIndex
+        this.optionsSwiper.slideTo(activeIndex)
+      }
+    },
+    async setOptions(title, id) {
+      if (!this.optionsCache[`${title}-${id}`]) {
+        // Проверка на наличие ключа в optionsCache
+        try {
+          const name = await getOptionsById(title, id)
+          this.optionsCache[`${title}-${id}`] = name // Обновление optionsCache с помощью $set
+        } catch (error) {
+          console.error('Error fetching data for', `${title}-${id}`, error)
+        }
+      }
+    },
+    onOptionsSlideChange() {
+      // Синхронизация первого слайдера
+      if (this.productsSwiper) {
+        const activeIndex = this.optionsSwiper.activeIndex
+        this.productsSwiper.slideTo(activeIndex)
+      }
+    },
+    setComparedProducts() {
+      console.log('В функции')
+      getComparedProducts().then((products) => {
+        if (products) {
+          console.log('В условии')
+          for (let product of products.results) {
+            getTransportById(product.transport).then((transport) => {
+              if (this.comparedProducts <= 1) {
+                this.comparedProducts.push(transport)
+              }
+            })
+          }
+        }
+        console.log('Вышли из цикла и условия')
+        console.log(this.comparedProducts)
+      })
+    },
+    async loadData() {
+      await this.GET_TRANSPORT_PRODUCTS_FROM_API()
+    }
+  },
+  computed: {
+    ...mapGetters(['TRANSPORT_PRODUCTS'])
+  },
+  async mounted() {
+    await this.loadData()
+    this.TRANSPORT_PRODUCTS.forEach(async (product) => {
+      for (let name of this.accessableNames) {
+        if (product[name.replace('-', '_')]) {
+          await this.setOptions(name, product[name.replace('-', '_')])
+        }
+      }
+    })
+    this.setComparedProducts()
+  }
+}
+</script>
+<style scoped>
+.toggle-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 20px;
+}
+
+.slider:before {
+  position: absolute;
+  content: '';
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #2196f3;
+}
+
+input:checked + .slider:before {
+  transform: translateX(14px);
+}
+
+.label-text {
+  font-size: 14px;
+  color: #333;
+}
+</style>

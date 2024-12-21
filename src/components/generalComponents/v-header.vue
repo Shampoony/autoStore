@@ -34,7 +34,10 @@
               >Регистрация</router-link
             >
             <li class="menu__list-item cabinet-link" v-if="user">
-              <span class="cabinet-link__title" @click="isCabinetActive = !isCabinetActive"
+              <span
+                class="cabinet-link__title"
+                :class="{ selected: isCabinetActive }"
+                @click="isCabinetActive = !isCabinetActive"
                 >Кабинет</span
               >
               <div class="cabinet-link__container" :class="{ active: isCabinetActive }">
