@@ -68,51 +68,56 @@
               <div
                 class="compare-options__item"
                 :class="{ hidden: product[`hide_title`] && isChecked }"
-                v-if="product.title"
               >
                 <p class="compare-options__item-title">Марка</p>
-                <span class="compare-options__item-option">{{ product.title }}</span>
+                <span v-if="product.title" class="compare-options__item-option">{{
+                  product.title
+                }}</span>
+                <span v-else class="compare-options__item-option">-</span>
               </div>
               <div
                 class="compare-options__item"
                 :class="{ hidden: product[`hide_model`] && isChecked }"
-                v-if="product.model"
               >
                 <p class="compare-options__item-title">Модель</p>
-                <span class="compare-options__item-option">{{ product.model }}</span>
+                <span v-if="product.model" class="compare-options__item-option">
+                  {{ product.model }}
+                </span>
+                <span v-else class="compare-options__item-option">-</span>
               </div>
               <div
                 class="compare-options__item"
                 :class="{ hidden: product[`hide_year`] && isChecked }"
-                v-if="product.year_of_release"
               >
                 <p class="compare-options__item-title">Год</p>
-                <span class="compare-options__item-option">{{ product.year_of_release }}</span>
+                <span v-if="product.year_of_release" class="compare-options__item-option">{{
+                  product.year_of_release
+                }}</span>
+                <span v-else class="compare-options__item-option">-</span>
               </div>
               <div
                 class="compare-options__item"
                 :class="{ hidden: product[`hide_body`] && isChecked }"
-                v-if="product.body_type"
               >
                 <p class="compare-options__item-title">Тип кузова</p>
-                <span class="compare-options__item-option">{{
+                <span v-if="product.body_type" class="compare-options__item-option">{{
                   optionsCache[`body-type-${product.body_type}`]?.body_type || 'Загрузка...'
                 }}</span>
+                <span v-else class="compare-options__item-option">-</span>
               </div>
               <div
                 class="compare-options__item"
                 :class="{ hidden: product[`hide_color`] && isChecked }"
-                v-if="product.color"
               >
                 <p class="compare-options__item-title">Цвет</p>
-                <span class="compare-options__item-option">
+                <span v-if="product.color" class="compare-options__item-option">
                   {{ optionsCache[`color-${product.color}`]?.color || 'Загрузка...' }}
                 </span>
+                <span v-else class="compare-options__item-option">-</span>
               </div>
               <div
                 class="compare-options__item"
                 :class="{ hidden: product[`hide_engine`] && isChecked }"
-                v-if="product.engine_volume && product.engine_type"
               >
                 <p class="compare-options__item-title">Двигатель</p>
                 <span class="compare-options__item-option">
@@ -126,60 +131,64 @@
               <div
                 class="compare-options__item"
                 :class="{ hidden: product[`hide_mileage`] && isChecked }"
-                v-if="product.mileage"
               >
                 <p class="compare-options__item-title">Пробег</p>
-                <span class="compare-options__item-option">{{ product.mileage }}</span>
+                <span v-if="product.mileage" class="compare-options__item-option">{{
+                  product.mileage
+                }}</span>
+                <span v-else class="compare-options__item-option">-</span>
               </div>
               <div
                 class="compare-options__item"
                 :class="{ hidden: product[`hide_transmission`] && isChecked }"
-                v-if="product.transmission"
               >
                 <p class="compare-options__item-title">Коробка передач</p>
-                <span class="compare-options__item-option">{{
+                <span v-if="product.transmission" class="compare-options__item-option">{{
                   optionsCache[`transmission-${product.transmission}`]?.transmission ||
                   'Загрузка...'
                 }}</span>
+                <span v-else class="compare-options__item-option">-</span>
               </div>
               <div
                 class="compare-options__item"
                 :class="{ hidden: product[`hide_drive`] && isChecked }"
-                v-if="product.drive"
               >
                 <p class="compare-options__item-title">Привод</p>
-                <span class="compare-options__item-option">{{
+                <span v-if="product.drive" class="compare-options__item-option">{{
                   optionsCache[`drive-${product.drive}`]?.drive || 'Загрузка...'
                 }}</span>
+                <span v-else class="compare-options__item-option">-</span>
               </div>
               <div
                 class="compare-options__item"
                 :class="{ hidden: product[`hide_owners`] && isChecked }"
-                v-if="product.owners_count"
               >
                 <p class="compare-options__item-title">Владельцы</p>
-                <span class="compare-options__item-option">{{ product.owners_count }}</span>
+                <span v-if="product.owners_count" class="compare-options__item-option">{{
+                  product.owners_count
+                }}</span>
+                <span v-else class="compare-options__item-option">-</span>
               </div>
               <div
                 class="compare-options__item"
                 :class="{ hidden: product[`hide_condition`] && isChecked }"
-                v-if="product.condition"
               >
                 <p class="compare-options__item-title">Состояние</p>
-                <span class="compare-options__item-option">
+                <span v-if="product.condition" class="compare-options__item-option">
                   {{ optionsCache[`condition-${product.condition}`]?.condition || 'Загрузка...' }}
                 </span>
+                <span v-else class="compare-options__item-option">-</span>
               </div>
               <div
                 class="compare-options__item"
                 :class="{ hidden: product[`hide_market_version`] && isChecked }"
-                v-if="product.market_version"
               >
                 <p class="compare-options__item-title">Версия для рынка</p>
-                <span class="compare-options__item-option">{{
+                <span v-if="product.market_version" class="compare-options__item-option">{{
                   optionsCache[`market-version-${product.market_version}`]?.market_version ||
                   'Загрузка...'
                 }}</span>
+                <span v-else class="compare-options__item-option">-</span>
               </div>
             </div>
           </swiper-slide>
