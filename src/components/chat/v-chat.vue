@@ -18,7 +18,11 @@
               <div class="chat-item__info flex gap-6">
                 <div class="chat-item__img avatar">
                   <div class="avatar__img-author">
-                    <!--   <img src="" alt="" /> -->
+                    <img
+                      v-if="usersPhoto[getUser2Id(chat)]"
+                      :src="usersPhoto[getUser2Id(chat)]"
+                      alt=""
+                    />
                   </div>
                   <div class="avatar__online" :class="{ online: isUserOnline(chat) }">
                     <!--    <img src="" alt="" /> -->
@@ -54,7 +58,8 @@ export default {
   data() {
     return {
       chats: [],
-      users: {}
+      users: {},
+      usersPhoto: {}
     }
   },
   computed: {
@@ -63,17 +68,17 @@ export default {
     }
   },
   methods: {
-    setChats() {
-      fetchChats().then((chats) => {
-        this.chats = chats
-        console.log(chats)
-      })
+    async setChats() {
+      const chats = await fetchChats()
+      this.chats = chats
+      console.log(chats)
     },
     isUserOnline(chat) {
       getUserById(this.getUser2Id(chat)).then((userInfo) => {
         return userInfo.is_online
       })
     },
+
     getName(chat) {
       if (chat.user1 != this.userId) {
         return chat.user1_name
@@ -86,12 +91,24 @@ export default {
       }
       return chat.user2
     },
+
     setPrettyDate(timestamp) {
       return getPrettyDate(timestamp)
+    },
+    getUsersPhoto() {
+      for (let chat of this.chats) {
+        getUserById(this.getUser2Id(chat)).then((userInfo) => {
+          this.usersPhoto[this.getUser2Id(chat)] = userInfo.photo
+        })
+      }
+    },
+    async loadData() {
+      await this.setChats()
     }
   },
-  mounted() {
-    this.setChats()
+  async mounted() {
+    await this.loadData()
+    this.getUsersPhoto()
   }
 }
 </script>
