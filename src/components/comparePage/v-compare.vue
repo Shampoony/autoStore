@@ -2,7 +2,7 @@
   <vHeader class="alt" />
   <v-header-alt />
   <main class="v-compare">
-    <div class="v-compare__container container">
+    <div class="v-compare__container container" v-if="comparedProducts.length">
       <h1 class="v-compare__title">Список сравнения</h1>
       <div class="v-compare__wrapper">
         <!-- Слайдер продуктов -->
@@ -18,6 +18,8 @@
             920: { slidesPerView: 3 },
             1200: { slidesPerView: 4 }
           }"
+          :navigation="true"
+          :modules="modules"
           v-if="comparedProducts"
         >
           <swiper-slide
@@ -30,9 +32,15 @@
               :products_length="comparedProducts.length"
               :type_of_product="'transport'"
             />
-            <img class="v-compare__item-delete" src="../../assets/images/trash.svg" alt="" />
+            <img
+              class="v-compare__item-delete"
+              src="../../assets/images/trash.svg"
+              alt=""
+              @click="deleteCompared(product.id)"
+            />
           </swiper-slide>
         </swiper>
+
         <div class="v-compare__button flex gap-2">
           <label class="switch">
             <input type="checkbox" v-model="isChecked" @change="onChangeStatus" />
@@ -178,16 +186,19 @@
         </swiper>
       </div>
     </div>
+    <div v-else class="container">
+      <h1 class="notFound">Для сравнения не было добавлено товаров</h1>
+    </div>
   </main>
   <v-bottom-menu :activeItem="'main'" />
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import { getOptionsById } from '@/api/requests'
+import { deleteComparedProduct, getOptionsById } from '@/api/requests'
 import { Swiper, SwiperSlide } from 'swiper/vue'
+import { Navigation } from 'swiper/modules'
 import { getComparedProducts, getTransportById } from '@/api/requests'
-
 import 'swiper/swiper-bundle.css'
 
 import vHeader from '../generalComponents/v-header.vue'
@@ -203,6 +214,7 @@ export default {
       productsSwiper: null,
       comparedProducts: [],
       optionsCache: {},
+      transportCache: {},
       accessableNames: [
         'body-type',
         'color',
@@ -216,6 +228,12 @@ export default {
     }
   },
   methods: {
+    deleteCompared(id) {
+      const compareId = this.transportCache[id]
+      deleteComparedProduct(compareId).then(() => {
+        this.comparedProducts = this.comparedProducts.filter((product) => product.id != id)
+      })
+    },
     onChangeStatus() {
       if (this.isChecked) {
         console.log('Зашли')
@@ -238,8 +256,8 @@ export default {
 
         // Сравниваем значения этих свойств между всеми продуктами
         keysToCompare.forEach((key) => {
-          const uniqueValues = new Set(this.TRANSPORT_PRODUCTS.map((product) => product[key]))
-          this.TRANSPORT_PRODUCTS.forEach((product) => {
+          const uniqueValues = new Set(this.comparedProducts.map((product) => product[key]))
+          this.comparedProducts.forEach((product) => {
             if (uniqueValues.size === 1) {
               // Если значение одинаковое у всех продуктов, удаляем его
               product[`hide_${key}`] = true
@@ -251,7 +269,7 @@ export default {
         })
       } else {
         // Сбрасываем скрытые свойства, если переключатель выключен
-        this.TRANSPORT_PRODUCTS.forEach((product) => {
+        this.comparedProducts.forEach((product) => {
           Object.keys(product).forEach((key) => {
             if (key.startsWith('hide_')) {
               product[key] = false
@@ -292,40 +310,43 @@ export default {
         this.productsSwiper.slideTo(activeIndex)
       }
     },
-    setComparedProducts() {
-      console.log('В функции')
-      getComparedProducts().then((products) => {
-        if (products) {
-          console.log('В условии')
-          for (let product of products.results) {
-            getTransportById(product.transport).then((transport) => {
-              if (this.comparedProducts <= 1) {
-                this.comparedProducts.push(transport)
-              }
-            })
-          }
+    async setComparedProducts() {
+      const products = await getComparedProducts()
+      let productsArray = []
+      if (products) {
+        for (let product of products.results) {
+          const transport = await getTransportById(product.transport)
+          this.transportCache[transport.id] = product.id
+          productsArray.push(transport)
         }
-        console.log('Вышли из цикла и условия')
-        console.log(this.comparedProducts)
-      })
+        this.comparedProducts = productsArray
+      }
+      console.log(this.comparedProducts)
     },
     async loadData() {
       await this.GET_TRANSPORT_PRODUCTS_FROM_API()
+      await this.setComparedProducts()
     }
   },
+
   computed: {
     ...mapGetters(['TRANSPORT_PRODUCTS'])
   },
   async mounted() {
     await this.loadData()
-    this.TRANSPORT_PRODUCTS.forEach(async (product) => {
+
+    this.comparedProducts.forEach(async (product) => {
       for (let name of this.accessableNames) {
         if (product[name.replace('-', '_')]) {
           await this.setOptions(name, product[name.replace('-', '_')])
         }
       }
     })
+    console.log(this.comparedProducts)
     this.setComparedProducts()
+  },
+  setup() {
+    return { modules: [Navigation] }
   }
 }
 </script>
