@@ -61,13 +61,15 @@
                 <div
                   class="product-card__show-map button flex gap-2"
                   @click="mapShowed = !mapShowed"
+                  v-if="coordinates"
                 >
                   <p>Показать карту</p>
                   <img v-if="!mapShowed" src="../../assets/images/arrow-down.svg" alt="" />
                   <img v-if="mapShowed" src="../../assets/images/arrow-up.svg" alt="" />
                 </div>
               </div>
-              <mapView v-if="mapShowed" :coordinates="coordinates" />
+
+              <mapView v-if="coordinates && mapShowed" :coordinates="coordinates" />
             </div>
           </div>
           <div class="product-card__description">
@@ -164,12 +166,19 @@
             <h2 class="product-title">Расположение</h2>
             <div class="product-card__block">
               <div class="flex">
-                <p>{{ product_data.city }}, {{ product_data.address }}</p>
-                <div class="product-card__show-map button" @click="mapShowed = !mapShowed">
+                <div>
+                  <p v-if="product_data.city">{{ product_data.city }},</p>
+                  <p>{{ product_data.address }}</p>
+                </div>
+                <div
+                  class="product-card__show-map button"
+                  @click="mapShowed = !mapShowed"
+                  v-if="coordinates"
+                >
                   Показать карту
                 </div>
               </div>
-              <mapView :coordinates="coordinates" />
+              <mapView v-if="coordinates && mapShowed" :coordinates="coordinates" />
             </div>
           </div>
           <div class="product-card__description">
@@ -187,10 +196,10 @@
               </div>
             </div>
           </div>
-          <div class="product-card__owner flex gap-4 my-4">
-            <img src="" alt="profile" />
-            <div class="product-card__owner-info flex flex-col">
-              <a href="">{{ product_data.owner }}</a>
+          <div class="product-card__owner flex gap-4 mb-4" v-if="user && user.user_profile">
+            <img v-if="user.photo" :src="user.photo" alt="profile" />
+            <div v-if="user.user_profile.full_name" class="product-card__owner-info flex flex-col">
+              <a href="">{{ user.user_profile.full_name }}</a>
               Частное лицо
             </div>
           </div>
@@ -199,8 +208,8 @@
             <div class="flex gap-2">Просмотров: {{ this.product_data.views }}</div>
             <div class="flex gap-2">Номер объявления: {{ this.product_data.id }}</div>
           </div>
-          <div class="flex gap-2">
-            <div class="product-card__button">
+          <div class="flex gap-2 product-card__mob-buttons">
+            <div class="product-card__button" @click="compareProduct">
               <img src="../../assets/images/scales.svg" alt="" />
               Сравнить
             </div>
@@ -255,8 +264,8 @@
         class="compare-win__image"
       />
       <div class="compare-win__content gap-2">
-        <h3 class="compare-win__title">Товар добавлен к сравнению</h3>
-        <h3 class="compare-win__subtitle">В списке 5 объявлений</h3>
+        <h3 class="compare-win__title">{{ phrase }}</h3>
+        <h3 class="compare-win__subtitle">В списке {{ quantity }} объявлений</h3>
       </div>
     </div>
     <router-link class="compare-win__link" :to="{ name: 'transport-compare' }"
@@ -269,7 +278,13 @@ import { getUserId } from '@/utils'
 import prettyNum from '@/filters/prettyNum.js'
 import mapView from '../generalComponents/mapView.vue'
 import ProductCarousel from '../generalComponents/productCarousel.vue'
-import { addProductToCompare, getCurrency, getUserById } from '@/api/requests'
+import {
+  addProductToCompare,
+  deleteComparedProduct,
+  getComparedProducts,
+  getCurrency,
+  getUserById
+} from '@/api/requests'
 
 export default {
   name: 'vProductCard',
@@ -293,7 +308,10 @@ export default {
       mapShowed: false,
       user: null,
       isCompared: false,
-      coordinates: { lat: 51.505, lng: -0.09 }
+      phrase: 'Товар добавлен к сравнению',
+      comparedProducts: [],
+      quantity: 0,
+      isSelected: false
     }
   },
   computed: {
@@ -302,6 +320,12 @@ export default {
     },
     lastUpd() {
       return this.product_data.created_at?.split('T')[0]
+    },
+    coordinates() {
+      if (this.product_data.width && this.product_data.longitude) {
+        return { lat: this.product_data.width, lng: this.product_data.longitude }
+      }
+      return null
     }
   },
   methods: {
@@ -310,34 +334,94 @@ export default {
     setUser() {
       getUserById(this.product_data.owner).then((user) => {
         this.user = user
-        console.log(this.user)
       })
     },
     setCurrency() {
       getCurrency(this.product_data.currency).then((currency) => {
-        console.log('Валюта', currency)
         this.currency = currency.currency
       })
     },
-    compareProduct() {
-      addProductToCompare(this.$route.params.id, getUserId()).then(() => {
-        this.isCompared = true
-        setTimeout(() => {
-          this.isCompared = false
-        }, 5000)
+    setSomparedProducts() {
+      getComparedProducts().then((products) => {
+        this.comparedProducts = products
+        this.quantity = products.count
+        // Устанавливаем флаг, если текущий товар уже в списке
+        const productId = this.$route.params.id
+        this.isSelected = this.comparedProducts.results.some(
+          (product) => product.transport === productId
+        )
       })
     },
+    filterComparedProducts() {
+      for (let comparedProduct of this.comparedProducts.results) {
+        if (comparedProduct.transport == this.$route.params.id) {
+          return { response: false, compareId: comparedProduct.id }
+        }
+      }
+      return { response: true }
+    },
+    compareProduct() {
+      const productId = this.$route.params.id
+
+      // Проверяем, есть ли товар в списке
+      let comparedItem
+      for (let item of this.comparedProducts.results) {
+        if (item.transport == productId) {
+          comparedItem = item.id
+        }
+      }
+
+      if (comparedItem || this.isSelected) {
+        // Удаление из списка
+        deleteComparedProduct(comparedItem)
+          .then(() => {
+            this.phrase = 'Удалили товар из сравнения'
+            this.quantity -= 1
+            this.isSelected = false
+            // Обновляем локальный массив
+            this.comparedProducts.results = this.comparedProducts.results.filter(
+              (product) => product.id !== comparedItem
+            )
+          })
+          .catch((error) => {
+            console.error('Ошибка при удалении товара:', error)
+            this.phrase = 'Не удалось удалить товар из сравнения'
+          })
+      } else {
+        // Добавление в список
+        addProductToCompare(productId, getUserId())
+          .then((response) => {
+            this.phrase = 'Товар добавлен к сравнению'
+            this.quantity += 1
+            this.isSelected = true
+            // Добавляем товар в локальный массив
+            this.comparedProducts.results.push(response)
+          })
+          .catch((error) => {
+            console.error('Ошибка при добавлении товара:', error)
+            this.phrase = 'Не удалось добавить товар к сравнению'
+          })
+      }
+
+      // Показываем уведомление
+      this.isCompared = true
+      setTimeout(() => {
+        this.isCompared = false
+      }, 5000)
+    },
+
     maskNumber(number) {
       return number.replace(/^(.{7}).*$/, '$1' + '*'.repeat(number.length - 3))
     },
     toggleBarterModal() {
-      console.log('зАшли')
       this.$emit('toggleBarterModal', 'barterModal')
     }
   },
   mounted() {
     this.setCurrency()
     this.setUser()
+    this.setSomparedProducts()
+    console.log()
   }
 }
 </script>

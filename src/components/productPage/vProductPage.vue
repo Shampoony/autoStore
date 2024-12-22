@@ -31,7 +31,11 @@
             v-for="similar_product in similarProducts"
             :key="similar_product.id"
           >
-            <v-product :product_data="similar_product" :products_length="similarProducts.length" />
+            <v-product
+              :product_data="similar_product"
+              :products_length="similarProducts.length"
+              :type_of_product="'transport'"
+            />
           </li>
         </ul>
       </div>
@@ -195,7 +199,6 @@ export default {
       if (this.product_data) {
         getSimilarProducts(this.product_data).then((products) => {
           this.similarProducts = products.splice(0, 16)
-          console.log(this.similarProducts, products)
         })
       }
     },
@@ -208,25 +211,21 @@ export default {
       return price?.toLocaleString('ru')
     },
     deletePreview() {
-      console.log('зашли')
       this.imagePreview = null
       this.isImageAdded = false
     },
     toggleToFavourites() {
       if (!this.productInFavourites) {
         addToFavourites(this.accessToken, this.product_data.id).then(() => {
-          console.log('Добавили в избранное')
           this.productInFavourites = true
         })
       } else {
         removeFromFavourites(this.accessToken, this.product_data.id).then(() => {
-          console.log('Удалили из избранного')
           this.productInFavourites = false
         })
       }
     },
     toggleModal(modalId) {
-      console.log('В v-product-page', modalId)
       this.modals[modalId] = !this.modals[modalId]
     },
     triggerFileInput() {
@@ -270,7 +269,6 @@ export default {
         this.product_data = responseData
         this.checkIfProductInFavourites()
         this.setSimilarProducts()
-        console.log(this.product_data)
       } catch (error) {
         console.error('Ошибка при получении данных о товаре:', error)
       }
@@ -278,8 +276,6 @@ export default {
   },
   mounted() {
     this.getProductById()
-
-    console.log(this.accessToken)
   }
 }
 </script>

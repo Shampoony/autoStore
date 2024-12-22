@@ -103,7 +103,7 @@
           </div>
         </div>
       </form>
-      <div class="v-spare-parts__products" v-if="filteredSpareParts.length">
+      <div class="v-spare-parts__products products-container" v-if="filteredSpareParts.length">
         <v-product
           v-for="product in filteredSpareParts"
           :key="product.id"
@@ -111,7 +111,7 @@
         />
       </div>
       <div
-        class="v-spare-parts__products"
+        class="v-spare-parts__products products-container"
         v-if="!filteredSpareParts.length && !isFilteredProductsFound"
       >
         <v-product

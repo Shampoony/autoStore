@@ -129,8 +129,8 @@ export async function getCurrency(currencyId) {
 }
 
 export async function getSimilarProducts(product_data) {
+  console.log(product_data.brand.title)
   try {
-    console.log(product_data)
     const response = await fetch(
       `http://api.rcarentacar.com/api/transport/filter/?brand=${product_data.brand.title}`,
       {
@@ -322,10 +322,33 @@ export async function getComparedProducts() {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
     const responseData = await response.json()
-    console.log(responseData)
+
     return responseData
   } catch (error) {
     console.error('Ошибка при загрузке сообщений:', error)
+  }
+}
+
+export async function getComparedProductsById(id) {
+  try {
+    const response = await fetch(
+      `http://api.rcarentacar.com/api/transport/comparison-transports/${id}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`
+        }
+      }
+    )
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    /* const responseData = await response.json() */
+    console.log(response)
+    return response
+  } catch (error) {
+    console.error('Ошибка при загрузке товара для сравнения:', error)
   }
 }
 export async function deleteComparedProduct(id) {
@@ -343,9 +366,8 @@ export async function deleteComparedProduct(id) {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
-    const responseData = await response.json()
-    console.log(responseData)
-    return responseData
+    console.log(response)
+    return response
   } catch (error) {
     console.error('Ошибка при загрузке сообщений:', error)
   }
