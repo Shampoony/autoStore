@@ -54,7 +54,7 @@
             <h2 class="product-title">Расположение</h2>
             <div class="product-card__block">
               <div class="flex justify-between">
-                <div>
+                <div class="flex">
                   <p v-if="product_data.city">{{ product_data.city }},</p>
                   <p>{{ product_data.address }}</p>
                 </div>
@@ -120,12 +120,20 @@
             Предложить бартер
             <p>На квартиру или участок</p>
           </button>
-          <div class="product-card__owner flex gap-4 mb-4" v-if="user && user.user_profile">
-            <img v-if="user.photo" :src="user.photo" alt="profile" />
-            <div v-if="user.user_profile.full_name" class="product-card__owner-info flex flex-col">
-              <a href="">{{ user.user_profile.full_name }}</a>
-              Частное лицо
-            </div>
+          <div v-if="user && user.user_profile">
+            <router-link
+              class="product-card__owner flex gap-4 mb-4"
+              :to="{ name: 'profile', params: { id: user.id } }"
+            >
+              <img v-if="user.photo" :src="user.photo" alt="profile" />
+              <div
+                v-if="user.user_profile.full_name"
+                class="product-card__owner-info flex flex-col"
+              >
+                <a href="">{{ user.user_profile.full_name }}</a>
+                Частное лицо
+              </div>
+            </router-link>
           </div>
         </div>
       </div>
@@ -165,17 +173,19 @@
           <div class="product-card__location">
             <h2 class="product-title">Расположение</h2>
             <div class="product-card__block">
-              <div class="flex">
-                <div>
+              <div class="flex justify-between">
+                <div class="flex">
                   <p v-if="product_data.city">{{ product_data.city }},</p>
                   <p>{{ product_data.address }}</p>
                 </div>
                 <div
-                  class="product-card__show-map button"
+                  class="product-card__show-map button flex items-center gap-2"
                   @click="mapShowed = !mapShowed"
                   v-if="coordinates"
                 >
-                  Показать карту
+                  <p>Показать карту</p>
+                  <img v-if="!mapShowed" src="../../assets/images/arrow-down.svg" alt="" />
+                  <img v-if="mapShowed" src="../../assets/images/arrow-up.svg" alt="" />
                 </div>
               </div>
               <mapView v-if="coordinates && mapShowed" :coordinates="coordinates" />

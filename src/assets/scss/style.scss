@@ -584,9 +584,11 @@ a {
   position: relative;
   border: 1px solid #cfcfcf;
   align-items: end;
+
   @media (max-width: 610px) {
     width: clamp(9rem, -0.931rem + 49.66vw, 18rem);
   }
+
   &__image {
     margin-bottom: 12px;
     position: absolute;
@@ -641,6 +643,7 @@ a {
   }
 
   &__content {
+    color: #000;
     padding: 10px 16px;
   }
 
@@ -669,6 +672,7 @@ a {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: #0c4a60;
 
     @media (max-width: 610px) {
       font-size: clamp(0.75rem, 0.474rem + 1.38vw, 1rem);
@@ -773,6 +777,14 @@ a {
 
 .v-cars {
   margin-top: 32px;
+  &__block {
+    border-top: 1px solid #cfcfcf;
+    padding: 30px 0;
+
+    @media (max-width: 600px) {
+      border-top: 0;
+    }
+  }
 }
 .title {
   font-size: 17px;
@@ -782,8 +794,10 @@ a {
   margin-bottom: 24px;
 }
 .v-cars__popular {
+  margin-bottom: 20px;
   &-title {
     font-size: 24px;
+    text-transform: none;
   }
   &-marks {
     max-height: 170px !important;
@@ -818,6 +832,8 @@ a {
     border-radius: 0 !important;
     border: 0;
     position: relative;
+
+    padding-left: 0;
     &::before,
     &::after {
       content: '';
@@ -911,6 +927,10 @@ a {
   border-color: #cfcfcf;
 }
 .filter {
+  @media (max-width: 920px) {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
   &__row-currency {
     @media (max-width: 1100px) {
       flex-direction: column;
@@ -977,6 +997,7 @@ a {
     font-weight: 600;
   }
   &-form {
+    padding-bottom: 30px;
     @media (max-width: 600px) {
       display: none;
       background-color: #fff;
@@ -1051,8 +1072,8 @@ a {
     }
   }
   &-option.special input:checked + label {
-    background-color: #0c4a60;
-    color: #fff;
+    background-color: #0c4a601a;
+    color: #0c4a60;
   }
 
   &-option input:checked + label {
@@ -1435,6 +1456,7 @@ a {
 
   &__left {
     width: 74%;
+    min-width: 700px;
   }
 
   &__addParams {
@@ -1442,7 +1464,7 @@ a {
   }
 
   &__right {
-    width: 100%;
+    width: 370px;
   }
 
   &__mob-buttons .product-card__button {
@@ -1556,7 +1578,7 @@ a {
     gap: 30px;
   }
   &__specifications-block p {
-    text-align: left;
+    text-align: right;
     display: inline;
     max-width: 50%;
   }
@@ -1703,6 +1725,29 @@ textarea {
     display: flex;
     gap: 8px;
   }
+  &__cut {
+    display: none;
+    @media (max-width: 600px) {
+      display: flex;
+    }
+  }
+  &__cut-button {
+    display: flex;
+    justify-content: center;
+    gap: 45px;
+    padding: 12px;
+
+    color: #0c4a60;
+    border: 1px solid #0c4a60;
+    border-radius: 5px;
+  }
+  &__cut-submit {
+    padding: 12px;
+
+    background-color: #0c4a60;
+    color: #fff;
+    border-radius: 5px;
+  }
   &__row-block {
     display: flex;
     gap: 8px;
@@ -1786,11 +1831,17 @@ textarea {
   gap: 92px;
 }
 .v-favourites {
+  &__container {
+    gap: 69px;
+  }
   &__list {
     width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 25px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    @media (max-width: 1200px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 }
 
@@ -2706,13 +2757,23 @@ textarea {
   padding-top: 40px;
   &__title {
     margin-bottom: 20px;
+    display: inline-block;
     font-size: 20px;
     font-weight: 500;
+    padding-left: 30px;
+    @media (max-width: 768px) {
+      padding: 0;
+    }
   }
   &__wrapper {
     position: relative;
     margin-bottom: 20px;
+    padding: 0 30px;
+    @media (max-width: 768px) {
+      padding: 0;
+    }
   }
+
   &__item {
     position: relative;
   }
@@ -2790,7 +2851,7 @@ textarea {
   content: url(../images/next.svg) !important;
 }
 .swiper-button-next {
-  right: -30px !important;
+  right: 0 !important;
 }
 
 .swiper-button-prev:after,
@@ -2799,10 +2860,131 @@ textarea {
 }
 
 .swiper-button-prev {
-  left: -30px !important;
+  left: 0 !important;
 }
 
 .swiper-button-next,
 .swiper-button-prev {
   top: 130px !important;
+  @media (max-width: 768px) {
+    display: none !important;
+  }
+}
+
+.mob-select .v-selectStyled__selected {
+  background-color: #f2f1f0;
+}
+.mob-select.v-selectStyled {
+  background-color: #f2f1f0 !important;
+  padding-left: 20px;
+}
+
+.mob-select.v-selectStyled::after,
+.mob-select.v-selectStyled::before {
+  content: '' !important;
+  width: 0 !important;
+  height: 0 !important;
+  background-color: transparent;
+}
+
+.v-profile {
+  margin-top: 34px;
+
+  &__author {
+    flex: 0 0 auto; /* Блок автора имеет фиксированную ширину и не сжимается */
+
+    @media (max-width: 600px) {
+      gap: 20px;
+    }
+  }
+  &__author-block {
+    display: flex;
+    gap: 12px;
+
+    @media (max-width: 600px) {
+      flex-direction: row;
+    }
+  }
+  &__author-img {
+    width: 288px;
+    height: 288px;
+    background-color: #cfcfcf;
+
+    margin-bottom: 16px;
+
+    @media (max-width: 600px) {
+      width: 72px;
+      height: 72px;
+    }
+  }
+  &__author img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  &__author-name {
+    font-size: 24px;
+    font-weight: 500;
+    margin-bottom: 25px;
+
+    @media (max-width: 600px) {
+      margin-bottom: 12px;
+    }
+  }
+  &__author-button {
+    width: 288px;
+    padding: 16px;
+    background-color: #0c4a60;
+    border-radius: 8px;
+
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    color: #fff;
+
+    cursor: pointer;
+    @media (max-width: 600px) {
+      width: 100%;
+    }
+  }
+  & .average-rating {
+    display: none;
+    @media (max-width: 600px) {
+      display: block;
+    }
+  }
+  &__products-count {
+    font-size: 18px;
+    color: #1c1819;
+  }
+  &__products-container {
+    flex: 1 1 auto; /* Блок с продуктами занимает оставшееся пространство и может сжиматься */
+    min-width: 100px; /* Минимальная ширина контейнера продуктов */
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+
+    @media (max-width: 920px) {
+      flex-direction: column;
+    }
+  }
+  &__products-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+
+    @media (max-width: 900px) {
+      flex-wrap: nowrap;
+    }
+  }
+  &__container {
+    width: 100%;
+    display: flex;
+    flex-wrap: nowrap; /* Элементы не переносятся */
+    gap: 10px;
+
+    @media (max-width: 900px) {
+      flex-direction: column;
+    }
+  }
 }

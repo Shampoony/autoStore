@@ -216,11 +216,11 @@ export default {
     },
     toggleToFavourites() {
       if (!this.productInFavourites) {
-        addToFavourites(this.accessToken, this.product_data.id).then(() => {
+        addToFavourites('transport_id', this.product_data.id).then(() => {
           this.productInFavourites = true
         })
       } else {
-        removeFromFavourites(this.accessToken, this.product_data.id).then(() => {
+        removeFromFavourites('transport_id', this.product_data.id).then(() => {
           this.productInFavourites = false
         })
       }
@@ -267,7 +267,8 @@ export default {
         )
         const responseData = await response.json()
         this.product_data = responseData
-        this.checkIfProductInFavourites()
+        this.productInFavourites = this.product_data.is_fav
+
         this.setSimilarProducts()
       } catch (error) {
         console.error('Ошибка при получении данных о товаре:', error)

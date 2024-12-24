@@ -66,7 +66,7 @@ export async function filterProducts(url, form, selectsRefs) {
   const queryParams = new URLSearchParams(filledFields).toString()
   const queryURL = `${url}?${decodeURIComponent(queryParams)}`
 
-  window.location.search = queryURL
+  window.location.search = queryParams
 
   console.log('Запрос:', queryURL)
 

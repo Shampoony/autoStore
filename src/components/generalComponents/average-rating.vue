@@ -47,11 +47,17 @@
   </div>
 </template>
 <script>
-import { getUserProfile } from '@/api/requests'
-import { decodeAccessToken, getQuantityOfReviews } from '@/utils'
+import { getUserById, getUserProfile } from '@/api/requests'
+import { decodeAccessToken, getQuantityOfReviews, getUserId } from '@/utils'
 
 export default {
   name: 'average-rating',
+  props: {
+    userId: {
+      type: Number,
+      required: false
+    }
+  },
   data() {
     return {
       user_profile: {},
@@ -61,12 +67,11 @@ export default {
   },
   methods: {
     setUserInfo() {
-      const decodedToken = decodeAccessToken()
-      if (decodedToken) {
-        const profileId = decodedToken.profile_id
-        getUserProfile(profileId).then((userProfile) => {
-          this.user_profile = userProfile
-          this.quantityOfStars = parseInt(userProfile.average_rating)
+      const userId = this.userId ? this.userId : getUserId()
+      if (userId) {
+        getUserById(userId).then((user) => {
+          this.user_profile = user.user_profile
+          this.quantityOfStars = parseInt(user.user_profile.average_rating)
           this.quantityOfNeutralStars = 5 - this.quantityOfStars
         })
       }

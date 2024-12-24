@@ -103,27 +103,181 @@
           </div>
         </div>
       </form>
-      <div class="v-spare-parts__products products-container" v-if="filteredSpareParts.length">
-        <v-product
-          v-for="product in filteredSpareParts"
-          :key="product.id"
-          :product_data="product"
-        />
+      <div class="mob-filter">
+        <form
+          method="GET"
+          action=""
+          @submit="onSubmit"
+          class="mob-filter__cut flex flex-col mb-3 gap-2"
+        >
+          <input
+            class="mob-filter__input"
+            type="text"
+            v-model="form.title.value"
+            name="search"
+            placeholder="Что ищем?"
+          />
+          <div class="flex gap-2">
+            <v-select-styled class="mob-select" ref="brand" :options="brand" />
+            <input
+              class="mob-filter__input"
+              type="text"
+              v-model="form.model.value"
+              name="model"
+              placeholder="Модель"
+            />
+          </div>
+          <div class="mob-filter__cut-button" @click="filterMenuOpen = !filterMenuOpen">
+            <img src="../../assets/images/show-filter.svg" alt="" />
+            Подробный фильтр
+          </div>
+          <button class="mob-filter__cut-submit">Показать объявления</button>
+        </form>
+        <form
+          v-if="filterMenuOpen"
+          class="mob-filter-form"
+          method="GET"
+          action=""
+          @submit="onSubmit"
+        >
+          <div class="mob-filter__header flex justify-between">
+            <img
+              @click="this.filterMenuOpen = false"
+              src="../../assets/images/cross.svg"
+              alt="cross"
+            />
+            <h3 class="mob-filter__header-title">Фильтры</h3>
+            <div class="mob-filter__reset" @click="resetFilter">Сбросить</div>
+          </div>
+          <div class="mob-filter v-cars__filter flex gap-4">
+            <div class="mob-filter__column">
+              <input
+                class="mob-filter__input"
+                type="text"
+                v-model="form.title.value"
+                name="search"
+                placeholder="Что ищем?"
+              />
+            </div>
+            <div class="mob-filter__column">
+              <div class="mob-filter__row">
+                <v-select-styled ref="brand" :options="brand" />
+              </div>
+            </div>
+            <div class="mob-filter__column">
+              <div class="mob-filter__row">
+                <h2 class="mob-filter__row-title">Состояние</h2>
+                <div class="flex gap-2">
+                  <div class="filter-option special">
+                    <input
+                      id="condition-all"
+                      type="radio"
+                      name="condition"
+                      v-model="form.condition.value"
+                      value="Все"
+                    />
+                    <label for="condition-all">Все</label>
+                  </div>
+                  <div class="filter-option special">
+                    <input
+                      id="condition-new"
+                      type="radio"
+                      name="condition"
+                      value="Новые"
+                      v-model="form.condition.value"
+                    />
+                    <label for="condition-new">Новые</label>
+                  </div>
+                  <div class="filter-option special">
+                    <input
+                      id="condition-mil"
+                      type="radio"
+                      name="condition"
+                      v-model="form.condition.value"
+                      value="С пробегом"
+                    />
+                    <label for="condition-mil">С пробегом</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mob-filter__column">
+              <div class="mob-filter__row">
+                <h2 class="mob-filter__row-title">Статус</h2>
+                <div class="flex gap-2">
+                  <div class="filter-option special">
+                    <input
+                      id="availability-status-in"
+                      type="radio"
+                      name="availability_status"
+                      v-model="form.availability_status.value"
+                      value="В наличии"
+                    />
+                    <label for="availability-status-in">В наличии</label>
+                  </div>
+                  <div class="filter-option special">
+                    <input
+                      id="availability-status-on"
+                      type="radio"
+                      name="availability_status"
+                      value="Новые"
+                      v-model="form.availability_status.value"
+                    />
+                    <label for="availability-status-on">На заказ</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mob-filter__column">
+              <div class="mob-filter__row mt-2">
+                <h2 class="mob-filter__row-title">Цена</h2>
+                <div class="mob-filter__row-block">
+                  <input
+                    class="mob-filter__input"
+                    type="text"
+                    name="price_min"
+                    v-model="form.price_min.value"
+                    placeholder="от"
+                  />
+                  <input
+                    class="mob-filter__input"
+                    type="text"
+                    name="price_max"
+                    v-model="form.price_max.value"
+                    placeholder="до"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mob-filter__row filter__styled-submit pb-2">
+            <button class="styled-button" type="submit">Применить</button>
+          </div>
+        </form>
       </div>
-      <div
-        class="v-spare-parts__products products-container"
-        v-if="!filteredSpareParts.length && !isFilteredProductsFound"
-      >
-        <v-product
-          v-for="product in SPARE_PARTS"
-          :key="product.id"
-          :product_data="product"
-          :products_length="SPARE_PARTS.length"
-          :type_of_product="'spare-transport'"
-        />
-      </div>
-      <div v-if="!filteredSpareParts.length && isFilteredProductsFound">
-        По вашему запросу ничего не найдено
+      <div v-if="!filterMenuOpen">
+        <div class="v-spare-parts__products products-container" v-if="filteredSpareParts.length">
+          <v-product
+            v-for="product in filteredSpareParts"
+            :key="product.id"
+            :product_data="product"
+          />
+        </div>
+        <div
+          class="v-spare-parts__products products-container"
+          v-if="!filteredSpareParts.length && !isFilteredProductsFound"
+        >
+          <v-product
+            v-for="product in SPARE_PARTS"
+            :key="product.id"
+            :product_data="product"
+            :products_length="SPARE_PARTS.length"
+            :type_of_product="'spare-transport'"
+          />
+        </div>
+        <div v-if="!filteredSpareParts.length && isFilteredProductsFound">
+          По вашему запросу ничего не найдено
+        </div>
       </div>
     </div>
   </main>
@@ -144,6 +298,7 @@ export default {
     return {
       filteredSpareParts: [],
       isFilteredProductsFound: false,
+      filterMenuOpen: false,
       form: {
         condition: { value: 'Все', default: 'Все' },
         availability_status: { value: 'В наличии', default: 'В наличии' },

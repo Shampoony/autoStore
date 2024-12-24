@@ -89,8 +89,7 @@ export default {
       required: true
     },
     products_length: {
-      type: Number,
-      required: true
+      type: Number
     },
     type_of_product: {
       type: String,
@@ -103,7 +102,7 @@ export default {
       tempOfWidth: 0,
       currentSegment: 0,
       isPagination: false,
-      productInFavourites: false,
+      productInFavourites: this.product_data.is_fav,
       swiper: null,
       currency: '',
       apiUrl: 'http://api.rcarentacar.com/'
@@ -187,16 +186,11 @@ export default {
           this.productInFavourites = false
         })
       }
-    },
-    checkIfProductInFavourites() {
-      isProductInFavourites(this.accessToken, this.product_data.id).then((result) => {
-        this.productInFavourites = result
-      })
     }
   },
   mounted() {
-    this.checkIfProductInFavourites()
     this.setCurrency()
+    console.log(this.product_data.is_fav)
   }
 }
 </script>

@@ -43,6 +43,7 @@ export default {
   computed: {
     ...mapGetters(['TRANSPORT_PRODUCTS']),
     sortedProducts() {
+      console.log(this.TRANSPORT_PRODUCTS)
       if (this.categoryProducts.length) {
         return this.categoryProducts.sort((a, b) => b.is_vip - a.is_vip)
       } else if (this.TRANSPORT_PRODUCTS) {
@@ -57,6 +58,7 @@ export default {
     paginatedProducts() {
       const start = (this.currentPage - 1) * this.itemsPerPage
       const end = start + this.itemsPerPage
+
       return this.sortedProducts.slice(start, end)
     }
   },

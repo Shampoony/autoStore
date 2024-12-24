@@ -1,5 +1,5 @@
 import { accessToken } from './auth'
-import { decodeAccessToken } from '@/utils'
+import { decodeAccessToken, getUserId } from '@/utils'
 
 export async function getFilteredProducts(url) {
   console.log(url)
@@ -12,7 +12,7 @@ export async function getFilteredProducts(url) {
       }
     })
     const responseData = await response.json()
-    console.log(responseData)
+
     return response.length ? responseData.results : responseData
   } catch (error) {
     console.error('Ошибка при получении отфильтрованных товаров:', error)
@@ -107,6 +107,23 @@ export async function getOptionsById(title, id) {
     console.error(`Ошибка при получении ${title}:`, error)
   }
 }
+export async function getOptionsByName(name) {
+  try {
+    const response = await fetch(`http://api.rcarentacar.com/api/transport/${name}/`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
+
+    const responseData = await response.json()
+
+    return responseData
+  } catch (error) {
+    console.error(`Ошибка при получении ${name}:`, error)
+  }
+}
 
 export async function getCurrency(currencyId) {
   try {
@@ -155,7 +172,7 @@ export async function getSimilarProducts(product_data) {
   }
 }
 export async function addToFavourites(name, id) {
-  console.log(JSON.stringify({ [name]: id }))
+  console.log(name, id, JSON.stringify({ [name]: id }))
   try {
     const response = await fetch(`http://api.rcarentacar.com/api/users/favorite/add_favorite/`, {
       method: 'POST',
@@ -186,7 +203,7 @@ export async function removeFromFavourites(name, id) {
     console.error('Ошибка при добавлении в избранное:', error)
   }
 }
-export async function getFFavouriteProducts() {
+export async function getFavouriteProducts() {
   try {
     const response = await fetch(`http://api.rcarentacar.com/api/users/favorite/`, {
       method: 'GET',
@@ -201,12 +218,11 @@ export async function getFFavouriteProducts() {
     console.error('Ошибка при получении избранного:', error)
   }
 }
-export async function isProductInFavourites(accessToken, productId) {
+export async function isProductInFavourites(productId) {
   try {
-    const responseData = await getFFavouriteProducts()
+    const responseData = await getFavouriteProducts()
 
-    const userId = decodeAccessToken(accessToken)?.user_id
-
+    const userId = getUserId()
     for (let product of responseData) {
       if (product.user == userId && product.transport.id == productId) {
         return true
@@ -279,6 +295,29 @@ export async function getUserById(userId) {
     return responseData
   } catch (error) {
     console.error('Ошибка при регистрации:', error)
+  }
+}
+
+export async function getUserTransport(userId) {
+  try {
+    const response = await fetch(
+      `http://api.rcarentacar.com/api/users/users/${userId}/transports/`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`
+        }
+      }
+    )
+    if (!response.ok) {
+      throw new Error('Ошибка полчения транспорта пользователя')
+    }
+
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.error('Ошибка при получении транспорта пользователя:', error)
   }
 }
 
@@ -482,6 +521,25 @@ export async function fetchChatById(chatId) {
   }
 }
 
+export async function createChat(username) {
+  try {
+    const response = await fetch(`http://api.rcarentacar.com/api/chats/chats/${username}/`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.error('Ошибка при загрузке чата:', error)
+  }
+}
+
 export async function filterProducts(url, form, selectsRefs) {
   const filledFields = Object.fromEntries(
     Object.entries(form)
@@ -499,7 +557,7 @@ export async function filterProducts(url, form, selectsRefs) {
 
   const queryParams = new URLSearchParams(filledFields).toString()
   const queryURL = `${url}?${decodeURIComponent(queryParams)}`
-
+  window.location.search = queryParams
   console.log('Запрос:', queryURL)
 
   // Дожидаемся ответа от сервера

@@ -1,11 +1,14 @@
 import MapTest from '../components/generalComponents/MapTest.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
-const vReviews = () => import('@/components/reviewsPage/v-reviews.vue')
 const vProductPage = () => import('@/components/productPage/vProductPage.vue')
-const vFavourites = () => import('@/components/favouritePage/v-favourites.vue')
 const VWaitReviews = () => import('@/components/reviewsPage/v-wait-reviews.vue')
 const vBuyersReviews = () => import('@/components/reviewsPage/v-buyers-reviews.vue')
+
+/* Провиль */
+const vProfile = () => import('@/components/profilePage/v-profile.vue')
+const vReviews = () => import('@/components/reviewsPage/v-reviews.vue')
+const vFavourites = () => import('@/components/favouritePage/v-favourites.vue')
 
 /* Аренда */
 const rentCars = () => import('@/components/rentPage/vRentCars.vue')
@@ -63,6 +66,16 @@ const registrationRoutes = [
 ]
 
 const profileRoutes = [
+  {
+    path: ':id?',
+    name: 'profile',
+    component: vProfile
+  },
+  {
+    path: 'my',
+    name: 'my_profile',
+    component: vProfile
+  },
   {
     path: 'favourites',
     name: 'favourites',
@@ -173,6 +186,7 @@ const routes = [
     children: profileRoutes,
     meta: { requiresAuth: true }
   },
+
   {
     path: '/chat/',
     children: chatRoutes,
