@@ -13,12 +13,15 @@
         />
       </ul>
       <h2 class="notFound" v-else>Товаров в данной категории нет</h2>
-      <v-pagination
-        :total-items="TRANSPORT_PRODUCTS.length"
-        :items-per-page="itemsPerPage"
-        :current-page="currentPage"
-        @page-changed="handlePageChange"
-      />
+      <div v-if="TRANSPORT_PRODUCTS.total_count">
+        лалал
+        <v-pagination
+          :total-items="TRANSPORT_PRODUCTS.total_count"
+          :items-per-page="itemsPerPage"
+          :current-page="currentPage"
+          @page-changed="handlePageChange"
+        />
+      </div>
     </div>
   </section>
 </template>
@@ -46,8 +49,8 @@ export default {
       console.log(this.TRANSPORT_PRODUCTS)
       if (this.categoryProducts.length) {
         return this.categoryProducts.sort((a, b) => b.is_vip - a.is_vip)
-      } else if (this.TRANSPORT_PRODUCTS) {
-        return this.TRANSPORT_PRODUCTS.sort((a, b) => b.is_vip - a.is_vip)
+      } else if (this.TRANSPORT_PRODUCTS.results) {
+        return this.TRANSPORT_PRODUCTS.results.sort((a, b) => b.is_vip - a.is_vip)
       } else {
         return []
       }
@@ -58,7 +61,7 @@ export default {
     paginatedProducts() {
       const start = (this.currentPage - 1) * this.itemsPerPage
       const end = start + this.itemsPerPage
-
+      console.log(this.currentPage)
       return this.sortedProducts.slice(start, end)
     }
   },

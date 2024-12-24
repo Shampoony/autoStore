@@ -1,7 +1,6 @@
 export default {
   SET_TRANSPORT_PRODUCTS_TO_STATE: (state, transport_products) => {
-    console.log(transport_products)
-    state.products['transport'] = transport_products.results
+    state.products['transport'] = transport_products
   },
   SET_TRANSPORT_CATEGORIES_TO_STATE: (state, categories) => {
     state.categories['transport'] = categories

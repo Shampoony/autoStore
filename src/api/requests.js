@@ -84,24 +84,6 @@ export async function getOptionsById(title, id) {
 
     const responseData = await response.json()
 
-    /*  if (title == 'brands') {
-      for (let option of responseData.results) {
-        options.push({
-          id: option.id,
-          value: option['title'],
-          name: option['title']
-        })
-      }
-    } else {
-      for (let option of responseData.results) {
-        options.push({
-          id: option.id,
-          value: option[name],
-          name: option[name]
-        })
-      }
-    } */
-
     return responseData
   } catch (error) {
     console.error(`Ошибка при получении ${title}:`, error)

@@ -57,7 +57,7 @@
         </div>
         <div class="v-product__block">
           <div class="v-product__location flex gap-2">
-            <div v-if="product_data.city">{{ product_data.city }},</div>
+            <div v-if="city.city">{{ city.city }},</div>
             <div v-if="product_data.created_at">
               {{ formattedDateTime.time }}
             </div>
@@ -76,10 +76,10 @@
 import 'swiper/css'
 import 'swiper/css/pagination'
 import { Pagination } from 'swiper/modules'
-import { getCurrency } from '@/api/requests'
+import { getCurrency, getOptionsById, getOptionsByName } from '@/api/requests'
 import prettyNum from '@/filters/prettyNum.js'
 import { Swiper, SwiperSlide } from 'swiper/vue'
-import { addToFavourites, removeFromFavourites, isProductInFavourites } from '@/api/requests'
+import { addToFavourites, removeFromFavourites } from '@/api/requests'
 
 export default {
   name: 'v-product',
@@ -105,6 +105,7 @@ export default {
       productInFavourites: this.product_data.is_fav,
       swiper: null,
       currency: '',
+      city: {},
       apiUrl: 'http://api.rcarentacar.com/'
     }
   },
@@ -169,11 +170,10 @@ export default {
 
   methods: {
     prettyNum,
-    setCurrency() {
+    async setCurrency() {
       if (this.product_data.currency) {
-        getCurrency(this.product_data.currency).then((currency) => {
-          this.currency = currency.currency
-        })
+        const currencyObj = await getCurrency(this.product_data.currency)
+        this.currency = currencyObj.currency
       }
     },
     toggleToFavourites() {
@@ -186,11 +186,16 @@ export default {
           this.productInFavourites = false
         })
       }
+    },
+    async setProductCity() {
+      if (this.product_data.city) {
+        this.city = await getOptionsById('cities', this.product_data.city)
+      }
     }
   },
-  mounted() {
-    this.setCurrency()
-    console.log(this.product_data.is_fav)
+  async mounted() {
+    await this.setCurrency()
+    await this.setProductCity()
   }
 }
 </script>
