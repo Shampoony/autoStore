@@ -505,13 +505,16 @@ export async function fetchChatById(chatId) {
 
 export async function createChat(username) {
   try {
-    const response = await fetch(`http://api.rcarentacar.com/api/chats/chats/${username}/`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`
+    const response = await fetch(
+      `http://api.rcarentacar.com/api/chats/chats/between/${username}/`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`
+        }
       }
-    })
+    )
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }

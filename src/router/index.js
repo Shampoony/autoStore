@@ -126,7 +126,7 @@ const transportRoutes = [
   },
   {
     path: 'product/:id',
-    name: 'transport-item',
+    name: 'product-item',
     component: vProductPage
   },
   {

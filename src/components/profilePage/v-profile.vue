@@ -12,7 +12,7 @@
             <average-rating :userId="userId" />
           </div>
         </div>
-        <div class="v-profile__author-button" @click-="writeMessage">Написать</div>
+        <div class="v-profile__author-button" @click="writeMessage">Написать</div>
       </div>
       <div class="v-profile__products-container" v-if="userTransport.length">
         <h2 class="v-profile__products-count">{{ userTransport.length }} объявлений</h2>
@@ -53,9 +53,12 @@ export default {
       let userId = this.$route.params.id ? this.$route.params.id : getUserId()
       this.user = await getUserById(userId)
       this.userTransport = await getUserTransport(userId)
+      console.log(this.user)
     },
     writeMessage() {
-      chatLoad()
+      createChat(this.user.username).then((res) => {
+        this.$router.push({ name: 'current_chat', params: { id: res.id } })
+      })
     }
   },
   async mounted() {

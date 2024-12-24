@@ -255,8 +255,10 @@ export default {
     },
     async getProductById() {
       try {
+        const typeOfProduct = Object.keys(this.$route.query)[0].replace('_', '-')
+        console.log(typeOfProduct)
         const response = await fetch(
-          `http://api.rcarentacar.com/api/transport/transports/${this.$route.params.id}/`,
+          `http://api.rcarentacar.com/api/${typeOfProduct}/${typeOfProduct}/${this.$route.params.id}/`,
           {
             method: 'GET',
             headers: {

@@ -108,7 +108,7 @@
             </p>
           </a>
 
-          <a class="product-card__btn product-btn write-message">
+          <a class="product-card__btn product-btn write-message" @click="writeMessage">
             Написать сообщение
             <p>Отвечает за несколько минут</p>
           </a>
@@ -260,7 +260,10 @@
           </p>
         </a>
       </div>
-      <div class="main-image-block main-image-btns__message flex items-center">
+      <div
+        class="main-image-block main-image-btns__message flex items-center"
+        @click="writeMessage"
+      >
         Написать сообщение
       </div>
     </div>
@@ -290,6 +293,7 @@ import mapView from '../generalComponents/mapView.vue'
 import ProductCarousel from '../generalComponents/productCarousel.vue'
 import {
   addProductToCompare,
+  createChat,
   deleteComparedProduct,
   getComparedProducts,
   getCurrency,
@@ -341,6 +345,13 @@ export default {
   methods: {
     prettyNum,
     getCurrency,
+    writeMessage() {
+      if (this.user.id != getUserId()) {
+        createChat(this.user.username).then((res) => {
+          this.$router.push({ name: 'current_chat', params: { id: res.id } })
+        })
+      }
+    },
     setUser() {
       getUserById(this.product_data.owner).then((user) => {
         this.user = user

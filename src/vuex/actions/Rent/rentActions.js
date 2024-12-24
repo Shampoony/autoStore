@@ -3,7 +3,7 @@ import { accessToken } from '@/api/auth'
 
 export default {
   GET_RENT_TRANSPORT_FROM_API({ commit }) {
-    return axios('http://api.rcarentacar.com/api/rent-transport/rent-transports/', {
+    return axios('http://api.rcarentacar.com/api/rent-transport/rent-transport/', {
       headers: {
         Authorization: `Bearer ${accessToken}`
       }

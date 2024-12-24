@@ -261,6 +261,7 @@
             v-for="product in filteredSpareParts"
             :key="product.id"
             :product_data="product"
+            :type_of_product="'spare_parts'"
           />
         </div>
         <div
@@ -272,7 +273,7 @@
             :key="product.id"
             :product_data="product"
             :products_length="SPARE_PARTS.length"
-            :type_of_product="'spare-transport'"
+            :type_of_product="'spare_parts'"
           />
         </div>
         <div v-if="!filteredSpareParts.length && isFilteredProductsFound">

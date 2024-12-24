@@ -2,7 +2,7 @@ import axios from 'axios'
 import { accessToken } from '@/api/auth'
 export default {
   GET_TRANSPORT_PRODUCTS_FROM_API({ commit }) {
-    return axios('http://api.rcarentacar.com/api/transport/transports/', {
+    return axios('http://api.rcarentacar.com/api/transport/transport/', {
       method: 'GET',
       params: {},
       headers: {

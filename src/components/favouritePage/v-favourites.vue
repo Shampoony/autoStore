@@ -6,12 +6,19 @@
       <ul class="v-favourites__list">
         <li
           class="v-favourites__list-item"
-          v-for="product_data in favouterites"
-          :key="product_data.transport.id"
+          v-for="(product_data, index) in favouterites"
+          :key="index"
         >
           <v-product
+            v-if="product_data.transport"
             :product_data="product_data.transport"
             :products_length="favouterites.length"
+            :type_of_product="'transport'"
+          />
+          <v-product
+            v-if="product_data.spare_parts"
+            :product_data="product_data.spare_parts"
+            :products_length="product_data.spare_parts.length"
             :type_of_product="'transport'"
           />
         </li>
@@ -44,6 +51,7 @@ export default {
     setFavourites() {
       getFavouriteProducts().then((products) => {
         this.favouterites = products
+        console.log(products)
       })
     }
   },

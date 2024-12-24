@@ -13,7 +13,7 @@
       <div class="v-left-menu__block">
         <div class="v-left-menu__link">
           <img src="../../assets/images/profile.svg" alt="" />
-          <a href="">Мой профиль</a>
+          <router-link :to="{ name: 'my_profile' }">Мой профиль</router-link>
         </div>
         <div class="v-left-menu__link">
           <img src="../../assets/images/my-ads.svg" alt="" />
