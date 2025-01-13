@@ -1,5 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import './loading.scss';
 @import './variables.scss';
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+:root {
+  --orange: #3db460;
+}
 
 :active,
 :hover,
@@ -69,7 +74,7 @@ body::after {
   left: 0;
   top: 0;
   z-index: 100;
-  transition: 0.3s ease-in-out;
+  /* transition: 0.3s ease-in-out; */
 }
 body.watch__mode::after {
   opacity: 1;
@@ -117,7 +122,7 @@ footer {
 }
 
 a {
-  color: $blue;
+  color: var(--blue);
 }
 
 .styled-button {
@@ -152,7 +157,8 @@ a {
     display: none;
   }
   &__switcher {
-    background-color: $gray;
+    background-color: var(--gray);
+    color: #000;
     padding: 2px;
     width: 190px;
     height: 30px;
@@ -162,9 +168,10 @@ a {
     font-size: 14px;
     padding: 2px 10px;
     text-align: center;
+    color: #000;
   }
   &__switcher-picker.active {
-    background-color: #ff6c2c;
+    background-color: var(--orange);
     color: white;
     border-radius: 4px;
   }
@@ -181,19 +188,27 @@ a {
     display: flex;
   }
   &__container {
+    gap: 20px;
     @media (max-width: 600px) {
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
   }
+  &__block {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-right: 5px;
+  }
 }
 
 .menu {
   &__btn {
-    background-color: #ff6c2c;
+    background-color: var(--orange);
     color: #fff;
-    padding: 5px 9px;
+    padding: 3px 9px;
     border-radius: 5px;
     font-size: 14px;
     @media (max-width: 730px) {
@@ -225,7 +240,7 @@ a {
 }
 
 .v-select {
-  color: $blue;
+  color: var(--blue);
   width: 35px;
   position: relative;
   &::after {
@@ -255,7 +270,7 @@ a {
 }
 
 .v-header-bottom {
-  background-color: $blue;
+  background-color: var(--blue);
   height: 55px;
   &__logo {
     color: #fff;
@@ -266,32 +281,6 @@ a {
   &__container {
     padding: 7px 10px;
     color: #fff;
-  }
-  &__search {
-    display: inline-block;
-    max-width: 275px;
-    margin-left: 10px;
-    height: 40px;
-    position: relative;
-    @media (max-width: 760px) {
-      max-width: clamp(8.125rem, -8.281rem + 43.75vw, 12.5rem);
-    }
-  }
-  &__search input {
-    width: 100%;
-    border: 0;
-    padding: 0 35px 0 16px;
-    border-radius: 4px;
-    height: 100%;
-    color: #000;
-  }
-  &__search::after {
-    content: url(../images/search.svg);
-    position: absolute;
-    right: 10px;
-    bottom: 0px;
-  }
-  &__search input {
   }
 }
 .bottom-menu {
@@ -384,6 +373,7 @@ a {
   top: -4px;
 }
 .v-header-menu {
+  width: 100%;
   opacity: 0;
   visibility: hidden;
   transition: 0.2s ease-in;
@@ -393,7 +383,7 @@ a {
   transform: translateX(-50%);
   z-index: 200;
   height: 380px;
-  width: clamp(36.875rem, -0.625rem + 100vw, 74.375rem);
+  /* width: clamp(36.875rem, -0.625rem + 100vw, 74.375rem); */
   padding: 25px 0 45px;
   flex-wrap: wrap;
   background-color: #ffff;
@@ -424,7 +414,7 @@ a {
     position: relative;
     @media (hover: hover) {
       &:hover {
-        background-color: $lightgray;
+        background-color: var(--lightgray);
       }
     }
     @media (max-width: 760px) {
@@ -530,7 +520,7 @@ a {
 .category-card {
   display: block;
   height: 90px;
-  background-color: $lightgray;
+  background-color: var(--lightgray);
 
   border-bottom-right-radius: 18px;
   border-top-left-radius: 18px;
@@ -553,36 +543,42 @@ a {
 }
 .products-container {
   display: grid;
-  grid-template-columns: repeat(4, 290px);
-  align-items: center;
+  grid-template-columns: repeat(4, 24.5%);
+  align-items: end;
   gap: 10px;
   @media (max-width: 1180px) {
-    grid-template-columns: repeat(3, 290px);
+    grid-template-columns: repeat(3, 33%);
   }
   @media (max-width: 900px) {
-    grid-template-columns: repeat(2, 290px);
+    grid-template-columns: repeat(2, 49%);
   }
-  @media (max-width: 600px) {
-    grid-template-columns: repeat(2, 1fr);
+  @media (max-width: 610px) {
+    grid-template-columns: repeat(2, 51%);
   }
 }
 .v-recomendations {
+  height: 100%;
   margin-top: 50px;
   &__title {
     margin-bottom: 25px;
     font-size: 14px;
     font-weight: 500;
     text-transform: uppercase;
+
+    @media (max-width: 420px) {
+      font-size: 12px;
+    }
   }
   &__list {
   }
 }
 .v-product {
-  width: 287px;
+  width: 100%;
   max-height: 340px;
   border-radius: 8px;
   position: relative;
   border: 1px solid #cfcfcf;
+
   align-items: end;
 
   @media (max-width: 610px) {
@@ -631,6 +627,7 @@ a {
 
   & .swiper-slide {
     height: 176px !important;
+    max-width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -655,7 +652,7 @@ a {
     }
   }
   &__price.vip {
-    background-color: #ff6c2c;
+    background-color: var(--orange);
     padding: 0 4px;
     border-radius: 4px;
     color: #fff;
@@ -712,6 +709,7 @@ a {
 .v-pagination {
   gap: 16px;
   margin-top: 32px;
+  margin-bottom: 16px;
   &__list {
     gap: 16px;
   }
@@ -749,7 +747,7 @@ a {
   opacity: 1 !important;
   border-radius: 0 !important;
   &.swiper-pagination-bullet-active {
-    background-color: $orange !important;
+    background-color: var(--orange) !important;
   }
 }
 .overlay {
@@ -777,6 +775,11 @@ a {
 
 .v-cars {
   margin-top: 32px;
+
+  &__container {
+    height: 100%;
+  }
+
   &__block {
     border-top: 1px solid #cfcfcf;
     padding: 30px 0;
@@ -803,7 +806,7 @@ a {
     max-height: 170px !important;
   }
   &-title span {
-    color: $orange;
+    color: var(--orange);
   }
   &-link {
     color: #000;
@@ -829,24 +832,29 @@ a {
   position: relative;
 
   @media (max-width: 600px) {
-    border-radius: 0 !important;
-    border: 0;
-    position: relative;
+    .mob-filter & {
+      border-radius: 0 !important;
+      border: 0;
+      position: relative;
 
-    padding-left: 0;
-    &::before,
-    &::after {
-      content: '';
-      height: 2px;
-      width: 100vw;
-      position: absolute;
-      left: -10px;
-      top: 0;
+      padding-left: 0;
+      &::before,
+      &::after {
+        content: '';
+        height: 2px;
+        width: 100vw;
+        position: absolute;
+        left: -10px;
+        top: 0;
 
-      background-color: #cfcfcf;
+        background-color: #cfcfcf;
+      }
     }
   }
 
+  &__option &__option-block {
+    width: 100% !important;
+  }
   &.selected {
     border-radius: 8px;
     cursor: pointer;
@@ -1349,7 +1357,7 @@ a {
     display: flex;
   }
   &__title {
-    color: $blue;
+    color: var(--blue);
     position: relative;
     margin-right: 10px;
     cursor: pointer;
@@ -1361,6 +1369,9 @@ a {
     height: 6px;
     right: -10px;
     bottom: 17px;
+    @media (max-width: 730px) {
+      bottom: 10px;
+    }
   }
 
   &__title.selected::after {
@@ -1607,8 +1618,6 @@ a {
 
     border-radius: 3px;
   }
-  &__btn {
-  }
   &__btn.phone-showed {
     background-color: rgb(100, 74, 74);
   }
@@ -1829,6 +1838,10 @@ textarea {
   padding-top: 34px;
   display: flex;
   gap: 92px;
+
+  @media (max-width: 760px) {
+    gap: 10px;
+  }
 }
 .v-favourites {
   &__container {
@@ -1977,6 +1990,12 @@ textarea {
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  &__images-item {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
 }
 .main-image {
   max-width: 100%;
@@ -1993,6 +2012,13 @@ textarea {
     height: 80%;
   }
 
+  &__video {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
   &-btns {
     width: 100%;
     background-color: #232323;
@@ -2072,6 +2098,7 @@ textarea {
 }
 
 .thumbnail {
+  display: none;
   width: 80px;
   height: 71px;
   overflow: hidden;
@@ -2082,6 +2109,10 @@ textarea {
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  &:has(img) {
+    display: inline-block;
   }
 }
 
@@ -2126,10 +2157,15 @@ textarea {
     color: #59595e;
     font-size: 14px;
     margin-left: 48px;
+
+    @media (max-width: 676px) {
+      gap: 10px;
+    }
   }
 
-  &__info-status {
-    @media (max-width: 410px) {
+  &__info-status,
+  &__info-product {
+    @media (max-width: 676px) {
       font-size: 12px;
     }
   }
@@ -2148,9 +2184,24 @@ textarea {
   &__answer {
     margin-left: 48px;
   }
-}
 
-.menu-reviews {
+  &__form {
+    padding-top: 20px;
+  }
+
+  &__input {
+    width: 100%;
+    border: 1px solid #cfcfcf;
+    padding: 8px 16px;
+    margin-bottom: 8px;
+  }
+
+  &__button {
+    max-width: 140px;
+    margin: 0;
+  }
+}
+.menu-toggler {
   display: flex;
   align-items: end;
   gap: 20px;
@@ -2257,7 +2308,7 @@ textarea {
     gap: 8px;
     margin-bottom: 22px;
     border-bottom: 1px solid #cfcfcf;
-    padding-bottom: 24px;
+    padding-bottom: 50px;
   }
   &__mark {
     position: relative;
@@ -2271,11 +2322,18 @@ textarea {
 
     left: 96px;
     bottom: 8px;
+
+    @media (max-width: 365px) {
+      width: 200px;
+    }
   }
   &__mark-quantity {
     font-size: 12px;
     position: absolute;
     left: 350px;
+    @media (max-width: 365px) {
+      left: 300px;
+    }
   }
 }
 
@@ -2292,6 +2350,10 @@ textarea {
     @media (max-width: 600px) {
       border: 0;
     }
+  }
+  &__list-item-answer {
+    padding-top: 25px;
+    padding-left: 50px;
   }
 }
 
@@ -2558,6 +2620,15 @@ textarea {
   }
 }
 
+.v-agencies {
+  &__container {
+    padding-top: 44px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+}
+
 .v-salons {
   &__list {
     display: grid;
@@ -2627,13 +2698,7 @@ textarea {
   }
 }
 
-.v-salon-page {
-  &__container {
-    padding-top: 44px;
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-  }
+.v-salon-info {
   &__info {
     border: 1px solid #cfcfcf;
     border-radius: 8px;
@@ -2641,6 +2706,10 @@ textarea {
 
     display: flex;
     gap: 16px;
+
+    @media (max-width: 576px) {
+      display: none;
+    }
   }
 
   &__content {
@@ -2671,28 +2740,75 @@ textarea {
   &__image {
     width: 210px;
     height: 210px;
+    @media (max-width: 576px) {
+      width: 72px;
+      height: 72px;
+    }
+  }
+
+  &__title {
+    font-size: 24px !important;
+    font-weight: 500 !important;
+    margin-bottom: 8px !important;
+
+    @media (max-width: 576px) {
+      font-size: 18px !important;
+    }
+  }
+  &__button {
+    width: 100%;
+    padding: 11px 0;
+    background-color: var(--blue);
+    color: #fff !important;
+
+    border-radius: 4px !important;
+
+    margin-top: 16px;
+  }
+
+  &__button.call {
+    background-color: #3db460;
+  }
+
+  &__info.mob {
+    display: none;
+    @media (max-width: 576px) {
+      display: flex;
+    }
+  }
+
+  &__info.mob &__block {
+    position: fixed;
+    bottom: 10px;
+    width: 95%;
+    z-index: 100;
+    left: 50%;
+    transform: translateX(-50%);
+
+    background-color: #fff;
+    box-shadow: 0px 0px 7.6px 1px #00000040;
+
+    display: flex;
+    gap: 8px;
+    padding: 8px;
+  }
+
+  &__info.mob &__button {
+    margin-top: 0;
+  }
+}
+
+.v-salon-page {
+  &__container {
+    padding-top: 44px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
   }
 
   & * {
     font-size: 14px;
     color: #1c1819;
-  }
-
-  &__title {
-    font-size: 24px;
-    font-weight: 500;
-    margin-bottom: 8px;
-  }
-
-  &__button {
-    width: 100%;
-    padding: 11px 0;
-    background-color: #0c4a60;
-    color: #fff;
-
-    border-radius: 3px;
-
-    margin-top: 16px;
   }
 
   &__time {
@@ -2711,6 +2827,9 @@ textarea {
 
   &__filter .v-selectStyled {
     max-width: 228px;
+    @media (max-width: 920px) {
+      max-width: 100%;
+    }
   }
   &__filter .v-selectStyled input {
     width: 100%;
@@ -2985,6 +3104,290 @@ textarea {
 
     @media (max-width: 900px) {
       flex-direction: column;
+    }
+  }
+}
+
+.cssload {
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.v-settings {
+  &__container {
+    height: 100%;
+  }
+  &__button {
+    max-width: 216px;
+    border-radius: 8px;
+    background-color: rgba($color: #0c4a60, $alpha: 0.5);
+  }
+  &__button.active {
+    background-color: #0c4a60;
+  }
+}
+
+.v-personal-settings {
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    max-width: 490px;
+  }
+  &__list-item {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+.param {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  @media (max-width: 460px) {
+    flex-direction: column;
+    align-items: start;
+  }
+  &__input {
+    width: 100%;
+    padding: 7px 16px;
+    border-radius: 4px;
+    border: 1px solid #cfcfcf;
+  }
+
+  &__title {
+    white-space: nowrap;
+  }
+  &__title + div {
+    width: 310px !important;
+  }
+}
+.profile-page {
+  margin-top: 35px;
+
+  & .container {
+    display: flex;
+    gap: clamp(0.625rem, -3.897rem + 12.06vw, 5.75rem);
+  }
+
+  &__content {
+    width: 100%;
+  }
+}
+
+.password-reset {
+  &__title {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 16px;
+  }
+  &__subtitle {
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  &__block * {
+    font-size: 14px;
+    font-weight: 500;
+  }
+  &__input {
+    border: 1px solid #cfcfcf;
+    border-radius: 4px;
+    padding: 5px 10px;
+    width: 100%;
+  }
+  &__block {
+    display: flex;
+    flex-direction: column;
+    max-width: 300px;
+    gap: 5px;
+  }
+  &__block + &__block {
+    margin-top: 20px;
+  }
+
+  &__button {
+    max-width: 216px;
+    border-radius: 8px;
+  }
+}
+
+.v-notifications {
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
+.notification {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0px 0px 12.2px 0px #00000040;
+
+  padding: 12px 24px;
+  &__title {
+    font-size: 14px;
+  }
+  &__subtitle,
+  &__date {
+    color: #59595e;
+    font-size: 12px;
+  }
+
+  &__date {
+    font-size: 11px;
+    white-space: nowrap;
+  }
+}
+
+.search {
+  display: inline-block;
+  max-width: 275px;
+  margin-left: 10px;
+  height: 40px;
+  position: relative;
+  @media (max-width: 760px) {
+    max-width: clamp(8.125rem, -8.281rem + 43.75vw, 12.5rem);
+  }
+
+  & input {
+    width: 100%;
+    border: 0;
+    padding: 0 35px 0 16px;
+    border-radius: 4px;
+    height: 100%;
+    color: #000;
+  }
+  &::after {
+    content: url(../images/search.svg);
+    position: absolute;
+    right: 10px;
+    bottom: 0px;
+  }
+}
+.v-ads {
+  &__search {
+    max-width: 100% !important;
+    width: 100%;
+    display: flex;
+    justify-content: end;
+  }
+  &__search input {
+    border: 1px solid #cfcfcf;
+    max-width: 460px;
+  }
+}
+
+.ad {
+  &__info {
+    display: flex;
+    gap: 16px;
+    width: 100%;
+
+    padding: 16px 0;
+
+    border-bottom: 1px solid #cfcfcf;
+
+    @media (max-width: 1024px) {
+      border: 0;
+    }
+  }
+  &__title {
+    font-weight: 500;
+    font-size: 14px;
+  }
+  &__price {
+    font-size: 14px;
+  }
+  &__subtitle {
+    font-size: 12px;
+  }
+  &__buttons {
+    display: flex;
+    gap: 16px;
+    @media (max-width: 1024px) {
+      display: none;
+    }
+  }
+  &__buttons.mob {
+    display: none;
+    @media (max-width: 1024px) {
+      display: flex;
+      gap: 16px;
+    }
+  }
+  &__button {
+    font-size: 14px;
+    color: #0c4a60;
+    padding: 11px 16px;
+    box-shadow: 0px 0px 9.5px 0px #00000040;
+
+    height: 40px;
+    white-space: nowrap;
+  }
+  &__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+  }
+  &__image {
+    width: 168px;
+    height: 112px;
+
+    object-fit: cover;
+
+    background-color: #cfcfcf;
+  }
+
+  &__image img {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.v-sort {
+  position: relative;
+  &__container {
+    cursor: pointer;
+    white-space: nowrap;
+    width: 100%;
+
+    @media (max-width: 420px) {
+      gap: 5px;
+    }
+  }
+
+  &__menu {
+    position: absolute;
+    z-index: 1000;
+
+    background-color: #fff;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    padding: 20px 5px 20px 10px;
+
+    width: 110%;
+  }
+
+  &__menu-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  &__menu-list-item {
+    cursor: pointer;
+    transition: 0.2s ease;
+    padding: 2px;
+
+    @media (hover: hover) {
+      &:hover {
+        background-color: #ebebeb;
+      }
     }
   }
 }

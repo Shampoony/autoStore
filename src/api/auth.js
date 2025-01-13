@@ -1,5 +1,6 @@
 export const accessToken = getAccessToken()
 export function getAccessToken() {
+  console.log(localStorage)
   return JSON.parse(localStorage.getItem('user'))?.access || ''
 }
 

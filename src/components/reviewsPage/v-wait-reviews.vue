@@ -4,18 +4,23 @@
     <div class="v-reviews__container container my-container">
       <v-left-menu />
       <div class="v-reviews__content">
-        <div class="v-reviews__menu menu-reviews flex gap-4">
+        <div class="v-reviews__menu menu-toggler flex gap-4">
           <router-link
-            :to="{ name: 'reviews_wait' }"
-            class="v-reviews__menu-item menu-reviews__item active"
+            :to="{ name: getUrlsName('reviews_wait') }"
+            class="v-reviews__menu-item menu-toggler__item active"
             >Ждут оценки</router-link
           >
-          <router-link :to="{ name: 'my_reviews' }" class="v-reviews__menu-item menu-reviews__item"
+          <router-link
+            :to="{ name: getUrlsName('my_reviews') }"
+            class="v-reviews__menu-item menu-toggler__item"
             >Оставленные</router-link
           >
         </div>
         <div class="v-reviews__wait">
-          <ul class="reviews-block__list flex flex-col">
+          <reviews-block>
+            <div></div>
+          </reviews-block>
+          <!--  <ul class="reviews-block__list flex flex-col">
             <li
               class="reviews-block__list-item review flex-col gap-2"
               v-for="review in reviews"
@@ -45,23 +50,26 @@
               </div>
               <div class="review__message">{{ review.text }}</div>
             </li>
-          </ul>
+          </ul> -->
         </div>
       </div>
     </div>
   </main>
 </template>
 <script>
-import { filterReviews } from '@/utils'
-import { mapActions, mapGetters } from 'vuex'
+import reviewsBlock from './reviews-block.vue'
 import vHeader from '../generalComponents/v-header.vue'
 import vLeftMenu from '../generalComponents/v-left-menu.vue'
+
+import { filterReviews, getUrlsName } from '@/utils'
+import { mapActions, mapGetters } from 'vuex'
 export default {
   name: 'vReviews',
-  components: { vLeftMenu, vHeader },
+  components: { vLeftMenu, vHeader, reviewsBlock },
   data() {
     return {
-      reviews: []
+      reviews: [],
+      answers: []
     }
   },
   methods: {
@@ -69,13 +77,14 @@ export default {
     async fetchReviews() {
       await this.GET_REVIEWS_FROM_API()
       this.reviews = filterReviews(this.REVIEWS)
-    }
+    },
+    getUrlsName
   },
   computed: {
     ...mapGetters(['REVIEWS'])
   },
-  mounted() {
-    this.GET_REVIEWS_FROM_API()
+  async mounted() {
+    await this.fetchReviews()
   }
 }
 </script>

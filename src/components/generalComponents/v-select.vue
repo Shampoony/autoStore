@@ -1,7 +1,7 @@
 <template>
   <div class="v-select" :class="{ selected: !areOptionsVisible }">
     <p class="v-select__selected" @click="areOptionsVisible = !areOptionsVisible">{{ selected }}</p>
-    <div class="options" v-if="areOptionsVisible">
+    <div class="options" v-if="areOptionsVisible && options.length > 1">
       <p
         class="v-select__options"
         v-for="option in options"

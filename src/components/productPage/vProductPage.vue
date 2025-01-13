@@ -257,8 +257,10 @@ export default {
       try {
         const typeOfProduct = Object.keys(this.$route.query)[0].replace('_', '-')
         console.log(typeOfProduct)
+        const productId = Object.values(this.$route.query)[0]
+        console.log(typeOfProduct)
         const response = await fetch(
-          `http://api.rcarentacar.com/api/${typeOfProduct}/${typeOfProduct}/${this.$route.params.id}/`,
+          `http://api.rcarentacar.com/api/${typeOfProduct}/${typeOfProduct}/${productId}/`,
           {
             method: 'GET',
             headers: {
@@ -268,6 +270,7 @@ export default {
           }
         )
         const responseData = await response.json()
+        console.log('йоу', responseData)
         this.product_data = responseData
         this.productInFavourites = this.product_data.is_fav
 

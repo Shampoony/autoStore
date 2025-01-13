@@ -29,17 +29,20 @@
         v-for="option in options.options"
         :key="option.id"
       >
-        <label v-if="options.is_multiselect" class="flex justify-between w-1" :for="option.name">
+        <div
+          v-if="options.is_multiselect"
+          class="v-selectStyled__option-block flex justify-between"
+        >
           {{ option.name }}
           <input
             :id="option.name"
             :name="options.name"
             :value="option.name"
             type="checkbox"
-            :checked="isChecked"
+            :checked="isCheckboxChecked[option.name]"
             @click.stop
           />
-        </label>
+        </div>
         <p v-else @click="selectOption(option)">
           {{ option.name }}
         </p>
@@ -62,7 +65,8 @@ export default {
     return {
       areOptionsVisible: false,
       selected: this.options.default,
-      isChecked: false
+      isChecked: false,
+      isCheckboxChecked: {}
     }
   },
   computed: {
@@ -75,16 +79,19 @@ export default {
   },
   methods: {
     toggleCheck() {
-      console.log('Лала')
       this.isChecked = !this.isChecked
     },
     toggleMenu() {
       this.areOptionsVisible = false
     },
     selectOption(option) {
-      console.log('-----')
-      console.log(this.options.is_multiselect, option)
+      console.log('Зашли ')
       if (this.options.is_multiselect) {
+        this.isCheckboxChecked[option.name] =
+          option.name in this.isCheckboxChecked
+            ? (this.isCheckboxChecked[option.name] = !this.isCheckboxChecked[option.name])
+            : true
+
         const optionName = option.name ? option.name : option
         if (this.selected) {
           if (this.selected.includes(this.options.default)) {
@@ -112,10 +119,12 @@ export default {
         }
         this.areOptionsVisible = false
       }
+      console.log(this.isCheckboxChecked)
     },
 
     resetOption() {
       this.selected = this.options.default
+      this.isCheckboxChecked = {}
       this.areOptionsVisible = false
     }
   },

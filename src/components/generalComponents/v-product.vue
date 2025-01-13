@@ -1,20 +1,14 @@
 <template>
-  <!--  <router-link
-    :to="{
-      name: 'product-item',
-      params: { id: product_data.id },
-      query: { [type_of_product]: product_data.id }
-    }"
-  > -->
   <div class="v-product">
-    <router-link
+    <!--   <router-link
       :to="{
         name: 'product-item',
-        params: { id: product_data.id },
+
         query: { [type_of_product]: product_data.id }
       }"
     >
       <swiper
+        v-if="product_data.images"
         ref="swiperRef"
         class="v-product__images"
         @mouseover="isPagination = true"
@@ -35,8 +29,8 @@
           </a>
         </swiper-slide>
       </swiper>
-    </router-link>
-    <div class="v-product__content">
+    </router-link> -->
+    <!-- <div class="v-product__content">
       <div class="v-product__block flex justify-between">
         <div class="v-product__price flex items-center" :class="{ vip: product_data.vip }">
           {{ prettyNum(product_data.price) }} {{ currency }}
@@ -57,7 +51,7 @@
       <router-link
         :to="{
           name: 'product-item',
-          params: { id: product_data.id },
+
           query: { [type_of_product]: product_data.id }
         }"
       >
@@ -86,19 +80,98 @@
       </router-link>
     </div>
     <div v-if="product_data.is_viewed" class="v-product__viewed">Просмотрено</div>
-    <div v-if="product_data.company" class="v-product__mark flex items-center justify-center">
+    <div
+      v-if="product_data.company && product_data.images"
+      class="v-product__mark flex items-center justify-center"
+    >
+      Салон
+    </div> -->
+    <router-link
+      :to="{
+        name: 'product-item',
+
+        query: { [type_of_product]: product_data.id }
+      }"
+    >
+      <swiper
+        v-if="product_data.images"
+        ref="swiperRef"
+        class="v-product__images"
+        @mouseover="isPagination = true"
+        @mouseleave="isPagination = false"
+        :slides-per-view="1"
+        :space-between="0"
+        :pagination="isPagination"
+        :modules="modules"
+      >
+        <swiper-slide v-for="image in getImages" :key="image">
+          <img :src="image.image" class="v-product__image" alt="product" />
+          <img :src="image.image" class="product-image-overlay" alt="product" />
+        </swiper-slide>
+      </swiper>
+    </router-link>
+    <div class="v-product__content">
+      <div class="v-product__block flex justify-between">
+        <div class="v-product__price flex items-center" :class="{ vip: product_data.vip }">
+          {{ prettyNum(product_data.price) }} {{ currency }}
+        </div>
+        <img
+          @click.stop="toggleToFavourites"
+          v-if="!productInFavourites"
+          src="../../assets/images/favourites.svg"
+          alt=""
+        />
+        <img
+          @click.stop="toggleToFavourites"
+          v-if="productInFavourites"
+          src="../../assets/images/favourites-on.svg"
+          alt=""
+        />
+      </div>
+      <router-link
+        :to="{
+          name: 'product-item',
+
+          query: { [type_of_product]: product_data.id }
+        }"
+      >
+        <div class="v-product__block">
+          <p>{{ product_data.title }}</p>
+        </div>
+        <div class="v-product__block">
+          <div class="v-product__description flex">
+            <div v-if="product_data.year_of_release">{{ product_data.year_of_release }}г</div>
+            <div v-if="product_data.engine_volume">
+              , {{ prettyNum(product_data.engine_volume) }}л
+            </div>
+            <div v-if="product_data.mileage">, {{ product_data.mileage }}км</div>
+          </div>
+        </div>
+        <div class="v-product__block">
+          <div class="v-product__location flex gap-2">
+            <div v-if="city.city">{{ city.city }},</div>
+            <div v-if="product_data.created_at">
+              {{ formattedDateTime.time }}
+            </div>
+          </div>
+        </div>
+      </router-link>
+    </div>
+    <div v-if="product_data.is_viewed" class="v-product__viewed">Просмотрено</div>
+    <div
+      v-if="product_data.company && product_data.images"
+      class="v-product__mark flex items-center justify-center"
+    >
       Салон
     </div>
   </div>
-
-  <!--  </router-link> -->
 </template>
 
 <script>
 import 'swiper/css'
 import 'swiper/css/pagination'
 import { Pagination } from 'swiper/modules'
-import { getCurrency, getOptionsById } from '@/api/requests'
+import { getCurrency, getOptionsById, isProductInFavourites } from '@/api/requests'
 import prettyNum from '@/filters/prettyNum.js'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { addToFavourites, removeFromFavourites } from '@/api/requests'
@@ -123,8 +196,9 @@ export default {
       widthOfSegments: 0,
       tempOfWidth: 0,
       currentSegment: 0,
+
       isPagination: false,
-      productInFavourites: this.product_data.is_fav,
+      productInFavourites: false,
       swiper: null,
       currency: '',
       city: {},
@@ -198,13 +272,22 @@ export default {
         this.currency = currencyObj.currency
       }
     },
+    async checkIfProductInfFav() {
+      const typeOfProduct = this.type_of_product.replace('-', '_') + '_id'
+      const productId = this.product_data.id
+      const isFavourite = await isProductInFavourites(
+        JSON.stringify({ [typeOfProduct]: productId })
+      )
+      this.productInFavourites = isFavourite
+    },
     toggleToFavourites() {
+      const typeOfProduct = this.type_of_product.replace('-', '_')
       if (!this.productInFavourites) {
-        addToFavourites(this.type_of_product + '_id', this.product_data.id).then(() => {
+        addToFavourites(typeOfProduct + '_id', this.product_data.id).then(() => {
           this.productInFavourites = true
         })
       } else {
-        removeFromFavourites(this.type_of_product + '_id', this.product_data.id).then(() => {
+        removeFromFavourites(typeOfProduct + '_id', this.product_data.id).then(() => {
           this.productInFavourites = false
         })
       }
@@ -218,6 +301,7 @@ export default {
   async mounted() {
     await this.setCurrency()
     await this.setProductCity()
+    await this.checkIfProductInfFav()
   }
 }
 </script>

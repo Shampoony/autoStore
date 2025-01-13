@@ -43,7 +43,13 @@ export default {
   },
   methods: {
     changePage(page) {
-      this.$emit('page-changed', page)
+      this.$router.push({
+        path: this.$route.path, // сохраняем текущий путь
+        query: {
+          ...this.$route.query, // сохраняем все текущие query параметры
+          page: page // добавляем новый параметр или обновляем существующий
+        }
+      })
     },
     nextPage() {
       if (this.currentPage < this.totalPages) {

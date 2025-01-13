@@ -1,5 +1,25 @@
 import { accessToken } from './auth'
-import { decodeAccessToken, getUserId } from '@/utils'
+
+export async function getTransportProducts(page) {
+  try {
+    const response = await fetch(
+      `http://api.rcarentacar.com/api/transport/transport/?page=${page}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`
+        }
+      }
+    )
+
+    const responseData = await response.json()
+    console.log(responseData)
+    return responseData
+  } catch (error) {
+    console.error(`Ошибка при получении товаров данной категории:`, error)
+  }
+}
 
 export async function getFilteredProducts(url) {
   console.log(url)
@@ -200,17 +220,40 @@ export async function getFavouriteProducts() {
     console.error('Ошибка при получении избранного:', error)
   }
 }
-export async function isProductInFavourites(productId) {
-  try {
-    const responseData = await getFavouriteProducts()
 
-    const userId = getUserId()
-    for (let product of responseData) {
-      if (product.user == userId && product.transport.id == productId) {
-        return true
+export async function getReviewAnswers(reviewId) {
+  try {
+    const response = await fetch(
+      `http://api.rcarentacar.com/api/users/reviews/${reviewId}/answers/`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`
+        }
       }
-    }
-    return false
+    )
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.error('Ошибка при получении ответов на отзыв:', error)
+  }
+}
+
+export async function isProductInFavourites(productInfo) {
+  try {
+    const response = await fetch(`http://api.rcarentacar.com/api/users/check-favorite/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`
+      },
+      body: productInfo
+    })
+
+    const responseData = await response.json()
+
+    return responseData['is_favorite']
   } catch (error) {
     console.error('Ошибка при получении избранного:', error)
   }
@@ -292,11 +335,13 @@ export async function getUserTransport(userId) {
         }
       }
     )
+    console.log(response)
     if (!response.ok) {
       throw new Error('Ошибка полчения транспорта пользователя')
     }
 
     const responseData = await response.json()
+    console.log('Транспорт пользователя: ', responseData)
     return responseData
   } catch (error) {
     console.error('Ошибка при получении транспорта пользователя:', error)
@@ -395,7 +440,7 @@ export async function deleteComparedProduct(id) {
 }
 
 export async function addProductToCompare(transport_id, owner) {
-  console.log(JSON.stringify({ transport: transport_id, owner: owner }))
+  console.log(transport_id, owner)
   try {
     const response = await fetch(
       `http://api.rcarentacar.com/api/transport/comparison-transports/`,
@@ -422,7 +467,7 @@ export async function addProductToCompare(transport_id, owner) {
 export async function getTransportById(transport_id) {
   try {
     const response = await fetch(
-      `http://api.rcarentacar.com/api/transport/transports/${transport_id}`,
+      `http://api.rcarentacar.com/api/transport/transport/${transport_id}`,
       {
         method: 'GET',
         headers: {
@@ -550,4 +595,58 @@ export async function filterProducts(url, form, selectsRefs) {
   console.log('Полученные продукты:', products)
 
   return products // Возвращаем полученные данные
+}
+
+/* Сортировка */
+
+export async function getSortedProducts(queryParams) {
+  try {
+    const response = await fetch(`http://api.rcarentacar.com/api/transport/sorted${queryParams}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.error('Ошибка при загрузке чата:', error)
+  }
+}
+
+export async function getFavouriteRealEstate() {
+  try {
+    const response = await fetch(`http://api.rcarentacar.com/api/users/favorite/real-estate/`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.error('Ошибка при получении избранного:', error)
+  }
+}
+
+export async function addFavouriteRealEstate(id) {
+  try {
+    const response = await fetch(`http://api.rcarentacar.com/api/users/favorite/add_favorite/`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`
+      },
+      body: JSON.parse({ real_estate_id: id })
+    })
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.error('Ошибка при получении избранного:', error)
+  }
 }

@@ -7,5 +7,8 @@ export default {
   },
   SET_TRANSPORT_FAVOURITES_TO_STATE: (state, favourites) => {
     state.favourites = favourites.results
+  },
+  SET_PAGE_TYPE_TO_STATE: (state, page_type) => {
+    state.page_type = page_type
   }
 }

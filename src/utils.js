@@ -1,8 +1,10 @@
+import store from './vuex/store'
 import { accessToken } from './api/auth'
-import { getFilteredProducts } from './api/requests'
+import { getFilteredProducts, createChat } from './api/requests'
 
 export function decodeAccessToken() {
   const payload = accessToken.split('.')[1]
+  console.log(accessToken)
   const decodedPayload = atob(payload.replace(/-/g, '+').replace(/_/g, '/'))
   return JSON.parse(decodedPayload)
 }
@@ -49,32 +51,55 @@ export function getPrettyDate(timestamp) {
   })
 }
 export async function filterProducts(url, form, selectsRefs) {
-  const filledFields = Object.fromEntries(
-    Object.entries(form)
-      .filter(([_, field]) => field.value) // Оставляем поля, у которых value не пустое
-      .map(([key, field]) => [key, field.value]) // Разворачиваем объект { value, default } -> value
-  )
-  console.log('Зашли', filledFields)
+  // Фильтрация заполненных полей формы
+  const filledFields = Object.entries(form)
+    .filter(([key, field]) => {
+      if (Array.isArray(field)) {
+        return field.length > 0 // Учитываем массивы
+      }
+      return field.value // Проверяем значение остальных полей
+    })
+    .reduce((acc, [key, field]) => {
+      if (Array.isArray(field)) {
+        // Для массивов добавляем каждое значение как отдельный ключ
+        field.forEach((value) => acc.push([key, value]))
+      } else {
+        acc.push([key, field.value])
+      }
+      return acc
+    }, [])
+
+  console.log('Фильтрованные поля формы:', filledFields)
 
   // Дополняем filledFields значениями из selectsRefs
-  for (let select in selectsRefs) {
-    if (selectsRefs[select].selectedValue) {
-      filledFields[selectsRefs[select].options.name] = selectsRefs[select].selectedValue
+  for (const selectKey in selectsRefs) {
+    const select = selectsRefs[selectKey]
+    if (select.selectedValue) {
+      filledFields.push([select.options.name, select.selectedValue])
     }
   }
 
-  const queryParams = new URLSearchParams(filledFields).toString()
-  const queryURL = `${url}?${decodeURIComponent(queryParams)}`
+  console.log('Объединённые данные формы:', filledFields)
 
-  window.location.search = queryParams
+  // Формируем строку параметров вручную
+  const queryParams = filledFields
+    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+    .join('&')
 
-  console.log('Запрос:', queryURL)
+  const queryURL = `${url}?${queryParams}`
 
-  // Дожидаемся ответа от сервера
-  const products = await getFilteredProducts(queryURL)
-  console.log('Полученные продукты:', products)
+  console.log('Сформированный запрос:', queryURL)
 
-  return products // Возвращаем полученные данные
+  // Выполняем запрос к серверу
+  try {
+    const products = await getFilteredProducts(queryURL)
+    window.location.search = queryParams
+    console.log('Полученные продукты:', products)
+    return products // Возвращаем данные
+  } catch (error) {
+    console.error('Ошибка при получении продуктов:', error)
+    throw error // Пробрасываем ошибку для обработки выше
+  }
 }
 
 export function setQueryParams(form, selectsRefs) {
@@ -82,26 +107,39 @@ export function setQueryParams(form, selectsRefs) {
   if (queryParams) {
     const params = new URLSearchParams(queryParams)
     for (const [key, value] of params.entries()) {
+      if (Array.isArray(form[key])) {
+        form[key].push(value)
+      }
       if (key in form) {
-        console.log(form[key])
         form[key].value = value
       } else if (key in selectsRefs) {
         selectsRefs[key].selectOption(value)
       }
     }
   }
+  console.log('лала')
 }
 // Функция для сброса фильтров
 export function resetFilter(form, selectsRefs) {
   for (let key in form) {
     if (form[key].default !== undefined) {
-      form[key].value = form[key].default // Сбрасываем значение на default
+      // Проверка типа значения перед сбросом
+      if (Array.isArray(form[key].default)) {
+        form[key].value = [] // Для массивов сбрасываем в пустой массив
+      } else if (typeof form[key].default === 'boolean') {
+        form[key].value = false // Для boolean сбрасываем в false
+      } else {
+        form[key].value = form[key].default // Для всех остальных типов сбрасываем в default значение
+      }
     }
   }
+
+  console.log(selectsRefs)
   // Сбрасываем селекты через их refs
   if (selectsRefs) {
     for (let selectName in selectsRefs) {
-      selectsRefs[selectName]?.resetOption?.()
+      console.log(selectsRefs[selectName])
+      selectsRefs[selectName]?.resetOption()
     }
   }
 }
@@ -122,4 +160,34 @@ export function resetFilter(form, selectsRefs) {
 export function getQuantityOfReviews() {
   /*  const userId = decodeAccessToken().user_id
   return filterReviews(store.getters.REVIEWS, userId) */
+}
+
+export const convertDateToISO = (date) => {
+  const [day, month, year] = date.split('.')
+  return `${year}-${month}-${day}`
+}
+
+export function writeMessage() {
+  console.log('Сюдаа')
+  if (this.user.id != getUserId()) {
+    createChat(this.user.username).then((res) => {
+      console.log(res)
+      this.$router.push({ name: 'current_chat', params: { id: res.id } })
+    })
+  }
+}
+
+export const setFormFromURL = (form, refs, queryParams) => {
+  const params = new URLSearchParams(queryParams)
+  for (const [key, value] of params.entries()) {
+    if (key in form) {
+      form[key].value = value
+    } else if (key in selects in refs) {
+      refs[key].selectOption(value)
+    }
+  }
+}
+const PAGE_TYPE = store.getters.PAGE_TYPE
+export function getUrlsName(name) {
+  return PAGE_TYPE == 'transport' ? name : `real_estate_${name}`
 }

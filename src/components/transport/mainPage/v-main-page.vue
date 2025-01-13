@@ -37,7 +37,7 @@
     </div>
     <main>
       <vCards />
-      <vRecomendations />
+      <vRecomendations :sortedProducts="sortedProducts" />
     </main>
     <v-bottom-menu :active-item="nameActiveItem" />
   </div>
@@ -46,8 +46,9 @@
 <script>
 import vCards from './v-cards.vue'
 import vRecomendations from './v-recomendations.vue'
-import vHeader from '../generalComponents/v-header.vue'
-import vBottomMenu from '../generalComponents/v-bottom-menu.vue'
+import vHeader from '@/components/generalComponents/v-header.vue'
+import vBottomMenu from '@/components/generalComponents/v-bottom-menu.vue'
+
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
@@ -67,6 +68,7 @@ export default {
     return {
       nameActiveItem: 'main',
       isMainMenuVisible: false,
+      sortedProducts: [],
       categories: {
         transport: this.TRANSPORT_CATEGORIES,
         spare_parts: this.SPARE_PARTS_CATEGORIES
@@ -113,6 +115,7 @@ export default {
         this.selectedCategories = this.transportCategories
       }
     },
+    sortProducts() {},
     async loadData() {
       await this.GET_TRANSPORT_CATEGORIES_FROM_API()
       await this.GET_SPARE_PARTS_CATEGORIES_FROM_API()

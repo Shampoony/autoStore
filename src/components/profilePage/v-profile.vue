@@ -15,7 +15,10 @@
         <div class="v-profile__author-button" @click="writeMessage">Написать</div>
       </div>
       <div class="v-profile__products-container" v-if="userTransport.length">
-        <h2 class="v-profile__products-count">{{ userTransport.length }} объявлений</h2>
+        <div class="flex w-full justify-between">
+          <h2 class="v-profile__products-count">{{ userTransport.length }} объявлений</h2>
+          <v-sort class="mr-10" @sort="sortProducts" :ownerId="user?.id" />
+        </div>
         <ul class="v-profile__products-list">
           <li class="v-profile__products-item" v-for="product in userTransport" :key="product.id">
             <v-product :product_data="product" :type_of_product="'transport'" />
@@ -32,10 +35,11 @@ import { getUserById, getUserTransport, createChat } from '@/api/requests'
 import vHeader from '../generalComponents/v-header.vue'
 import vProduct from '../generalComponents/v-product.vue'
 import averageRating from '../generalComponents/average-rating.vue'
+import vSort from '../generalComponents/v-sort.vue'
 
 export default {
   name: 'vProfile',
-  components: { vHeader, vProduct, averageRating },
+  components: { vHeader, vProduct, averageRating, vSort },
   data() {
     return {
       userProducts: [],
@@ -59,6 +63,10 @@ export default {
       createChat(this.user.username).then((res) => {
         this.$router.push({ name: 'current_chat', params: { id: res.id } })
       })
+    },
+    sortProducts(sortedProducts) {
+      console.log('Пришли')
+      this.userTransport = sortedProducts
     }
   },
   async mounted() {

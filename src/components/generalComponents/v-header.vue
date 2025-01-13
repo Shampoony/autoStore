@@ -5,25 +5,33 @@
         <nav class="v-header-top__menu menu flex justify-between">
           <div class="v-header-top__switcher flex gap-2 items-center justify-start">
             <router-link
-              class="v-header-top__switcher-picker active"
+              class="v-header-top__switcher-picker"
+              :class="{ active: PAGE_TYPE == 'transport' }"
               :to="{ name: 'transport-filter' }"
               >Авто</router-link
             >
-            <a class="v-header-top__switcher-picker" href="#!">Недвижимость</a>
+            <router-link
+              class="v-header-top__switcher-picker"
+              :class="{ active: PAGE_TYPE == 'real-estate' }"
+              :to="{ name: 'real_estate' }"
+            >
+              Недвижимость
+            </router-link>
           </div>
           <ul class="menu__list flex gap-5 items-center">
             <li class="menu__list-item"><a href="#!">Помощь</a></li>
             <li class="menu__list-item">
               Техподдержка: <a href="tel:0125057755">(012) 505-77-55</a>
             </li>
+
             <li class="menu__list-item chat">
-              <router-link :to="{ name: 'chat' }">
+              <router-link :to="{ name: getUrlsName('chat') }">
                 <img src="../../assets/images/chats.svg" alt="chat" />
                 <div class="chat__item">11</div>
               </router-link>
             </li>
             <li class="menu__list-item">
-              <router-link :to="{ name: 'favourites' }">
+              <router-link :to="{ name: getUrlsName('favourites') }">
                 <img src="../../assets/images/like.svg" alt="" />
               </router-link>
             </li>
@@ -33,7 +41,7 @@
             <router-link class="menu__list-item" :to="{ name: 'registration' }" v-if="!user"
               >Регистрация</router-link
             >
-            <li class="menu__list-item cabinet-link" v-if="user">
+            <li class="menu__list-item cabinet-link" v-click-outside="closeCabinetMenu">
               <span
                 class="cabinet-link__title"
                 :class="{ selected: isCabinetActive }"
@@ -46,24 +54,26 @@
                 </div>
                 <div class="cabinet-link__block">
                   <div class="cabinet-link__item">
-                    <a href="">Мой профиль</a>
+                    <router-link :to="{ name: getUrlsName('my_profile') }">Мой профиль</router-link>
                   </div>
                   <div class="cabinet-link__item">
-                    <a href="">Мои объявления</a>
+                    <router-link :to="{ name: getUrlsName('my_ads') }">Мои объявления</router-link>
                   </div>
                   <div class="cabinet-link__item">
-                    <router-link :to="{ name: 'my_reviews' }">Мои отзывы</router-link>
+                    <router-link :to="{ name: getUrlsName('my_reviews') }">Мои отзывы</router-link>
                   </div>
                   <div class="cabinet-link__item">
-                    <router-link :to="{ name: 'favourites' }">Избранное</router-link>
+                    <router-link :to="{ name: getUrlsName('favourites') }">Избранное</router-link>
                   </div>
                 </div>
                 <div class="cabinet-link__block">
                   <div class="cabinet-link__item">
-                    <router-link to="/messages">Сообщения</router-link>
+                    <router-link :to="getUrlsName('chat')">Сообщения</router-link>
                   </div>
                   <div class="cabinet-link__item">
-                    <router-link to="/notifications">Уведомления</router-link>
+                    <router-link :to="{ name: getUrlsName('notifications') }"
+                      >Уведомления</router-link
+                    >
                   </div>
                 </div>
                 <div class="cabinet-link__block">
@@ -72,7 +82,7 @@
                     <span class="" style="text-align: end">0</span>
                   </div>
                   <div class="cabinet-link__item">
-                    <router-link to="/settings">Настройки</router-link>
+                    <router-link :to="{ name: getUrlsName('settings') }">Настройки</router-link>
                   </div>
                 </div>
                 <div class="cabinet-link__item pt-3">
@@ -112,7 +122,7 @@
               <router-link :to="{ name: 'spare_parts' }">Запчасти и Аксессуары</router-link>
             </li>
           </ul>
-          <div class="v-header-bottom__search">
+          <div class="v-header-bottom__search search">
             <input type="text" placeholder="Поиск" />
           </div>
         </nav>
@@ -155,7 +165,7 @@
         </ul>
         <div class="v-header-menu__content">
           <div class="v-header-menu__title">{{ getMenuTitle }}</div>
-          <div class="v-header-menu__links">
+          <div class="v-header-menu__links styled-scrollbar">
             <div
               class="v-header-menu__category category"
               v-for="category in filteredCategory"
@@ -184,11 +194,13 @@
 </template>
 
 <script>
-import { logout } from '@/api/auth'
 import vSelect from './v-select.vue'
-import { mapActions, mapGetters } from 'vuex'
 import averageRating from './average-rating.vue'
-import vMainMobMenu from '../mainPage/v-main-mob-menu.vue'
+import vMainMobMenu from '../transport/mainPage/v-main-mob-menu.vue'
+
+import { logout } from '@/api/auth'
+import { getUrlsName } from '@/utils'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'v-header',
@@ -203,7 +215,7 @@ export default {
   data() {
     return {
       options: [
-        { value: 'UZ', name: 'UZ' },
+        /*   { value: 'UZ', name: 'UZ' }, */
         { value: 'RU', name: 'RU' }
       ],
       isMenuVisible: false,
@@ -217,7 +229,12 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['TRANSPORT_CATEGORIES', 'TRANSPORT_SUB_CATEGORIES', 'SPARE_PARTS_CATEGORIES']),
+    ...mapGetters([
+      'TRANSPORT_CATEGORIES',
+      'TRANSPORT_SUB_CATEGORIES',
+      'SPARE_PARTS_CATEGORIES',
+      'PAGE_TYPE'
+    ]),
     getMenuTitle() {
       return this.menuTitle
     },
@@ -260,6 +277,9 @@ export default {
         document.body.classList.remove('watch__mode')
       }
     },
+    closeCabinetMenu() {
+      this.isCabinetActive = false
+    },
     async loadData() {
       await this.GET_TRANSPORT_SUB_CATEGORIES_FROM_API()
       await this.GET_TRANSPORT_CATEGORIES_FROM_API()
@@ -271,10 +291,12 @@ export default {
     toggleMenu() {
       this.$emit('toggleMenu')
     },
+    getUrlsName,
     logout
   },
   async mounted() {
     await this.loadData()
+    console.log(this.PAGE_TYPE)
   }
 }
 </script>

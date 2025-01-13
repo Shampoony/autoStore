@@ -2,8 +2,8 @@
   <v-header />
   <div class="v-salons">
     <div class="v-salons__container container">
-      <ul class="v-salons__list">
-        <li class="v-salons__list-item" v-for="company in TRANSPORT_COMPANIES" :key="company.id">
+      <ul class="v-salons__list" v-if="companies.length">
+        <li class="v-salons__list-item" v-for="company in companies" :key="company.id">
           <router-link
             class="salon flex gap-4"
             :to="{ name: 'salon-page', params: { id: company.id } }"
@@ -24,6 +24,7 @@
           </router-link>
         </li>
       </ul>
+      <h1 class="not-found">На данный момент здесь нет компаний</h1>
     </div>
   </div>
 </template>
@@ -33,14 +34,24 @@ import { mapGetters, mapActions } from 'vuex'
 export default {
   name: 'vSalons',
   components: { vHeader },
+  data() {
+    return {
+      companies: []
+    }
+  },
   methods: {
-    ...mapActions(['GET_TRANSPORT_COMPANIES'])
+    ...mapActions(['GET_TRANSPORT_COMPANIES', 'GET_REAL_ESTATE_COMPANIES'])
   },
   computed: {
-    ...mapGetters(['TRANSPORT_COMPANIES'])
+    ...mapGetters(['PAGE_TYPE', 'TRANSPORT_COMPANIES', 'REAL_ESTATE_COMPANIES'])
   },
   mounted() {
-    this.GET_TRANSPORT_COMPANIES()
+    if (this.PAGE_TYPE == 'transport') {
+      this.GET_TRANSPORT_COMPANIES()
+      this.companies = this.TRANSPORT_COMPANIES
+    } else {
+      this.GET_REAL_ESTATE_COMPANIES()
+    }
   }
 }
 </script>

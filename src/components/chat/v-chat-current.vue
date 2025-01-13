@@ -34,7 +34,7 @@
           <button
             :class="{ hide: numberShowed }"
             class="v-chat-current__header-button"
-            v-if="user2Info.user_profile.phone"
+            v-if="user2Info.user_profile && user2Info.user_profile.phone"
             @click="numberShowed = !numberShowed"
           >
             Показать телефон
@@ -42,13 +42,13 @@
           <button
             :class="{ show: numberShowed }"
             class="v-chat-current__header-number"
-            v-if="user2Info.user_profile.phone"
+            v-if="user2Info.user_profile && user2Info.user_profile.phone"
             @click="numberShowed = !numberShowed"
           >
             {{ user2Info.user_profile.phone }}
           </button>
         </div>
-        <div class="v-chat-current__header-mob flex justify-between">
+        <div class="v-chat-current__header-mob flex justify-between" v-if="user2Info">
           <div class="flex">
             <div class="v-chat-current__header-mob-back mr-6 flex items-center" @click="toPrevPage">
               <img src="../../assets/images/back.svg" alt="" />

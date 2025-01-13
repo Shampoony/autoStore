@@ -255,7 +255,7 @@
           </div>
         </form>
       </div>
-      <div v-if="!filterMenuOpen">
+      <div v-if="!filterMenuOpen && !isLoading">
         <div class="v-spare-parts__products products-container" v-if="filteredSpareParts.length">
           <v-product
             v-for="product in filteredSpareParts"
@@ -280,6 +280,11 @@
           По вашему запросу ничего не найдено
         </div>
       </div>
+      <div class="v-rent-cars__load cssload" v-if="isLoading">
+        <div class="cssload-container">
+          <div class="cssload-whirlpool"></div>
+        </div>
+      </div>
     </div>
   </main>
 </template>
@@ -288,7 +293,7 @@ import { setQueryParams } from '@/utils'
 import { mapGetters, mapActions } from 'vuex'
 import { filterProducts, getSelectOptions, getFilteredProducts } from '@/api/requests'
 
-import VSelectStyled from '../v-select-styled.vue'
+import VSelectStyled from '../generalComponents/v-select-styled.vue'
 import vHeader from '../generalComponents/v-header.vue'
 import vProduct from '../generalComponents/v-product.vue'
 import VBottomMenu from '../generalComponents/v-bottom-menu.vue'
@@ -300,6 +305,8 @@ export default {
       filteredSpareParts: [],
       isFilteredProductsFound: false,
       filterMenuOpen: false,
+      isLoading: false,
+
       form: {
         condition: { value: 'Все', default: 'Все' },
         availability_status: { value: 'В наличии', default: 'В наличии' },
@@ -325,6 +332,18 @@ export default {
       })
     },
 
+    async fecthSpareParts() {
+      try {
+        this.isLoading = true
+        this.filteredSpareParts = []
+        await this.GET_SPARE_PARTS_FROM_API()
+      } catch (error) {
+        console.error('Ошибка при загрузке данных:', error)
+      } finally {
+        this.isLoading = false
+      }
+    },
+
     async onSubmit(e) {
       e.preventDefault()
       // Полный URL с фильтром
@@ -345,11 +364,10 @@ export default {
     setFilteredProducts() {
       const queryParams = window.location.search
       if (queryParams) {
+        this.isFilteredProductsFound = true
         getFilteredProducts(`http://api.rcarentacar.com/api/spare-parts/filter${queryParams}`).then(
           (products) => {
             this.filteredSpareParts = products || []
-            console.log(this.filteredSpareParts)
-            this.isFilteredProductsFound = true
           }
         )
       }
@@ -358,13 +376,12 @@ export default {
   computed: {
     ...mapGetters(['SPARE_PARTS'])
   },
-  mounted() {
+  async mounted() {
     this.getBrandOptions()
     setQueryParams(this.form, this.$refs)
     this.setFilteredProducts()
 
-    this.GET_SPARE_PARTS_FROM_API()
-    console.log(this.SPARE_PARTS)
+    await this.fecthSpareParts()
   }
 }
 </script>

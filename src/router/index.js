@@ -1,32 +1,38 @@
+import store from '@/vuex/store'
 import MapTest from '../components/generalComponents/MapTest.vue'
 import { createRouter, createWebHistory } from 'vue-router'
+/* ======================== Импорты для "Авто" ========================*/
 
 const vProductPage = () => import('@/components/productPage/vProductPage.vue')
 const VWaitReviews = () => import('@/components/reviewsPage/v-wait-reviews.vue')
 const vBuyersReviews = () => import('@/components/reviewsPage/v-buyers-reviews.vue')
 
 /* Провиль */
+const vAds = () => import('@/components/myAdsPage/v-ads.vue')
 const vProfile = () => import('@/components/profilePage/v-profile.vue')
 const vReviews = () => import('@/components/reviewsPage/v-reviews.vue')
+const vSettings = () => import('@/components/settingsPage/v-settings.vue')
 const vFavourites = () => import('@/components/favouritePage/v-favourites.vue')
+const vNotifications = () => import('@/components/notificationsPage/v-notifications.vue')
 
 /* Аренда */
-const rentCars = () => import('@/components/rentPage/vRentCars.vue')
+const rentCars = () => import('@/components/transport/rentPage/vRentCars.vue')
 
 /* Салоны */
 const vSalons = () => import('@/components/salonsPage/vSalons.vue')
 const VSalonPage = () => import('@/components/salonsPage/vSalonPage.vue')
 
 /* Запчасти и аксессуары */
-const vSpareParts = () => import('@/components/sparePartsPage/v-spare-parts.vue')
+const vSpareParts = () => import('@/components/transport/sparePartsPage/v-spare-parts.vue')
 const test = () => import('@/components/chat/test.vue')
 
 // Ленивая загрузка компонентов
-const vCars = () => import('@/components/v-cars.vue')
-const vMainPage = () => import('@/components/mainPage/v-main-page.vue')
+const vCars = () => import('@/components/transport/v-cars.vue')
+const vMainPage = () => import('@/components/transport/mainPage/v-main-page.vue')
 
 /* Сравнение */
-const VCompare = () => import('@/components/comparePage/v-compare.vue')
+const vAgencyPage = () => import('@/components/real-estate/agencyPage/v-agency-page.vue')
+const vCompare = () => import('@/components/transport/comparePage/v-compare.vue')
 
 /* Чат */
 const vChat = () => import('@/components/chat/v-chat.vue')
@@ -40,6 +46,10 @@ const vRegistrationRealEstate = () =>
   import('@/components/users/registration/v-registration-real-estate.vue')
 const vRegistration = () => import('@/components/users/registration/v-registration.vue')
 const vRegistrationUser = () => import('@/components/users/registration/v-registration-user.vue')
+
+/* ======================== Импорты для "Недвижимость" ========================*/
+
+const vRealEstate = () => import('@/components/real-estate/v-real-estate.vue')
 
 // Группируем маршруты регистрации
 const registrationRoutes = [
@@ -95,6 +105,87 @@ const profileRoutes = [
     path: 'reviews-wait',
     name: 'reviews_wait',
     component: VWaitReviews
+  },
+  {
+    path: 'settings',
+    name: 'settings',
+    component: vSettings
+  },
+  {
+    path: 'notifications',
+    name: 'notifications',
+    component: vNotifications
+  },
+  {
+    path: 'my-ads',
+    name: 'my_ads',
+    component: vAds
+  }
+]
+const realEstateProfileRoutes = [
+  {
+    path: ':id?',
+    name: 'real_estate_profile',
+    component: vProfile
+  },
+  {
+    path: 'my',
+    name: 'real_estate_my_profile',
+    component: vProfile
+  },
+  {
+    path: 'favourites',
+    name: 'real_estate_favourites',
+    component: vFavourites
+  },
+  {
+    path: 'reviews',
+    name: 'real_estate_reviews',
+    component: vBuyersReviews
+  },
+  {
+    path: 'my-reviews',
+    name: 'real_estate_my_reviews',
+    component: vReviews
+  },
+  {
+    path: 'reviews-wait',
+    name: 'real_estate_reviews_wait',
+    component: VWaitReviews
+  },
+  {
+    path: 'settings',
+    name: 'real_estate_settings',
+    component: vSettings
+  },
+  {
+    path: 'notifications',
+    name: 'real_estate_notifications',
+    component: vNotifications
+  },
+  {
+    path: 'my-ads',
+    name: 'real_estate_my_ads',
+    component: vAds
+  }
+]
+
+const realEstateChatRoutes = [
+  {
+    path: '',
+    name: 'real_estate_chat',
+    component: vChat
+  },
+  {
+    path: 'messages/:id?',
+    props: true,
+    name: 'real_estate_current_chat',
+    component: vChatCurrent
+  },
+  {
+    path: 'test/',
+    name: 'real_estate_chat_test',
+    component: test
   }
 ]
 
@@ -125,7 +216,7 @@ const transportRoutes = [
     props: (route) => ({ query: route.query })
   },
   {
-    path: 'product/:id',
+    path: 'product/',
     name: 'product-item',
     component: vProductPage
   },
@@ -147,12 +238,12 @@ const transportRoutes = [
   {
     path: 'compare/:id?',
     name: 'transport-compare',
-    component: VCompare
+    component: vCompare
   }
 ]
 
 // Основные маршруты
-const routes = [
+const mainTransportRoutes = [
   {
     path: '/:page?',
     name: 'main',
@@ -184,7 +275,7 @@ const routes = [
   {
     path: '/profile/',
     children: profileRoutes,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true, page_typr: 'transport' }
   },
 
   {
@@ -204,18 +295,59 @@ const routes = [
   }
 ]
 
+const mainRealEstateRoutes = [
+  {
+    path: '',
+    name: 'real_estate',
+    component: vRealEstate
+  },
+  {
+    path: 'profile/',
+    children: realEstateProfileRoutes
+  },
+  {
+    path: 'salons/',
+    name: 'real_estate_salons',
+    component: vSalons
+  },
+  {
+    path: 'salons/:id?',
+    name: 'real_estate_agency',
+    component: vAgencyPage
+  },
+  {
+    path: 'chat/',
+    children: realEstateChatRoutes,
+    meta: { requiresAuth: true }
+  }
+]
+const routes = [
+  {
+    path: '',
+    children: mainTransportRoutes
+  },
+  {
+    path: '/real-estate/',
+    children: mainRealEstateRoutes
+  }
+]
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes
 })
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = !!localStorage.getItem('user') // Проверяем, авторизован ли пользователь
+  const pageType = to.name.startsWith('real_estate') ? 'real-estate' : 'transport'
+  store.commit('SET_PAGE_TYPE_TO_STATE', pageType)
+
+  console.log('Маршрут принадлежит группе:', pageType)
 
   // Если маршрут требует авторизации и пользователь не авторизован
+  const isAuthenticated = localStorage.getItem('user')
   if (to.meta.requiresAuth && !isAuthenticated) {
     next({ name: 'login' }) // Перенаправляем на страницу входа
   } else {
-    next() // Если все в порядке, продолжаем навигацию
+    next() // Продолжаем навигацию
   }
 })
 

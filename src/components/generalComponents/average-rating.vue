@@ -1,9 +1,9 @@
 <template>
   <div class="average-rating">
     <router-link
-      :to="{ name: 'reviews' }"
+      :to="{ name: getUrlsName('reviews') }"
       class="v-left-menu__reviews flex gap-4 items-center"
-      v-if="user_profile.average_rating"
+      v-if="user_profile && user_profile.average_rating"
     >
       <p>{{ user_profile.average_rating }}</p>
       <div class="flex">
@@ -47,8 +47,8 @@
   </div>
 </template>
 <script>
-import { getUserById, getUserProfile } from '@/api/requests'
-import { decodeAccessToken, getQuantityOfReviews, getUserId } from '@/utils'
+import { getUserById } from '@/api/requests'
+import { getQuantityOfReviews, getUserId, getUrlsName } from '@/utils'
 
 export default {
   name: 'average-rating',
@@ -66,16 +66,18 @@ export default {
     }
   },
   methods: {
-    setUserInfo() {
+    async setUserInfo() {
       const userId = this.userId ? this.userId : getUserId()
       if (userId) {
-        getUserById(userId).then((user) => {
-          this.user_profile = user.user_profile
+        const user = await getUserById(userId)
+        this.user_profile = user.user_profile
+        if (this.user_profile) {
           this.quantityOfStars = parseInt(user.user_profile.average_rating)
           this.quantityOfNeutralStars = 5 - this.quantityOfStars
-        })
+        }
       }
-    }
+    },
+    getUrlsName
   },
   mounted() {
     this.setUserInfo()

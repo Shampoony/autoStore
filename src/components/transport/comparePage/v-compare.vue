@@ -1,7 +1,7 @@
 <template>
   <vHeader class="alt" />
   <v-header-alt />
-  <main class="v-compare">
+  <main class="v-compare" v-if="!isLoading">
     <div class="v-compare__container container" v-if="comparedProducts.length">
       <h1 class="v-compare__title">Список сравнения</h1>
       <div class="v-compare__wrapper">
@@ -34,7 +34,7 @@
             />
             <img
               class="v-compare__item-delete"
-              src="../../assets/images/trash.svg"
+              src="@/assets/images/trash.svg"
               alt=""
               @click="deleteCompared(product.id)"
             />
@@ -44,7 +44,7 @@
         <div class="v-compare__button flex gap-2">
           <label class="switch">
             <input type="checkbox" v-model="isChecked" @change="onChangeStatus" />
-            <span class="slider"></span>
+            <span class="slider"> </span>
           </label>
           <span class="label-text">Показать только отличия</span>
         </div>
@@ -195,10 +195,15 @@
         </swiper>
       </div>
     </div>
-    <div v-else class="container">
+    <div v-if="!comparedProducts.length && !isLoading" class="container">
       <h1 class="notFound">Для сравнения не было добавлено товаров</h1>
     </div>
   </main>
+  <div v-else class="cssload">
+    <div class="cssload-container">
+      <div class="cssload-whirlpool"></div>
+    </div>
+  </div>
   <v-bottom-menu :activeItem="'main'" />
 </template>
 
@@ -210,10 +215,10 @@ import { Navigation } from 'swiper/modules'
 import { getComparedProducts, getTransportById } from '@/api/requests'
 import 'swiper/swiper-bundle.css'
 
-import vHeader from '../generalComponents/v-header.vue'
-import vProduct from '../generalComponents/v-product.vue'
-import vHeaderAlt from '../generalComponents/v-header-alt.vue'
-import VBottomMenu from '../generalComponents/v-bottom-menu.vue'
+import vHeader from '@/components/generalComponents/v-header.vue'
+import vProduct from '@/components/generalComponents/v-product.vue'
+import vHeaderAlt from '@/components/generalComponents/v-header-alt.vue'
+import VBottomMenu from '@/components/generalComponents/v-bottom-menu.vue'
 export default {
   name: 'vCompare',
   components: { vHeader, VBottomMenu, Swiper, SwiperSlide, vProduct, vHeaderAlt },
@@ -224,6 +229,7 @@ export default {
       comparedProducts: [],
       optionsCache: {},
       transportCache: {},
+      isLoading: false,
       accessableNames: [
         'body-type',
         'color',
@@ -233,7 +239,7 @@ export default {
         'condition',
         'market-version'
       ],
-      isChecked: false // Состояние переключателя
+      isChecked: true // Состояние переключателя
     }
   },
   methods: {
@@ -320,17 +326,25 @@ export default {
       }
     },
     async setComparedProducts() {
-      const products = await getComparedProducts()
-      let productsArray = []
-      if (products) {
-        for (let product of products.results) {
-          const transport = await getTransportById(product.transport)
-          this.transportCache[transport.id] = product.id
-          productsArray.push(transport)
+      try {
+        this.isLoading = true
+        const products = await getComparedProducts()
+        console.log(products)
+        let productsArray = []
+        if (products) {
+          for (let product of products.results) {
+            const transport = await getTransportById(product.transport)
+            this.transportCache[transport.id] = product.id
+            productsArray.push(transport)
+          }
+          this.comparedProducts = productsArray
         }
-        this.comparedProducts = productsArray
+      } catch {
+        console.error('Ошибка при получении данных о товароах сранвения')
+      } finally {
+        this.isLoading = false
+        console.log(this.comparedProducts.length)
       }
-      console.log(this.comparedProducts)
     },
     async loadData() {
       await this.GET_TRANSPORT_PRODUCTS_FROM_API()

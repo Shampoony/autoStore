@@ -1,71 +1,70 @@
 <template>
-  <v-header />
+  <v-header class="alt" />
+  <v-header-alt>
+    <div class="flex w-full justify-end gap-2">
+      <p class="subtitle">21324</p>
+      <img src="../../assets/images/Eye.svg" alt="" />
+    </div>
+  </v-header-alt>
   <div class="v-salon-page">
     <div class="v-salon-page__container container">
-      <div class="v-salon-page__banner"><img src="" alt="" /></div>
-      <div class="v-salon-page__info" v-if="user && company_info">
-        <img v-if="user.photo" class="v-salon-page__image" :src="user.photo" alt="" />
-        <img v-else class="v-salon-page__image" src="../../assets/images/default.png" alt="" />
-        <div class="v-salon-page__content">
-          <h3 class="v-salon-page__title">{{ company_info.company_name }}</h3>
-          <averageRating />
-          <p class="v-salon-page__descriptio">
-            Официальный дилер автомобилей Hyundai в Азербайджане. Hyundai в Азербайджане.
-          </p>
-          <a href="" class="v-salon-page__address">{{ company_info.address }}</a>
-          <a href="" class="v-salon-page__button flex justify-center">Написать</a>
+      <!-- Передаем данные в дочерний компонент -->
+      <v-salon-info :company_info="company_info" :user="user" />
+
+      <div class="v-salon-page__products" v-if="products.length">
+        <div class="v-salon-page__products-info mb-2">
+          <p>{{ products.length }} объявлений</p>
         </div>
-        <div class="v-salon-page__content">
-          <div class="v-salon-page__number flex gap-4">
-            <img src="../../assets/images/phone.svg" alt="phone" />
-            <p>(077) 277-00-77</p>
-          </div>
-          <div class="v-salon-page__time flex gap-2 items-center">
-            <img src="../../assets/images/watch.svg" alt="" />
-            <p>Ежедневно: 09:00-20:00</p>
-          </div>
-        </div>
-      </div>
-      <div class="v-salon-page__products">
-        <div class="v-salon-page__products-info">
-          <p>18 объявлений</p>
-        </div>
-        <ul class="v-salon-page__products-list">
-          <li class="v-salon-page__products-list-item"></li>
+        <ul class="v-salon-page__products-list products-container">
+          <v-product
+            v-for="product in products"
+            :key="product.id"
+            :type_of_product="'transport'"
+            :product_data="product"
+          />
         </ul>
       </div>
     </div>
   </div>
 </template>
+
 <script>
 import vHeader from '../generalComponents/v-header.vue'
+import vHeaderAlt from '../generalComponents/v-header-alt.vue'
 import vProduct from '../generalComponents/v-product.vue'
-import { getCompanyById, getUserById } from '@/api/requests'
-import averageRating from '../generalComponents/average-rating.vue'
+import vSalonInfo from '../generalComponents/v-salon-info.vue'
+
+import { getCompanyById, getUserById, getUserTransport } from '@/api/requests'
+
 export default {
   name: 'vSalonPage',
   components: {
     vHeader,
-    averageRating,
-    vProduct
+    vProduct,
+    vSalonInfo,
+    vHeaderAlt
   },
   data() {
     return {
       company_info: {},
-      user: null
+      user: {},
+      products: []
     }
   },
   methods: {
-    setCompanyInfo() {
-      getCompanyById(this.$route.params.id).then((company) => {
-        this.company_info = company
-        getUserById(company.user_id).then((user) => {
-          this.user = user
-        })
-      })
+    async setCompanyInfo() {
+      try {
+        // Делаем запросы в родительском компоненте
+        this.company_info = await getCompanyById(this.$route.params.id)
+        this.user = await getUserById(this.company_info.user_id)
+        this.products = await getUserTransport(this.company_info.user_id)
+      } catch (error) {
+        console.error('Ошибка при получении данных:', error)
+      }
     }
   },
   mounted() {
+    // Когда компонент монтируется, выполняем запросы
     this.setCompanyInfo()
   }
 }

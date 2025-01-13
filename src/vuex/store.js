@@ -21,26 +21,34 @@ import rentActions from './actions/Rent/rentActions'
 import rentMutations from './mutations/rentMutations'
 import rentGetters from './getters/rentGetters'
 
+/* Недвижимость */
+import realEstateMutations from './mutations/realEstateMutations'
+import realEstateActions from './actions/Real-estate/realEstateActions'
+import realEstateGetters from './getters/realEstateGetters'
+
 const allActions = {
   ...apiActions,
   ...rentActions,
   ...commandActions,
   ...generalActions,
-  ...sparePartsApiActions
+  ...sparePartsApiActions,
+  ...realEstateActions
 }
 
 const allMutations = {
   ...mutations,
   ...rentMutations,
   ...transportMutations,
-  ...sparePartsMutations
+  ...sparePartsMutations,
+  ...realEstateMutations
 }
 
 const allGetters = {
   ...getters,
   ...rentGetters,
   ...transportGetters,
-  ...sparePartsGetters
+  ...sparePartsGetters,
+  ...realEstateGetters
 }
 
 let store = createStore({
@@ -54,6 +62,9 @@ let store = createStore({
       transport: [],
       spare_parts: []
     },
+
+    page_type: 'transport',
+
     reviews: [],
     cards: [],
     categories: {},

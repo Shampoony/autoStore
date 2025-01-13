@@ -44,7 +44,6 @@ export default {
   methods: {
     toggleMenu() {
       this.isMainMenuVisible = !this.isMainMenuVisible
-      console.log(this.isMainMenuVisible)
     }
   },
   mounted() {}

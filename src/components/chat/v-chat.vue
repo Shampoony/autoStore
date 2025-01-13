@@ -11,7 +11,7 @@
             <router-link
               class="chat-item flex justify-between"
               :to="{
-                name: 'current_chat',
+                name: PAGE_TYPE === 'transport' ? 'current_chat' : 'real_estate_current_chat',
                 params: { id: chat.id }
               }"
             >
@@ -47,11 +47,14 @@
   <v-bottom-menu :active-item="'chat'" />
 </template>
 <script>
-import { fetchChats, getUserById } from '@/api/requests'
-import { getUserId, getPrettyDate } from '@/utils'
 import vHeader from '../generalComponents/v-header.vue'
 import vLeftMenu from '../generalComponents/v-left-menu.vue'
 import vBottomMenu from '../generalComponents/v-bottom-menu.vue'
+
+import { mapGetters } from 'vuex'
+import { getUserId, getPrettyDate } from '@/utils'
+import { fetchChats, getUserById } from '@/api/requests'
+
 export default {
   name: 'vChat',
   components: { vHeader, vLeftMenu, vBottomMenu },
@@ -63,6 +66,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['PAGE_TYPE']),
     userId() {
       return getUserId()
     }

@@ -26,7 +26,10 @@
       <div class="product-card__container flex justify-between gap-4">
         <div class="product-card__left">
           <div class="product-card__images">
-            <ProductCarousel :images="product_data.images" />
+            <ProductCarousel
+              :images="product_data.images"
+              :link_to_video="product_data.link_to_video"
+            />
           </div>
           <div class="product-card__info flex justify-between">
             <div class="flex justify-between w-full">
@@ -139,7 +142,10 @@
       </div>
       <div class="product-card__container mob">
         <div class="product-card__images">
-          <ProductCarousel :images="product_data.images" />
+          <ProductCarousel
+            :images="product_data.images"
+            :link_to_video="product_data.link_to_video"
+          />
         </div>
 
         <h2 class="page-title product-card__price mb-4">
@@ -382,7 +388,8 @@ export default {
       return { response: true }
     },
     compareProduct() {
-      const productId = this.$route.params.id
+      const firstQueryParam = Object.keys(this.$route.query)[0]
+      const productId = this.$route.query[firstQueryParam]
 
       // Проверяем, есть ли товар в списке
       let comparedItem
@@ -442,7 +449,7 @@ export default {
     this.setCurrency()
     this.setUser()
     this.setSomparedProducts()
-    console.log()
+    console.log(this.product_data)
   }
 }
 </script>

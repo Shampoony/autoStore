@@ -13,29 +13,29 @@
       <div class="v-left-menu__block">
         <div class="v-left-menu__link">
           <img src="../../assets/images/profile.svg" alt="" />
-          <router-link :to="{ name: 'my_profile' }">Мой профиль</router-link>
+          <router-link :to="{ name: getUrlsName('my_profile') }">Мой профиль</router-link>
         </div>
         <div class="v-left-menu__link">
           <img src="../../assets/images/my-ads.svg" alt="" />
-          <a href="">Мои объявления</a>
+          <router-link :to="{ name: getUrlsName('my_ads') }">Мои объявления</router-link>
         </div>
         <div class="v-left-menu__link">
           <img src="../../assets/images/my-reviews.svg" alt="" />
-          <router-link :to="{ name: 'my_reviews' }">Мои отзывы</router-link>
+          <router-link :to="{ name: getUrlsName('my_reviews') }">Мои отзывы</router-link>
         </div>
         <div class="v-left-menu__link">
           <img src="../../assets/images/favourites.svg" alt="" />
-          <router-link :to="{ name: 'favourites' }">Избранные</router-link>
+          <router-link :to="{ name: getUrlsName('favourites') }">Избранные</router-link>
         </div>
       </div>
       <div class="v-left-menu__block">
         <div class="v-left-menu__link">
           <img src="../../assets/images/messages.svg" alt="" />
-          <router-link :to="{ name: 'chat' }">Сообщения</router-link>
+          <router-link :to="{ name: getUrlsName('chat') }">Сообщения</router-link>
         </div>
         <div class="v-left-menu__link">
           <img src="../../assets/images/notifications.svg" alt="" />
-          <a href="">Уведомления</a>
+          <router-link :to="{ name: getUrlsName('notifications') }">Уведомления</router-link>
         </div>
       </div>
       <div class="v-left-menu__block">
@@ -48,7 +48,7 @@
         </div>
         <div class="v-left-menu__link">
           <img src="../../assets/images/settings.svg" alt="" />
-          <a href="">Настройки</a>
+          <router-link :to="{ name: getUrlsName('settings') }">Настройки</router-link>
         </div>
       </div>
       <div class="v-lefy-menu__block">
@@ -61,8 +61,9 @@
   </div>
 </template>
 <script>
-import { decodeAccessToken } from '@/utils'
 import { getUserById } from '@/api/requests'
+import { decodeAccessToken, getUrlsName } from '@/utils'
+
 import averageRating from './average-rating.vue'
 
 export default {
@@ -76,15 +77,21 @@ export default {
   computed: {},
   methods: {
     setUser() {
+      const localUser = JSON.parse(localStorage.getItem('userInfo'))
+      if (localUser) {
+        this.user = localUser
+        return
+      }
       const decodedToken = decodeAccessToken()
       if (decodedToken) {
         const userId = decodedToken.user_id
         getUserById(userId).then((user) => {
           this.user = user
-          console.log()
+          localStorage.setItem('userInfo', JSON.stringify(user))
         })
       }
-    }
+    },
+    getUrlsName
   },
   mounted() {
     this.setUser()
