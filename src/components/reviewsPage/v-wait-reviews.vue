@@ -17,9 +17,7 @@
           >
         </div>
         <div class="v-reviews__wait">
-          <reviews-block>
-            <div></div>
-          </reviews-block>
+          <v-rate />
           <!--  <ul class="reviews-block__list flex flex-col">
             <li
               class="reviews-block__list-item review flex-col gap-2"
@@ -57,16 +55,16 @@
   </main>
 </template>
 <script>
-import reviewsBlock from './reviews-block.vue'
 import vHeader from '../generalComponents/v-header.vue'
 import vLeftMenu from '../generalComponents/v-left-menu.vue'
 
 import { filterReviews, getUrlsName } from '@/utils'
 import { mapActions, mapGetters } from 'vuex'
+import VRate from './v-rate.vue'
 export default {
   name: 'vReviews',
-  components: { vLeftMenu, vHeader, reviewsBlock },
-  data() {
+  components: { vLeftMenu, vHeader, VRate },
+  VRateta() {
     return {
       reviews: [],
       answers: []

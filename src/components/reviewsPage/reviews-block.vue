@@ -23,7 +23,7 @@
           <div class="review__message">{{ review.text }}</div>
         </div>
 
-        <div class="reviews-block__list-item-answers" v-if="answers">
+        <div class="reviews-block__list-item-answers" v-if="answers[review.id]">
           <div
             class="reviews-block__list-item-answer review"
             v-for="answer in answers[review.id]"
@@ -37,65 +37,106 @@
               </div>
             </div>
             <div class="review__message">{{ answer.text }}</div>
-            <form method="POST" class="review__form" @submit.prevent="onSubmit">
-              <input type="text" class="review__input" placeholder="Написать отзыв" />
-              <button type="submit" class="review__button styled-button">Отправить</button>
-            </form>
           </div>
+          <form
+            method="POST"
+            class="review__form"
+            @submit.prevent="onSubmit(review.id)"
+            v-if="is_submit"
+          >
+            <input
+              type="text"
+              class="review__input"
+              placeholder="Написать ответ"
+              v-model="reviewAnswer[review.id]"
+            />
+            <button type="submit" class="review__button styled-button">Отправить</button>
+          </form>
         </div>
       </li>
     </ul>
   </div>
 </template>
+
 <script>
 import { filterReviews } from '@/utils'
 import { mapGetters, mapActions } from 'vuex'
-import { getUserById, getReviewAnswers } from '@/api/requests'
+import { getUserById, getReviewAnswers, setReviewAnswer } from '@/api/requests'
 
 export default {
   name: 'vBlockReviews',
+  props: {
+    is_submit: {
+      type: Boolean,
+      default: false
+    },
+    type_of_submit: {
+      type: String,
+      default: ''
+    }
+  },
   data() {
     return {
       reviews: [],
       answers: {},
+      reviewAnswer: {},
       names: {}
     }
   },
   methods: {
     ...mapActions(['GET_REVIEWS_FROM_API']),
     async fetchReviews() {
-      await this.GET_REVIEWS_FROM_API()
-      this.reviews = filterReviews(this.REVIEWS)
+      try {
+        await this.GET_REVIEWS_FROM_API()
+        this.reviews = filterReviews(this.REVIEWS)
+      } catch (error) {
+        console.error('Ошибка при загрузке отзывов:', error)
+      }
     },
     async fetchReviewAnswers() {
-      for (let review of this.reviews) {
-        const reviewAnswers = await getReviewAnswers(review.id)
-        this.answers[review.id] = reviewAnswers
-        console.log(this.reviews[1])
+      try {
+        const answersData = {}
+        await Promise.all(
+          this.reviews.map(async (review) => {
+            const reviewAnswers = await getReviewAnswers(review.id)
+            answersData[review.id] = reviewAnswers
+          })
+        )
+        this.answers = answersData
+        console.log(this.answers)
+      } catch (error) {
+        console.error('Ошибка при загрузке ответов на отзывы:', error)
       }
-
-      this.reviews = filterReviews(this.REVIEWS)
     },
     async getUserName() {
-      const userIds = [...this.reviews.map((review) => review.from_whom), this.reviews[0]?.for_whom]
-
-      // Удаление дубликатов
-      const uniqueUserIds = [...new Set(userIds)]
-
-      // Параллельное получение данных пользователей
-      const userPromises = uniqueUserIds.map((id) => getUserById(id))
-      const usersData = await Promise.all(userPromises)
-
-      // Сохранение имен пользователей
-      usersData.forEach((userData) => {
-        if (userData) {
-          this.names[userData.id] = userData.user_profile.full_name
-        }
-      })
+      try {
+        const userIds = [
+          ...this.reviews.map((r) => r.from_whom),
+          ...this.reviews.map((r) => r.for_whom)
+        ]
+        const uniqueUserIds = [...new Set(userIds)]
+        const userPromises = uniqueUserIds.map((id) => getUserById(id))
+        const usersData = await Promise.all(userPromises)
+        usersData.forEach((userData) => {
+          if (userData) {
+            this.names[userData.id] = userData.user_profile.full_name
+          }
+        })
+      } catch (error) {
+        console.error('Ошибка при загрузке данных пользователей:', error)
+      }
     },
+    async onSubmit(reviewId) {
+      try {
+        if (this.type_of_submit && this.reviewAnswer[reviewId]) {
+          console.log('Отправка:', reviewId, this.reviewAnswer[reviewId])
+          await setReviewAnswer(reviewId, this.reviewAnswer[reviewId])
 
-    onSubmit(e) {
-      e.preventDefault()
+          this.reviewAnswer[reviewId] = '' // Очистить поле после отправки
+        }
+      } catch (error) {
+        console.error('Ошибка при отправке ответа:', error)
+      }
     }
   },
   computed: {
@@ -104,7 +145,7 @@ export default {
   async mounted() {
     await this.fetchReviews()
     await this.fetchReviewAnswers()
-    this.getUserName()
+    await this.getUserName()
   }
 }
 </script>

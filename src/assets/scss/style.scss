@@ -383,7 +383,7 @@ a {
   transform: translateX(-50%);
   z-index: 200;
   height: 380px;
-  /* width: clamp(36.875rem, -0.625rem + 100vw, 74.375rem); */
+  width: clamp(36.875rem, -0.625rem + 100vw, 74.375rem);
   padding: 25px 0 45px;
   flex-wrap: wrap;
   background-color: #ffff;

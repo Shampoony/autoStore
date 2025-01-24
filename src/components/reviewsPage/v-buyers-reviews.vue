@@ -122,7 +122,7 @@ export default {
       marks: 5
     }
   },
-  computed: {},
+ 
   methods: {
     ...mapActions(['GET_REVIEWS_FROM_API']),
     async fetchReviews() {

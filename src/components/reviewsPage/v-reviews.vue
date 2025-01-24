@@ -16,7 +16,7 @@
             >Оставленные</router-link
           >
         </div>
-        <reviews-block />
+        <reviews-block :type_of_submit="'asnwer'" :is_submit="'true'" />
       </div>
     </div>
   </main>

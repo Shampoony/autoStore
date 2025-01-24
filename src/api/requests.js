@@ -239,7 +239,22 @@ export async function getReviewAnswers(reviewId) {
     console.error('Ошибка при получении ответов на отзыв:', error)
   }
 }
-
+export async function setReviewAnswer(review, text) {
+  try {
+    const response = await fetch(`http://api.rcarentacar.com/api/users/answers/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`
+      },
+      body: JSON.stringify({ review, text })
+    })
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.error('Ошибка при получении ответов на отзыв:', error)
+  }
+}
 export async function isProductInFavourites(productInfo) {
   try {
     const response = await fetch(`http://api.rcarentacar.com/api/users/check-favorite/`, {
