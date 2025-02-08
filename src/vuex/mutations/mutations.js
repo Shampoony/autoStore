@@ -8,7 +8,13 @@ export default {
   SET_TRANSPORT_FAVOURITES_TO_STATE: (state, favourites) => {
     state.favourites = favourites.results
   },
+  SET_TOKEN_STATUS: (state, tokenStatus) => {
+    state.is_token_valid = tokenStatus
+  },
   SET_PAGE_TYPE_TO_STATE: (state, page_type) => {
     state.page_type = page_type
+  },
+  SET_USER_INFO_TO_STATE: (state, user_info) => {
+    state.user_info = user_info
   }
 }

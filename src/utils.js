@@ -1,6 +1,7 @@
 import store from './vuex/store'
 import { accessToken } from './api/auth'
 import { getFilteredProducts, createChat } from './api/requests'
+import { onMounted, onUnmounted } from 'vue'
 
 export function decodeAccessToken() {
   const payload = accessToken.split('.')[1]
@@ -187,7 +188,20 @@ export const setFormFromURL = (form, refs, queryParams) => {
     }
   }
 }
-const PAGE_TYPE = store.getters.PAGE_TYPE
 export function getUrlsName(name) {
-  return PAGE_TYPE == 'transport' ? name : `real_estate_${name}`
+  return store.getters.PAGE_TYPE == 'transport' ? name : `real_estate_${name}`
+}
+
+export function isMobile(breakPoint = 600) {
+  const isMobile = () => {
+    window.innerWidth <= breakPoint
+  }
+
+  onMounted(() => {
+    document.addEventListener('resize', isMobile)
+  })
+
+  onUnmounted(() => {
+    document.removeEventListener('resize')
+  })
 }

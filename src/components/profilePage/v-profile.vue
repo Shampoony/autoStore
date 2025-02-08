@@ -19,7 +19,7 @@
           <h2 class="v-profile__products-count">{{ userTransport.length }} объявлений</h2>
           <v-sort class="mr-10" @sort="sortProducts" :ownerId="user?.id" />
         </div>
-        <ul class="v-profile__products-list">
+        <ul class="v-profile__products-list products-container">
           <li class="v-profile__products-item" v-for="product in userTransport" :key="product.id">
             <v-product :product_data="product" :type_of_product="'transport'" />
           </li>
@@ -32,10 +32,12 @@
 import { getUserId } from '@/utils'
 import { getUserById, getUserTransport, createChat } from '@/api/requests'
 
+import { mapActions, mapGetters } from 'vuex'
+
+import vSort from '../generalComponents/v-sort.vue'
 import vHeader from '../generalComponents/v-header.vue'
 import vProduct from '../generalComponents/v-product.vue'
 import averageRating from '../generalComponents/average-rating.vue'
-import vSort from '../generalComponents/v-sort.vue'
 
 export default {
   name: 'vProfile',
@@ -48,14 +50,17 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['USER_INFO']),
     userId() {
       return parseInt(this.$route.params.id ? this.$route.params.id : getUserId())
     }
   },
   methods: {
+    ...mapActions(['GET_USER_INFO']),
     async setUserInfo() {
+      await this.GET_USER_INFO()
+      this.user = this.USER_INFO
       let userId = this.$route.params.id ? this.$route.params.id : getUserId()
-      this.user = await getUserById(userId)
       this.userTransport = await getUserTransport(userId)
       console.log(this.user)
     },
@@ -69,8 +74,8 @@ export default {
       this.userTransport = sortedProducts
     }
   },
-  async mounted() {
-    await this.setUserInfo()
+  mounted() {
+    this.setUserInfo()
   }
 }
 </script>

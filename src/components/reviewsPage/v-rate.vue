@@ -52,9 +52,7 @@ export default {
       })
       return starsObject
     },
-    onSubmit() {
-        await setRevi                                             
-    }
+    onSubmit() {}
   }
 }
 </script>

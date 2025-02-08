@@ -1,5 +1,8 @@
 import axios from 'axios'
 import { accessToken } from '@/api/auth'
+import { getUserId } from '@/utils'
+import router from '@/router'
+import store from '../store'
 
 export default {
   async GET_REVIEWS_FROM_API({ commit }) {
@@ -31,6 +34,26 @@ export default {
       })
       .catch((error) => {
         console.error('Ошибка при получении избранных транспорта:', error)
+      })
+  },
+  async GET_USER_INFO({ commit }) {
+    const userId = getUserId()
+    return axios(`http://api.rcarentacar.com/api/users/users/${userId}/`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
+      .then((userInfo) => {
+        commit('SET_USER_INFO_TO_STATE', userInfo.data)
+      })
+      .catch((error) => {
+        if (error.response.status === 401) {
+          router.push({ name: 'login' })
+          return
+        }
+        console.error('Ошибка при получении данных о пользователе:', error)
       })
   }
 }

@@ -6,14 +6,14 @@
         <v-sort @sort="sortProducts" :vip="isVipProducts" />
       </div>
       <ul class="v-recomendations__list products-container" v-if="!notFoundProducts">
-        <v-product
-          v-for="product_data in sortedProducts"
-          :key="product_data.id"
-          :product_data="product_data"
-          :products_length="product_data.images.length"
-          :type_of_product="'transport'"
-          class="v-recomendations-item recomendation-card"
-        />
+        <li v-for="product_data in sortedProducts" :key="product_data.id">
+          <v-product
+            :product_data="product_data"
+            :products_length="product_data.images.length"
+            :type_of_product="'transport'"
+            class="v-recomendations-item recomendation-card"
+          />
+        </li>
       </ul>
       <h2 class="notFound" v-else>Товаров в данной категории нет</h2>
       <div v-if="products.length && products.total_count">

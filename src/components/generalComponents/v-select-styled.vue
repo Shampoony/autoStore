@@ -13,7 +13,7 @@
       @click="areOptionsVisible = !areOptionsVisible"
       readonly
     />
-    <img src="../assets/images/CaretDown.svg" alt="" class="v-selectStyled__icon" />
+    <img src="../../assets/images/CaretDown.svg" alt="" class="v-selectStyled__icon" />
 
     <div class="v-selectStyled__options" v-if="areOptionsVisible">
       <p

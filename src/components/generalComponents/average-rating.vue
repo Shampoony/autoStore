@@ -48,6 +48,7 @@
 </template>
 <script>
 import { getUserById } from '@/api/requests'
+import { mapActions, mapGetters } from 'vuex'
 import { getQuantityOfReviews, getUserId, getUrlsName } from '@/utils'
 
 export default {
@@ -65,22 +66,24 @@ export default {
       quantityOfNeutralStars: 0
     }
   },
+  computed: {
+    ...mapGetters(['USER_INFO'])
+  },
   methods: {
+    ...mapActions(['GET_USER_INFO']),
     async setUserInfo() {
-      const userId = this.userId ? this.userId : getUserId()
-      if (userId) {
-        const user = await getUserById(userId)
-        this.user_profile = user.user_profile
-        if (this.user_profile) {
-          this.quantityOfStars = parseInt(user.user_profile.average_rating)
-          this.quantityOfNeutralStars = 5 - this.quantityOfStars
-        }
+      await this.GET_USER_INFO()
+      const user = this.USER_INFO
+      this.user_profile = user.user_profile
+      if (this.user_profile) {
+        this.quantityOfStars = parseInt(user.user_profile.average_rating)
+        this.quantityOfNeutralStars = 5 - this.quantityOfStars
       }
     },
     getUrlsName
   },
-  mounted() {
-    this.setUserInfo()
+  async mounted() {
+    await this.setUserInfo()
     getQuantityOfReviews()
   }
 }

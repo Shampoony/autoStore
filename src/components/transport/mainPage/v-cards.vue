@@ -23,14 +23,10 @@
 <script>
 import 'swiper/css'
 import { mapActions, mapGetters } from 'vuex'
-import { Swiper, SwiperSlide } from 'swiper/vue'
 
 export default {
   name: 'v-header',
-  components: {
-    Swiper,
-    SwiperSlide
-  },
+  components: {},
   computed: {
     ...mapGetters(['CARDS'])
   },

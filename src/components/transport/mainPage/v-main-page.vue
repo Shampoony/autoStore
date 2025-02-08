@@ -1,10 +1,10 @@
 <template>
   <div class="v-main-page">
     <vHeader @toggleMenu="toggleMainMenu" />
-    <div class="v-main-mob-menu flex-col" :class="{ active: isMainMenuVisible }">
+    <div class="v-main-mob-menu flex-col" v-if="isMobile" :class="{ active: isMainMenuVisible }">
       <div class="v-main-mob-menu__header flex gap-28">
         <div @click="isMainMenuVisible = false">
-          <img src="../../assets/images/cross.svg" alt="" />
+          <img src="../../../assets/images/cross.svg" alt="" />
         </div>
         <div>Фильтры</div>
       </div>
@@ -49,6 +49,7 @@ import vRecomendations from './v-recomendations.vue'
 import vHeader from '@/components/generalComponents/v-header.vue'
 import vBottomMenu from '@/components/generalComponents/v-bottom-menu.vue'
 
+import { useMobile } from '@/mixins/isMobile'
 import { mapActions, mapGetters } from 'vuex'
 
 export default {

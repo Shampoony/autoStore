@@ -1,7 +1,7 @@
 <template>
   <div class="v-login">
     <div class="v-login__container container">
-      <div class="v-login__window window" v-if="!user">
+      <div class="v-login__window window">
         <h2 class="window__title">Вход в личный кабинет</h2>
         <form
           @submit.prevent="loginUser(this.form)"
@@ -29,7 +29,7 @@
           <button class="window__button" type="submit">Войти</button>
         </form>
       </div>
-      <h1 class="title" v-else>Ты успешно авторизован</h1>
+      <!--  <h1 class="title" v-else>Ты успешно авторизован</h1> -->
     </div>
   </div>
 </template>
@@ -49,6 +49,8 @@ export default {
   },
   methods: {
     loginUser
-  }
+  },
+  computed: {},
+  mounted() {}
 }
 </script>

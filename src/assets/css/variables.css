@@ -1,1 +1,12 @@
-/*# sourceMappingURL=variables.css.map */
+:root {
+  --gray: #d1d1d1;
+  --lightgray: #f2f1f0;
+  --blue: #50707a;
+  --darkblue: #0c4a60;
+  --orange: #ff6c2c;
+}
+
+.transport__mode {
+  --orange: #ff6c2c;
+  --blue: #0c4a60;
+}/*# sourceMappingURL=variables.css.map */

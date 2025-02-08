@@ -1,5 +1,7 @@
 import axios from 'axios'
+import router from '@/router'
 import { accessToken } from '@/api/auth'
+import store from '@/vuex/store'
 export default {
   GET_TRANSPORT_PRODUCTS_FROM_API({ commit }) {
     return axios('http://api.rcarentacar.com/api/transport/transport/', {
@@ -13,7 +15,11 @@ export default {
         commit('SET_TRANSPORT_PRODUCTS_TO_STATE', recomendations.data)
       })
       .catch((error) => {
-        console.log(error)
+        if (error.response.status === 401) {
+          router.push({ name: 'login' })
+          return
+        }
+
         return error
       })
   },
@@ -28,7 +34,11 @@ export default {
         commit('SET_CARDS_TO_STATE', cards.data)
       })
       .catch((error) => {
-        console.log(error)
+        if (error.response.status === 401) {
+          router.push({ name: 'login' })
+          return
+        }
+
         return error
       })
   },
@@ -43,7 +53,11 @@ export default {
         commit('SET_TRANSPORT_CATEGORIES_TO_STATE', categories.data)
       })
       .catch((error) => {
-        console.log(error)
+        if (error.response.status === 401) {
+          router.push({ name: 'login' })
+          return
+        }
+
         return error
       })
   },
@@ -84,7 +98,11 @@ export default {
         commit('SET_TRANSPORT_SUB_CATEGORIES_TO_STATE', allSubCategories)
       })
       .catch((error) => {
-        console.log(error)
+        if (error.response.status === 401) {
+          router.push({ name: 'login' })
+          return
+        }
+
         return error
       })
   },
@@ -117,7 +135,11 @@ export default {
         commit('SET_TRANSPORT_COMPANIES_TO_STATE', conditions.data)
       })
       .catch((error) => {
-        console.error('Ошибка при получении компаний:', error)
+        if (error.response.status === 401) {
+          router.push({ name: 'login' })
+          return
+        }
+
         alert('Произошла ошибка при получении компаний')
       })
   }

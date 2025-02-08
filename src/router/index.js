@@ -1,19 +1,8 @@
 import store from '@/vuex/store'
 import MapTest from '../components/generalComponents/MapTest.vue'
 import { createRouter, createWebHistory } from 'vue-router'
+
 /* ======================== Импорты для "Авто" ========================*/
-
-const vProductPage = () => import('@/components/productPage/vProductPage.vue')
-const VWaitReviews = () => import('@/components/reviewsPage/v-wait-reviews.vue')
-const vBuyersReviews = () => import('@/components/reviewsPage/v-buyers-reviews.vue')
-
-/* Провиль */
-const vAds = () => import('@/components/myAdsPage/v-ads.vue')
-const vProfile = () => import('@/components/profilePage/v-profile.vue')
-const vReviews = () => import('@/components/reviewsPage/v-reviews.vue')
-const vSettings = () => import('@/components/settingsPage/v-settings.vue')
-const vFavourites = () => import('@/components/favouritePage/v-favourites.vue')
-const vNotifications = () => import('@/components/notificationsPage/v-notifications.vue')
 
 /* Аренда */
 const rentCars = () => import('@/components/transport/rentPage/vRentCars.vue')
@@ -34,9 +23,16 @@ const vMainPage = () => import('@/components/transport/mainPage/v-main-page.vue'
 const vAgencyPage = () => import('@/components/real-estate/agencyPage/v-agency-page.vue')
 const vCompare = () => import('@/components/transport/comparePage/v-compare.vue')
 
-/* Чат */
-const vChat = () => import('@/components/chat/v-chat.vue')
-const vChatCurrent = () => import('@/components/chat/v-chat-current.vue')
+/* ======================== Импорты для "Недвижимость" ========================*/
+
+/* Главная */
+const vRealEstate = () => import('@/components/real-estate/v-real-estate.vue')
+
+/* Жилые комплексы */
+const VResidentialComplexes = () =>
+  import('@/components/real-estate/residentialComplexes/v-residential-complexes.vue')
+
+/* ======================== Общие импорты ========================*/
 
 /* Регистрация - ленивая загрузка */
 const vLogin = () => import('@/components/users/login/v-login.vue') // Используем ленивую загрузку
@@ -47,9 +43,23 @@ const vRegistrationRealEstate = () =>
 const vRegistration = () => import('@/components/users/registration/v-registration.vue')
 const vRegistrationUser = () => import('@/components/users/registration/v-registration-user.vue')
 
-/* ======================== Импорты для "Недвижимость" ========================*/
+/* Чат */
+const vChat = () => import('@/components/chat/v-chat.vue')
+const vChatCurrent = () => import('@/components/chat/v-chat-current.vue')
 
-const vRealEstate = () => import('@/components/real-estate/v-real-estate.vue')
+/* Провиль */
+const vAds = () => import('@/components/myAdsPage/v-ads.vue')
+const vProfile = () => import('@/components/profilePage/v-profile.vue')
+const vReviews = () => import('@/components/reviewsPage/v-reviews.vue')
+const vSettings = () => import('@/components/settingsPage/v-settings.vue')
+const vFavourites = () => import('@/components/favouritePage/v-favourites.vue')
+const VWaitReviews = () => import('@/components/reviewsPage/v-wait-reviews.vue')
+const vBuyersReviews = () => import('@/components/reviewsPage/v-buyers-reviews.vue')
+const vNotifications = () => import('@/components/notificationsPage/v-notifications.vue')
+
+const vProductPage = () => import('@/components/productPage/vProductPage.vue')
+
+/* ======================== Маршруты ========================*/
 
 // Группируем маршруты регистрации
 const registrationRoutes = [
@@ -302,6 +312,11 @@ const mainRealEstateRoutes = [
     component: vRealEstate
   },
   {
+    path: 'residential-complexes',
+    name: 'residential_complexes',
+    component: VResidentialComplexes
+  },
+  {
     path: 'profile/',
     children: realEstateProfileRoutes
   },
@@ -337,7 +352,9 @@ const router = createRouter({
   routes
 })
 router.beforeEach((to, from, next) => {
-  const pageType = to.name.startsWith('real_estate') ? 'real-estate' : 'transport'
+  console.log(to.matched[0].path.replace(/\//g, ''))
+  const pageType =
+    to.matched[0].path.replace(/\//g, '') === 'real-estate' ? 'real-estate' : 'transport'
   store.commit('SET_PAGE_TYPE_TO_STATE', pageType)
 
   console.log('Маршрут принадлежит группе:', pageType)

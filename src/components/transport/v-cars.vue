@@ -304,7 +304,11 @@
 
       <form v-if="filterMenuOpen" class="mob-filter-form" method="GET" action="" @submit="onSubmit">
         <div class="mob-filter__header flex justify-between">
-          <img @click="this.filterMenuOpen = false" src="../assets/images/cross.svg" alt="cross" />
+          <img
+            @click="this.filterMenuOpen = false"
+            src="../../assets/images/cross.svg"
+            alt="cross"
+          />
           <h3 class="mob-filter__header-title">Фильтры</h3>
           <div class="mob-filter__reset" @click="resetFormFilter">Сбросить</div>
         </div>

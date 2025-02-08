@@ -1,17 +1,21 @@
+import router from '@/router'
 import { accessToken } from './auth'
+const domain = `http://api.rcarentacar.com/`
 
 export async function getTransportProducts(page) {
   try {
-    const response = await fetch(
-      `http://api.rcarentacar.com/api/transport/transport/?page=${page}`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`
-        }
+    const response = await fetch(`${domain}api/transport/transport/?page=${page}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`
       }
-    )
+    })
+
+    if (response.status === 401) {
+      router.push({ name: 'login' })
+      return
+    }
 
     const responseData = await response.json()
     console.log(responseData)
@@ -40,16 +44,13 @@ export async function getFilteredProducts(url) {
 }
 export async function getCategoryProductsById(name, subcategory_id) {
   try {
-    const response = await fetch(
-      `http://api.rcarentacar.com/api/transport/${name}/${subcategory_id}/transports/`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`
-        }
+    const response = await fetch(`${domain}api/transport/${name}/${subcategory_id}/transports/`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`
       }
-    )
+    })
 
     const responseData = await response.json()
     return responseData
@@ -60,7 +61,7 @@ export async function getCategoryProductsById(name, subcategory_id) {
 export async function getSelectOptions(title, name) {
   try {
     const options = []
-    const response = await fetch(`http://api.rcarentacar.com/api/transport/${title}/`, {
+    const response = await fetch(`${domain}api/transport/${title}/`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -94,7 +95,7 @@ export async function getSelectOptions(title, name) {
 }
 export async function getOptionsById(title, id) {
   try {
-    const response = await fetch(`http://api.rcarentacar.com/api/transport/${title}/${id}`, {
+    const response = await fetch(`${domain}api/transport/${title}/${id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -111,7 +112,7 @@ export async function getOptionsById(title, id) {
 }
 export async function getOptionsByName(name) {
   try {
-    const response = await fetch(`http://api.rcarentacar.com/api/transport/${name}/`, {
+    const response = await fetch(`${domain}api/transport/${name}/`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -129,16 +130,13 @@ export async function getOptionsByName(name) {
 
 export async function getCurrency(currencyId) {
   try {
-    const response = await fetch(
-      `http://api.rcarentacar.com/api/transport/currency-tr/${currencyId}/`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`
-        }
+    const response = await fetch(`${domain}api/transport/currency-tr/${currencyId}/`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`
       }
-    )
+    })
 
     const responseData = await response.json()
     return responseData
@@ -151,7 +149,7 @@ export async function getSimilarProducts(product_data) {
   console.log(product_data.brand.title)
   try {
     const response = await fetch(
-      `http://api.rcarentacar.com/api/transport/filter/?brand=${product_data.brand.title}`,
+      `${domain}api/transport/filter/?brand=${product_data.brand.title}`,
       {
         method: 'GET',
         headers: {
@@ -176,7 +174,7 @@ export async function getSimilarProducts(product_data) {
 export async function addToFavourites(name, id) {
   console.log(name, id, JSON.stringify({ [name]: id }))
   try {
-    const response = await fetch(`http://api.rcarentacar.com/api/users/favorite/add_favorite/`, {
+    const response = await fetch(`${domain}api/users/favorite/add_favorite/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -193,7 +191,7 @@ export async function addToFavourites(name, id) {
 }
 export async function removeFromFavourites(name, id) {
   try {
-    const response = await fetch(`http://api.rcarentacar.com/api/users/favorite/remove_favorite/`, {
+    const response = await fetch(`${domain}api/users/favorite/remove_favorite/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -207,7 +205,7 @@ export async function removeFromFavourites(name, id) {
 }
 export async function getFavouriteProducts() {
   try {
-    const response = await fetch(`http://api.rcarentacar.com/api/users/favorite/`, {
+    const response = await fetch(`${domain}api/users/favorite/`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -223,16 +221,13 @@ export async function getFavouriteProducts() {
 
 export async function getReviewAnswers(reviewId) {
   try {
-    const response = await fetch(
-      `http://api.rcarentacar.com/api/users/reviews/${reviewId}/answers/`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`
-        }
+    const response = await fetch(`${domain}api/users/reviews/${reviewId}/answers/`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`
       }
-    )
+    })
     const responseData = await response.json()
     return responseData
   } catch (error) {
@@ -241,7 +236,7 @@ export async function getReviewAnswers(reviewId) {
 }
 export async function setReviewAnswer(review, text) {
   try {
-    const response = await fetch(`http://api.rcarentacar.com/api/users/answers/`, {
+    const response = await fetch(`${domain}api/users/answers/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -257,7 +252,7 @@ export async function setReviewAnswer(review, text) {
 }
 export async function isProductInFavourites(productInfo) {
   try {
-    const response = await fetch(`http://api.rcarentacar.com/api/users/check-favorite/`, {
+    const response = await fetch(`${domain}api/users/check-favorite/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -276,7 +271,7 @@ export async function isProductInFavourites(productInfo) {
 
 export async function getUserProfile(userId) {
   try {
-    const response = await fetch(`http://api.rcarentacar.com/api/users/user-profile/${userId}/`, {
+    const response = await fetch(`${domain}api/users/user-profile/${userId}/`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -292,7 +287,7 @@ export async function getUserProfile(userId) {
 
 export async function registerUser(name, form) {
   try {
-    await fetch(`http://api.rcarentacar.com/api/${name}/register/`, {
+    await fetch(`${domain}api/${name}/register/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -300,7 +295,7 @@ export async function registerUser(name, form) {
       body: JSON.stringify(form)
     })
 
-    const response = await fetch('http://api.rcarentacar.com/api/users/token/login/', {
+    const response = await fetch('${domain}api/users/token/login/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -320,7 +315,7 @@ export async function registerUser(name, form) {
 }
 export async function getUserById(userId) {
   try {
-    const response = await fetch(`http://api.rcarentacar.com/api/users/users/${userId}`, {
+    const response = await fetch(`${domain}api/users/users/${userId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -340,16 +335,13 @@ export async function getUserById(userId) {
 
 export async function getUserTransport(userId) {
   try {
-    const response = await fetch(
-      `http://api.rcarentacar.com/api/users/users/${userId}/transports/`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`
-        }
+    const response = await fetch(`${domain}api/users/users/${userId}/transports/`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`
       }
-    )
+    })
     console.log(response)
     if (!response.ok) {
       throw new Error('Ошибка полчения транспорта пользователя')
@@ -367,7 +359,7 @@ export async function getUserTransport(userId) {
 
 export async function getCompanyById(companyId) {
   try {
-    const response = await fetch(`http://api.rcarentacar.com/api/users/auto-company/${companyId}`, {
+    const response = await fetch(`${domain}api/users/auto-company/${companyId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -389,16 +381,13 @@ export async function getCompanyById(companyId) {
 
 export async function getComparedProducts() {
   try {
-    const response = await fetch(
-      `http://api.rcarentacar.com/api/transport/comparison-transports/`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`
-        }
+    const response = await fetch(`${domain}api/transport/comparison-transports/`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`
       }
-    )
+    })
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
@@ -412,16 +401,13 @@ export async function getComparedProducts() {
 
 export async function getComparedProductsById(id) {
   try {
-    const response = await fetch(
-      `http://api.rcarentacar.com/api/transport/comparison-transports/${id}`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`
-        }
+    const response = await fetch(`${domain}api/transport/comparison-transports/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`
       }
-    )
+    })
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
@@ -434,16 +420,13 @@ export async function getComparedProductsById(id) {
 }
 export async function deleteComparedProduct(id) {
   try {
-    const response = await fetch(
-      `http://api.rcarentacar.com/api/transport/comparison-transports/${id}/`,
-      {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`
-        }
+    const response = await fetch(`${domain}api/transport/comparison-transports/${id}/`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`
       }
-    )
+    })
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
@@ -457,17 +440,14 @@ export async function deleteComparedProduct(id) {
 export async function addProductToCompare(transport_id, owner) {
   console.log(transport_id, owner)
   try {
-    const response = await fetch(
-      `http://api.rcarentacar.com/api/transport/comparison-transports/`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`
-        },
-        body: JSON.stringify({ transport: transport_id, owner: owner })
-      }
-    )
+    const response = await fetch(`${domain}api/transport/comparison-transports/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`
+      },
+      body: JSON.stringify({ transport: transport_id, owner: owner })
+    })
     if (!response.ok) {
       throw new Error('Ошибка полчения данных о компании')
     }
@@ -481,16 +461,13 @@ export async function addProductToCompare(transport_id, owner) {
 
 export async function getTransportById(transport_id) {
   try {
-    const response = await fetch(
-      `http://api.rcarentacar.com/api/transport/transport/${transport_id}`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`
-        }
+    const response = await fetch(`${domain}api/transport/transport/${transport_id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`
       }
-    )
+    })
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
@@ -506,7 +483,7 @@ export async function getTransportById(transport_id) {
 export async function fetchChatMessages(chatId, url = null) {
   console.log(url)
   try {
-    let fetchUrl = url ? url : `http://api.rcarentacar.com/api/chats/chats/${chatId}/messages`
+    let fetchUrl = url ? url : `${domain}api/chats/chats/${chatId}/messages`
     const response = await fetch(fetchUrl, {
       method: 'GET',
       headers: {
@@ -527,7 +504,7 @@ export async function fetchChatMessages(chatId, url = null) {
 
 export async function fetchChats() {
   try {
-    const response = await fetch(`http://api.rcarentacar.com/api/chats/chats/`, {
+    const response = await fetch(`${domain}api/chats/chats/`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -546,7 +523,7 @@ export async function fetchChats() {
 
 export async function fetchChatById(chatId) {
   try {
-    const response = await fetch(`http://api.rcarentacar.com/api/chats/chats/${chatId}/`, {
+    const response = await fetch(`${domain}api/chats/chats/${chatId}/`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -565,16 +542,13 @@ export async function fetchChatById(chatId) {
 
 export async function createChat(username) {
   try {
-    const response = await fetch(
-      `http://api.rcarentacar.com/api/chats/chats/between/${username}/`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`
-        }
+    const response = await fetch(`${domain}api/chats/chats/between/${username}/`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`
       }
-    )
+    })
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
@@ -616,7 +590,7 @@ export async function filterProducts(url, form, selectsRefs) {
 
 export async function getSortedProducts(queryParams) {
   try {
-    const response = await fetch(`http://api.rcarentacar.com/api/transport/sorted${queryParams}`, {
+    const response = await fetch(`${domain}api/transport/sorted${queryParams}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -635,7 +609,7 @@ export async function getSortedProducts(queryParams) {
 
 export async function getFavouriteRealEstate() {
   try {
-    const response = await fetch(`http://api.rcarentacar.com/api/users/favorite/real-estate/`, {
+    const response = await fetch(`${domain}api/users/favorite/real-estate/`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -651,7 +625,7 @@ export async function getFavouriteRealEstate() {
 
 export async function addFavouriteRealEstate(id) {
   try {
-    const response = await fetch(`http://api.rcarentacar.com/api/users/favorite/add_favorite/`, {
+    const response = await fetch(`${domain}api/users/favorite/add_favorite/`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

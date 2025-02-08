@@ -1,6 +1,5 @@
 export const accessToken = getAccessToken()
 export function getAccessToken() {
-  console.log(localStorage)
   return JSON.parse(localStorage.getItem('user'))?.access || ''
 }
 
@@ -50,9 +49,9 @@ export async function loginUser(form) {
     }
 
     const responseData = await response.json()
-    console.log(responseData)
     // Сохраняем токен в localStorage
     localStorage.setItem('user', JSON.stringify(responseData))
+    console.log(localStorage.getItem('user'))
     this.$router.push({ name: 'main' })
   } catch (error) {
     console.error('Ошибка при входе в аккаунт:', error)

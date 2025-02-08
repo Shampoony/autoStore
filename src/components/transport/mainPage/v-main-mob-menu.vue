@@ -2,7 +2,7 @@
   <div class="v-main-mob-menu flex-col" :class="{ active: isMainMenuVisible }">
     <div class="v-main-mob-menu__header flex gap-32">
       <div @click="isMainMenuVisible = false">
-        <img src="../../assets/images/cross.svg" alt="" />
+        <img src="../../../assets/images/cross.svg" alt="" />
       </div>
       <div>Фильтры</div>
     </div>

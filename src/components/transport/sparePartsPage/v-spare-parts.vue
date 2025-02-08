@@ -128,7 +128,7 @@
             />
           </div>
           <div class="mob-filter__cut-button" @click="filterMenuOpen = !filterMenuOpen">
-            <img src="../../assets/images/show-filter.svg" alt="" />
+            <img src="../../../assets/images/show-filter.svg" alt="" />
             Подробный фильтр
           </div>
           <button class="mob-filter__cut-submit">Показать объявления</button>
@@ -143,7 +143,7 @@
           <div class="mob-filter__header flex justify-between">
             <img
               @click="this.filterMenuOpen = false"
-              src="../../assets/images/cross.svg"
+              src="../../../assets/images/cross.svg"
               alt="cross"
             />
             <h3 class="mob-filter__header-title">Фильтры</h3>
@@ -293,12 +293,12 @@ import { setQueryParams } from '@/utils'
 import { mapGetters, mapActions } from 'vuex'
 import { filterProducts, getSelectOptions, getFilteredProducts } from '@/api/requests'
 
-import VSelectStyled from '../generalComponents/v-select-styled.vue'
-import vHeader from '../generalComponents/v-header.vue'
-import vProduct from '../generalComponents/v-product.vue'
-import VBottomMenu from '../generalComponents/v-bottom-menu.vue'
+import vHeader from '@/components/generalComponents/v-header.vue'
+import vProduct from '@/components/generalComponents/v-product.vue'
+import vBottomMenu from '@/components/generalComponents/v-bottom-menu.vue'
+import vSelectStyled from '@/components/generalComponents/v-select-styled.vue'
 export default {
-  components: { vHeader, VBottomMenu, VSelectStyled, vProduct },
+  components: { vHeader, vBottomMenu, vSelectStyled, vProduct },
   name: 'vSpareParts',
   data() {
     return {

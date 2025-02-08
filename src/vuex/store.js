@@ -53,6 +53,8 @@ const allGetters = {
 
 let store = createStore({
   state: {
+    is_token_valid: true,
+    user_info: {},
     recomendations: [],
     companies: {
       transport: []

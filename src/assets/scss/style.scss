@@ -142,6 +142,7 @@ a {
 .v-header {
   position: relative;
   z-index: 200;
+  margin-bottom: 50px;
   &.alt {
     @media (max-width: 600px) {
       display: none;
@@ -373,27 +374,28 @@ a {
   top: -4px;
 }
 .v-header-menu {
-  width: 100%;
   opacity: 0;
   visibility: hidden;
   transition: 0.2s ease-in;
-  position: absolute;
-  left: 50%;
+  position: relative;
 
-  transform: translateX(-50%);
-  z-index: 200;
-  height: 380px;
-  width: clamp(36.875rem, -0.625rem + 100vw, 74.375rem);
-  padding: 25px 0 45px;
-  flex-wrap: wrap;
-  background-color: #ffff;
-  border-bottom-left-radius: 16px;
-  border-bottom-right-radius: 16px;
   @media (max-width: 600px) {
     display: none;
     opacity: 0;
   }
   &__container {
+    position: absolute;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+    z-index: 200;
+    height: 380px;
+    width: clamp(36.875rem, -0.625rem + 100vw, 74.375rem);
+    padding: 25px 0 45px;
+    background-color: #ffff;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
     @media (max-width: 970px) {
       gap: 10px !important;
     }
@@ -433,7 +435,7 @@ a {
     gap: 100px; /* Задает расстояние между главными блоками */
   }
   &__links {
-    overflow-x: auto;
+    overflow-x: hidden;
 
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -554,6 +556,9 @@ a {
   }
   @media (max-width: 610px) {
     grid-template-columns: repeat(2, 51%);
+  }
+  li {
+    max-width: 100%;
   }
 }
 .v-recomendations {
@@ -3089,12 +3094,14 @@ textarea {
   }
   &__products-list {
     display: flex;
-    flex-wrap: wrap;
     gap: 10px;
 
-    @media (max-width: 900px) {
+    @media (max-width: 600px) {
       flex-wrap: nowrap;
     }
+  }
+  &__products-item {
+    width: 50% !important;
   }
   &__container {
     width: 100%;
@@ -3102,7 +3109,7 @@ textarea {
     flex-wrap: nowrap; /* Элементы не переносятся */
     gap: 10px;
 
-    @media (max-width: 900px) {
+    @media (max-width: 768px) {
       flex-direction: column;
     }
   }
@@ -3371,6 +3378,8 @@ textarea {
     padding: 20px 5px 20px 10px;
 
     width: 110%;
+
+    right: 0;
   }
 
   &__menu-list {
@@ -3390,4 +3399,84 @@ textarea {
       }
     }
   }
+}
+
+.v-residential-complexes {
+  &__title {
+    margin-bottom: 0;
+  }
+  &__subtitle {
+    font-weight: 500;
+  }
+  &__menu {
+    gap: 30px;
+    align-items: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--gray);
+  }
+  &__buttons {
+    background-color: #f1f1f1;
+    min-width: 200px;
+    height: 35px;
+    gap: 4px;
+    border-radius: 5px;
+    padding: 2px;
+  }
+  &__button {
+    padding: 5px 12px;
+    border-radius: 5px;
+    width: 50%;
+    font-weight: 400;
+    white-space: nowrap;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 5px;
+    &.active {
+      background-color: #50707a;
+      color: #fff;
+    }
+    img {
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+.looking-for {
+  position: relative;
+  &__menu {
+    position: absolute;
+    z-index: 100000;
+    left: 0px;
+    background-color: #fff;
+    color: #000;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    border-radius: 5px;
+
+    padding: 5px;
+    &-name {
+      padding: 5px;
+      background-color: #eee7e7;
+    }
+    &-link {
+      padding: 5px;
+      a {
+        color: #000;
+      }
+    }
+  }
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition:
+    opacity 0.2s ease-in-out,
+    transform 0.2s ease-in-out;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
 }
