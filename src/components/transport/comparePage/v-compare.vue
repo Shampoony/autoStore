@@ -101,7 +101,7 @@
               >
                 <p class="compare-options__item-title">Тип кузова</p>
                 <span v-if="product.body_type" class="compare-options__item-option">{{
-                  optionsCache[`body-type-${product.body_type}`]?.body_type || 'Загрузка...'
+                  product.body_type.body_type
                 }}</span>
                 <span v-else class="compare-options__item-option">-</span>
               </div>
@@ -111,7 +111,7 @@
               >
                 <p class="compare-options__item-title">Цвет</p>
                 <span v-if="product.color" class="compare-options__item-option">
-                  {{ optionsCache[`color-${product.color}`]?.color || 'Загрузка...' }}
+                  {{ product.color.color }}
                 </span>
                 <span v-else class="compare-options__item-option">-</span>
               </div>
@@ -123,9 +123,7 @@
                 <span class="compare-options__item-option">
                   <span v-if="product.engine_volume">{{ product.engine_volume }}л</span>
                   <span v-if="product.engine_volume && product.engine_type">/</span>
-                  <span v-if="product.engine_type">{{
-                    optionsCache[`engine-type-${product.engine_type}`]?.engine_type || 'Загрузка...'
-                  }}</span>
+                  <span v-if="product.engine_type">{{ product.engine_type.engine_type }}</span>
                 </span>
               </div>
               <div
@@ -144,8 +142,7 @@
               >
                 <p class="compare-options__item-title">Коробка передач</p>
                 <span v-if="product.transmission" class="compare-options__item-option">{{
-                  optionsCache[`transmission-${product.transmission}`]?.transmission ||
-                  'Загрузка...'
+                  product.transmission.transmission
                 }}</span>
                 <span v-else class="compare-options__item-option">-</span>
               </div>
@@ -155,7 +152,7 @@
               >
                 <p class="compare-options__item-title">Привод</p>
                 <span v-if="product.drive" class="compare-options__item-option">{{
-                  optionsCache[`drive-${product.drive}`]?.drive || 'Загрузка...'
+                  product.drive.drive
                 }}</span>
                 <span v-else class="compare-options__item-option">-</span>
               </div>
@@ -175,7 +172,7 @@
               >
                 <p class="compare-options__item-title">Состояние</p>
                 <span v-if="product.condition" class="compare-options__item-option">
-                  {{ optionsCache[`condition-${product.condition}`]?.condition || 'Загрузка...' }}
+                  {{ product.condition.condition }}
                 </span>
                 <span v-else class="compare-options__item-option">-</span>
               </div>
@@ -185,8 +182,7 @@
               >
                 <p class="compare-options__item-title">Версия для рынка</p>
                 <span v-if="product.market_version" class="compare-options__item-option">{{
-                  optionsCache[`market-version-${product.market_version}`]?.market_version ||
-                  'Загрузка...'
+                  product.market_version
                 }}</span>
                 <span v-else class="compare-options__item-option">-</span>
               </div>
@@ -229,7 +225,7 @@ export default {
       comparedProducts: [],
       optionsCache: {},
       transportCache: {},
-      isLoading: false,
+      isLoading: true,
       accessableNames: [
         'body-type',
         'color',
@@ -307,17 +303,7 @@ export default {
         this.optionsSwiper.slideTo(activeIndex)
       }
     },
-    async setOptions(title, id) {
-      if (!this.optionsCache[`${title}-${id}`]) {
-        // Проверка на наличие ключа в optionsCache
-        try {
-          const name = await getOptionsById(title, id)
-          this.optionsCache[`${title}-${id}`] = name // Обновление optionsCache с помощью $set
-        } catch (error) {
-          console.error('Error fetching data for', `${title}-${id}`, error)
-        }
-      }
-    },
+
     onOptionsSlideChange() {
       // Синхронизация первого слайдера
       if (this.productsSwiper) {
@@ -329,23 +315,23 @@ export default {
       try {
         this.isLoading = true
         const products = await getComparedProducts()
-        console.log(products)
-        let productsArray = []
         if (products) {
-          for (let product of products.results) {
-            const transport = await getTransportById(product.transport)
-            this.transportCache[transport.id] = product.id
-            productsArray.push(transport)
-          }
+          const productsArray = await Promise.all(
+            products.results.map(async (product) => {
+              const transport = await getTransportById(product.transport)
+              this.transportCache[transport.id] = product.id
+              return transport
+            })
+          )
           this.comparedProducts = productsArray
         }
       } catch {
-        console.error('Ошибка при получении данных о товароах сранвения')
+        console.error('Ошибка при получении данных о товарах сравнения')
       } finally {
         this.isLoading = false
-        console.log(this.comparedProducts.length)
       }
     },
+
     async loadData() {
       await this.GET_TRANSPORT_PRODUCTS_FROM_API()
       await this.setComparedProducts()
@@ -355,18 +341,8 @@ export default {
   computed: {
     ...mapGetters(['TRANSPORT_PRODUCTS'])
   },
-  async mounted() {
-    await this.loadData()
-
-    this.comparedProducts.forEach(async (product) => {
-      for (let name of this.accessableNames) {
-        if (product[name.replace('-', '_')]) {
-          await this.setOptions(name, product[name.replace('-', '_')])
-        }
-      }
-    })
-    console.log(this.comparedProducts)
-    this.setComparedProducts()
+  mounted() {
+    this.loadData()
   },
   setup() {
     return { modules: [Navigation] }

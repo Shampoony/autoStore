@@ -1,6 +1,6 @@
 <template>
   <div class="v-main-page">
-    <vHeader @toggleMenu="toggleMainMenu" />
+    <!-- <vHeader @toggleMenu="toggleMainMenu" /> -->
     <div class="v-main-mob-menu flex-col" v-if="isMobile" :class="{ active: isMainMenuVisible }">
       <div class="v-main-mob-menu__header flex gap-28">
         <div @click="isMainMenuVisible = false">
@@ -16,7 +16,6 @@
             v-for="(main_category, index) in main_categories"
             :key="main_category.id"
           >
-            <!-- Единственный обработчик на названии категории -->
             <div class="v-main-mob-menu__theme-title" @click.stop="openSubcategories(index)">
               {{ main_category.name }}
             </div>
@@ -120,7 +119,7 @@ export default {
     async loadData() {
       await this.GET_TRANSPORT_CATEGORIES_FROM_API()
       await this.GET_SPARE_PARTS_CATEGORIES_FROM_API()
-      await this.GET_TRANSPORT_SUB_CATEGORIES_FROM_API()
+      /*    await this.GET_TRANSPORT_SUB_CATEGORIES_FROM_API() */
 
       for (let main_category of this.main_categories) {
         const name = main_category.eng_name + 'Categories'
@@ -128,8 +127,8 @@ export default {
       }
     }
   },
-  async mounted() {
-    await this.loadData()
+  mounted() {
+    this.loadData()
   }
 }
 </script>

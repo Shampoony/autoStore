@@ -16,5 +16,8 @@ export default {
   },
   SET_USER_INFO_TO_STATE: (state, user_info) => {
     state.user_info = user_info
+  },
+  SET_REAL_ESTATE_PRODUCTS_TO_STATE: (state, products) => {
+    state.products['real_estate'] = products
   }
 }

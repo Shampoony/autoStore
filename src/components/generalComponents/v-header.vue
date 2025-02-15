@@ -164,7 +164,7 @@
               <router-link to="">Посуточно</router-link>
             </li>
             <li class="bottom-menu__list-item" v-if="PAGE_TYPE === 'real-estate'">
-              <router-link to="">Агенства</router-link>
+              <router-link :to="{ name: 'real_estate_salons' }">Агенства</router-link>
             </li>
 
             <li class="bottom-menu__list-item" v-if="PAGE_TYPE === 'transport'">

@@ -26,11 +26,14 @@ const vCompare = () => import('@/components/transport/comparePage/v-compare.vue'
 /* ======================== Импорты для "Недвижимость" ========================*/
 
 /* Главная */
-const vRealEstate = () => import('@/components/real-estate/v-real-estate.vue')
+const vRealEstate = () => import('@/components/real-estate/main/v-real-estate.vue')
 
 /* Жилые комплексы */
 const VResidentialComplexes = () =>
   import('@/components/real-estate/residentialComplexes/v-residential-complexes.vue')
+
+/* Кошелёк */
+const VWallet = () => import('@/components/walletPage/v-wallet.vue')
 
 /* ======================== Общие импорты ========================*/
 
@@ -125,6 +128,11 @@ const profileRoutes = [
     path: 'notifications',
     name: 'notifications',
     component: vNotifications
+  },
+  {
+    path: 'wallet',
+    name: 'wallet',
+    component: VWallet
   },
   {
     path: 'my-ads',

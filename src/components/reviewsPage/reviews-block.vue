@@ -133,6 +133,7 @@ export default {
           await setReviewAnswer(reviewId, this.reviewAnswer[reviewId])
 
           this.reviewAnswer[reviewId] = '' // Очистить поле после отправки
+          window.location.reload(true)
         }
       } catch (error) {
         console.error('Ошибка при отправке ответа:', error)

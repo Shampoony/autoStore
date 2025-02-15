@@ -93,7 +93,7 @@
         </div>
         <div class="product-card__right">
           <h2 class="page-title product-card__price">
-            {{ prettyNum(product_data.price) }} {{ currency }}
+            {{ prettyNum(product_data.price) }} {{ product_data.currency.currency }}
           </h2>
           <h2 class="product-card__title page-title mob">
             {{ product_data.title }}
@@ -149,7 +149,7 @@
         </div>
 
         <h2 class="page-title product-card__price mb-4">
-          {{ prettyNum(product_data.price) }} {{ currency }}
+          {{ prettyNum(product_data.price) }} {{ product_data.currency.currency }}
         </h2>
         <h2 class="product-card__title page-title mob mb-6">
           {{ product_data.title }}
@@ -305,6 +305,7 @@ import {
   getCurrency,
   getUserById
 } from '@/api/requests'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'vProductCard',
@@ -335,6 +336,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['USER_INFO']),
     mainImage() {
       return this.product_data.images ? this.product_data.images[0]['image'] : ''
     },
@@ -349,8 +351,8 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['GET_USER_INFO']),
     prettyNum,
-    getCurrency,
     writeMessage() {
       if (this.user.id != getUserId()) {
         createChat(this.user.username).then((res) => {
@@ -358,16 +360,14 @@ export default {
         })
       }
     },
-    setUser() {
-      getUserById(this.product_data.owner).then((user) => {
+    async setUser() {
+      /* getUserById(this.product_data.owner).then((user) => {
         this.user = user
-      })
+      }) */
+      await this.GET_USER_INFO()
+      this.user = this.USER_INFO
     },
-    setCurrency() {
-      getCurrency(this.product_data.currency).then((currency) => {
-        this.currency = currency.currency
-      })
-    },
+
     setSomparedProducts() {
       getComparedProducts().then((products) => {
         this.comparedProducts = products
@@ -446,7 +446,6 @@ export default {
     }
   },
   mounted() {
-    this.setCurrency()
     this.setUser()
     this.setSomparedProducts()
     console.log(this.product_data)

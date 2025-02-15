@@ -42,7 +42,7 @@
         <div class="v-left-menu__link flex justify-between">
           <div class="flex gap-2">
             <img src="../../assets/images/wallet.svg" alt="" />
-            <a href="">Кошелёк</a>
+            <router-link :to="{ name: 'wallet' }">Кошелёк</router-link>
           </div>
           <p>0Р</p>
         </div>

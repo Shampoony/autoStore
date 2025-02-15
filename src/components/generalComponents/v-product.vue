@@ -27,7 +27,7 @@
     <div class="v-product__content">
       <div class="v-product__block flex justify-between">
         <div class="v-product__price flex items-center" :class="{ vip: product_data.vip }">
-          {{ prettyNum(product_data.price) }} {{ currency }}
+          {{ prettyNum(product_data.price) }} {{ product_data.currency.currency }}
         </div>
         <img
           @click.stop="toggleToFavourites"
@@ -63,7 +63,7 @@
         </div>
         <div class="v-product__block">
           <div class="v-product__location flex gap-2">
-            <div v-if="city.city">{{ city.city }},</div>
+            <div v-if="product_data.city">{{ product_data.city.city }},</div>
             <div v-if="product_data.created_at">
               {{ formattedDateTime.time }}
             </div>
@@ -180,12 +180,7 @@ export default {
 
   methods: {
     prettyNum,
-    async setCurrency() {
-      if (this.product_data.currency) {
-        const currencyObj = await getCurrency(this.product_data.currency)
-        this.currency = currencyObj.currency
-      }
-    },
+
     async checkIfProductInfFav() {
       const typeOfProduct = this.type_of_product.replace('-', '_') + '_id'
       const productId = this.product_data.id
@@ -204,11 +199,6 @@ export default {
         removeFromFavourites(typeOfProduct + '_id', this.product_data.id).then(() => {
           this.productInFavourites = false
         })
-      }
-    },
-    async setProductCity() {
-      if (this.product_data.city) {
-        this.city = await getOptionsById('cities', this.product_data.city)
       }
     }
   },
