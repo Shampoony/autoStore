@@ -37,6 +37,9 @@ const VWallet = () => import('@/components/walletPage/v-wallet.vue')
 
 /* ======================== Общие импорты ========================*/
 
+/* Подать объявление */
+const vCreateAdd = () => import('@/components/createAd/v-create-add.vue')
+
 /* Регистрация - ленивая загрузка */
 const vLogin = () => import('@/components/users/login/v-login.vue') // Используем ленивую загрузку
 const vRegistrationTransport = () =>
@@ -310,6 +313,11 @@ const mainTransportRoutes = [
     path: '/map-test/',
     name: 'map-test',
     component: MapTest
+  },
+  {
+    path: 'create/ad',
+    name: 'create_ad',
+    component: vCreateAdd
   }
 ]
 
@@ -342,6 +350,11 @@ const mainRealEstateRoutes = [
     path: 'chat/',
     children: realEstateChatRoutes,
     meta: { requiresAuth: true }
+  },
+  {
+    path: 'create/ad',
+    name: 'real_estate_create_ad',
+    component: vCreateAdd
   }
 ]
 const routes = [

@@ -1,6 +1,6 @@
 <template>
   <div class="v-main-page">
-    <!-- <vHeader @toggleMenu="toggleMainMenu" /> -->
+    <vHeader @toggleMenu="toggleMainMenu" />
     <div class="v-main-mob-menu flex-col" v-if="isMobile" :class="{ active: isMainMenuVisible }">
       <div class="v-main-mob-menu__header flex gap-28">
         <div @click="isMainMenuVisible = false">
@@ -35,7 +35,7 @@
       </div>
     </div>
     <main>
-      <vCards />
+      <vCards :categories="TRANSPORT_CATEGORIES" v-if="TRANSPORT_CATEGORIES" />
       <vRecomendations :sortedProducts="sortedProducts" />
     </main>
     <v-bottom-menu :active-item="nameActiveItem" />
@@ -48,8 +48,8 @@ import vRecomendations from './v-recomendations.vue'
 import vHeader from '@/components/generalComponents/v-header.vue'
 import vBottomMenu from '@/components/generalComponents/v-bottom-menu.vue'
 
-import { useMobile } from '@/mixins/isMobile'
 import { mapActions, mapGetters } from 'vuex'
+import { isMobile } from '@/utils'
 
 export default {
   name: 'v-main-page',
@@ -92,7 +92,8 @@ export default {
           eng_name: 'spareParts',
           categories: []
         }
-      ]
+      ],
+      isMobile: isMobile()
     }
   },
   methods: {
@@ -128,7 +129,7 @@ export default {
     }
   },
   mounted() {
-    this.loadData()
+    /*  this.loadData() */
   }
 }
 </script>

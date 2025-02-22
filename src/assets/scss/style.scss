@@ -140,6 +140,26 @@ a {
   margin-top: 20px;
 }
 
+.dropdown-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  align-items: center;
+  justify-content: center;
+  z-index: 1025;
+  /* opacity: 0; */
+  transition: opacity 0.3s ease;
+
+  display: none;
+}
+
+.dropdown-overlay.active {
+  display: flex;
+}
+
 .v-header {
   position: relative;
   z-index: 200;
@@ -663,6 +683,9 @@ a {
     padding: 0 4px;
     border-radius: 4px;
     color: #fff;
+    &.real-estate {
+      background-color: #3db460;
+    }
   }
   &__title {
     font-size: 16px;
@@ -2345,6 +2368,8 @@ textarea {
 }
 
 .reviews-block {
+  max-height: 600px;
+  overflow-x: hidden;
   &__list {
     width: 100%;
   }
@@ -3405,7 +3430,7 @@ textarea {
 
 .map-buttons {
   background-color: #f1f1f1;
-  min-width: 200px;
+  width: 210px;
   height: 35px;
   gap: 4px;
   border-radius: 5px;
@@ -3539,6 +3564,8 @@ textarea {
 }
 
 .menu-top {
+  position: relative;
+  z-index: 1026;
   display: flex;
   @media (max-width: 870px) {
     flex-direction: column;
@@ -3563,6 +3590,7 @@ textarea {
     font-size: 14px;
     gap: 5px;
     padding: 16px;
+    background-color: #fff;
     @media (max-width: 720px) {
       font-size: 10px;
     }
@@ -3608,7 +3636,10 @@ textarea {
     }
     &-filter {
       max-width: 686px;
+      width: auto !important;
       right: 0;
+
+      padding: 24px;
     }
   }
   &__input {
@@ -3636,6 +3667,84 @@ textarea {
     @media (max-width: 700px) {
       padding: 10px;
     }
+  }
+}
+
+.real-estate-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  max-width: 670px;
+
+  &__input {
+    padding: 5px 8px;
+    background-color: #f8f8f8;
+    border: 1px solid #cfcfcf;
+    max-width: 200px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    input {
+      background-color: #f8f8f8;
+      width: 100%;
+    }
+    label {
+      white-space: nowrap;
+    }
+    &.splited {
+      display: flex;
+      width: 250px !important;
+
+      input + input {
+        border-left: 1px solid #cfcfcf;
+        padding: 5px 10px;
+      }
+    }
+  }
+  &__block {
+    display: flex;
+    gap: 25px;
+  }
+  &__subtitle {
+    color: #59595e;
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+  &__buttons {
+    display: flex;
+    justify-content: space-between;
+
+    border-top: 1px solid var(--gray);
+    padding-top: 16px;
+  }
+  &__roll {
+    color: var(--blue) !important;
+    position: relative;
+    margin-right: 20px;
+    &::after {
+      content: url(../images/roll-arrow.svg);
+
+      position: absolute;
+      right: -20px;
+      top: 50%;
+      transform: translateY(-50%);
+
+      width: 16px;
+      height: 16px;
+    }
+  }
+  &__reset {
+    border: 1px solid var(--blue);
+    color: var(--blue);
+    border-radius: 4px;
+
+    padding: 11px 24px;
+  }
+  &__submit {
+    background-color: var(--blue);
+    color: #fff;
+    padding: 11px 24px;
+    border-radius: 4px;
   }
 }
 

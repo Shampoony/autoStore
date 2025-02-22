@@ -3,12 +3,8 @@
     <div class="v-cards__container container">
       <!-- Контейнер для прокрутки -->
       <div class="v-cards__list-wrapper">
-        <ul class="v-cards__list" v-if="TRANSPORT_CATEGORIES">
-          <li
-            class="v-cards__list-item"
-            v-for="card in TRANSPORT_CATEGORIES.results"
-            :key="card.id"
-          >
+        <ul class="v-cards__list" v-if="categories">
+          <li class="v-cards__list-item" v-for="card in categories.results" :key="card.id">
             <a class="category-card" :href="'/?category=' + card.id">
               <p>{{ card.category_name }}</p>
               <img
@@ -31,6 +27,12 @@ import { mapActions, mapGetters } from 'vuex'
 export default {
   name: 'v-cards',
   components: {},
+  props: {
+    categories: {
+      type: Object,
+      required: true
+    }
+  },
   computed: {
     ...mapGetters(['TRANSPORT_CATEGORIES'])
   },
@@ -38,7 +40,7 @@ export default {
     ...mapActions(['GET_TRANSPORT_CATEGORIES_FROM_API'])
   },
   mounted() {
-    this.GET_TRANSPORT_CATEGORIES_FROM_API()
+    /* this.GET_TRANSPORT_CATEGORIES_FROM_API() */
   }
 }
 </script>

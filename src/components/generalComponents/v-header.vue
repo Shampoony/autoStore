@@ -36,6 +36,11 @@
               </router-link>
             </li>
             <li class="menu__list-item">
+              <router-link :to="{ name: getUrlsName('notifications') }"
+                ><img src="/src/assets/images/notification.svg" alt=""
+              /></router-link>
+            </li>
+            <li class="menu__list-item">
               <v-select :options="options" />
             </li>
             <router-link class="menu__list-item" :to="{ name: 'registration' }" v-if="!user"
@@ -91,9 +96,13 @@
               </div>
             </li>
             <li class="menu__list-item">
-              <button class="flex menu__btn items-center" href="#!">
+              <router-link
+                :to="{ name: getUrlsName('create_ad') }"
+                class="flex menu__btn items-center"
+                href="#!"
+              >
                 <img src="../../assets/images/plus.svg" alt="plus" />Подать объявление
-              </button>
+              </router-link>
             </li>
           </ul>
         </nav>
@@ -314,21 +323,21 @@ export default {
     }
   },
   methods: {
-    ...mapActions([
-      'GET_TRANSPORT_CATEGORIES_FROM_API',
-      'GET_TRANSPORT_SUB_CATEGORIES_FROM_API',
-      'GET_SPARE_PARTS_CATEGORIES_FROM_API'
-    ]),
+    ...mapActions(['GET_TRANSPORT_CATEGORIES_FROM_API', 'GET_SPARE_PARTS_CATEGORIES_FROM_API']),
     toggleShowedLinks(name) {
       name === this.showedLinks ? (this.showedLinks = '') : (this.showedLinks = name)
     },
     getSubCategories(index) {
-      return this.TRANSPORT_SUB_CATEGORIES[index] || []
+      console.log(this.TRANSPORT_CATEGORIES)
+      return this.TRANSPORT_CATEGORIES.results[index]?.sub_categories || []
     },
     async showMenu() {
       if (!this.isMenuVisible) {
         this.isMenuVisible = true
         document.body.classList.add('watch__mode')
+      }
+      if (!this.TRANSPORT_CATEGORIES) {
+        await this.loadData()
       }
     },
 
@@ -349,7 +358,6 @@ export default {
       if (!this.isMobile) {
         await this.GET_TRANSPORT_CATEGORIES_FROM_API()
         await this.GET_SPARE_PARTS_CATEGORIES_FROM_API()
-        await this.GET_TRANSPORT_SUB_CATEGORIES_FROM_API()
       }
     },
     setMenuTitle(title) {
@@ -361,8 +369,6 @@ export default {
     getUrlsName,
     logout
   },
-  async mounted() {
-    await this.loadData()
-  }
+  mounted() {}
 }
 </script>

@@ -26,8 +26,14 @@
     </router-link>
     <div class="v-product__content">
       <div class="v-product__block flex justify-between">
-        <div class="v-product__price flex items-center" :class="{ vip: product_data.vip }">
-          {{ prettyNum(product_data.price) }} {{ product_data.currency.currency }}
+        <div
+          class="v-product__price flex items-center"
+          :class="{ vip: product_data.vip, 'real-estate': type_of_product === 'real-estate' }"
+        >
+          {{ prettyNum(product_data.price) }}
+          <p v-if="product_data.currency && product_data.currency.currency">
+            {{ product_data.currency.currency }}
+          </p>
         </div>
         <img
           @click.stop="toggleToFavourites"
@@ -85,7 +91,7 @@
 import 'swiper/css'
 import 'swiper/css/pagination'
 import { Pagination } from 'swiper/modules'
-import { getCurrency, getOptionsById, isProductInFavourites } from '@/api/requests'
+import { isProductInFavourites } from '@/api/requests'
 import prettyNum from '@/filters/prettyNum.js'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { addToFavourites, removeFromFavourites } from '@/api/requests'
@@ -114,7 +120,6 @@ export default {
       isPagination: false,
       productInFavourites: false,
       swiper: null,
-      currency: '',
       city: {},
       apiUrl: 'http://api.rcarentacar.com/'
     }
@@ -202,10 +207,6 @@ export default {
       }
     }
   },
-  async mounted() {
-    /*  await this.setCurrency()
-    await this.setProductCity()
-    await this.checkIfProductInfFav() */
-  }
+  mounted() {}
 }
 </script>

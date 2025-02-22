@@ -23,34 +23,36 @@
                 :class="{ rotated: hiddenDropdowns[index] }"
               />
             </div>
-            <div class="menu-top__dropdown" v-show="hiddenDropdowns[index]">
-              <div
-                class="menu-top__dropdown-item"
-                v-for="(item, itemIndex) in dropdown.items"
-                :key="itemIndex"
-              >
-                <template v-if="dropdown.type === 'checkbox'">
-                  <input
-                    type="checkbox"
-                    :id="`checkbox-${index}-${itemIndex}`"
-                    :checked="dropdown.selectedItems.includes(item)"
-                    @change="handleCheckboxChange(index, item)"
-                  />
-                  <label :for="`checkbox-${index}-${itemIndex}`">{{ item }}</label>
-                </template>
-                <template v-else-if="dropdown.type === 'text'">
-                  <input
-                    class="menu-top__input"
-                    type="text"
-                    :placeholder="item"
-                    @input="updateTextInput(index, itemIndex, $event.target.value)"
-                  />
-                </template>
-                <template v-else>
-                  <div @click="selectItem(index, item)">{{ item }}</div>
-                </template>
+            <transition name="fade">
+              <div class="menu-top__dropdown" v-show="hiddenDropdowns[index]">
+                <div
+                  class="menu-top__dropdown-item"
+                  v-for="(item, itemIndex) in dropdown.items"
+                  :key="itemIndex"
+                >
+                  <template v-if="dropdown.type === 'checkbox'">
+                    <input
+                      type="checkbox"
+                      :id="`checkbox-${index}-${itemIndex}`"
+                      :checked="dropdown.selectedItems.includes(item)"
+                      @change="handleCheckboxChange(index, item)"
+                    />
+                    <label :for="`checkbox-${index}-${itemIndex}`">{{ item }}</label>
+                  </template>
+                  <template v-else-if="dropdown.type === 'text'">
+                    <input
+                      class="menu-top__input"
+                      type="text"
+                      :placeholder="item"
+                      @input="updateTextInput(index, itemIndex, $event.target.value)"
+                    />
+                  </template>
+                  <template v-else>
+                    <div @click="selectItem(index, item)">{{ item }}</div>
+                  </template>
+                </div>
               </div>
-            </div>
+            </transition>
           </div>
           <div class="menu-top__block" v-click-outside="closeFilter">
             <div
@@ -67,32 +69,171 @@
                 :class="{ rotated: isFilterMenuOpen }"
               />
             </div>
-            <div class="menu-top__dropdown-filter" v-show="isFilterMenuOpen">
-              <div class="form_toggle">
-                <div class="form_toggle-item item-1">
-                  <input id="type_of_novetly-all" type="radio" name="condition" value="Все" /><label
-                    for="type_of_novetly-all"
-                    >Все</label
-                  >
+            <transition name="fade">
+              <div
+                class="menu-top__dropdown-filter menu-top__dropdown real-estate-filter"
+                v-show="isFilterMenuOpen"
+              >
+                <div class="real-estate-filter__row">
+                  <div class="form_toggle">
+                    <div class="form_toggle-item item-1">
+                      <input
+                        id="type_of_novetly-all"
+                        type="radio"
+                        name="condition"
+                        value="Все"
+                        v-model="form.condition"
+                      /><label for="type_of_novetly-all">Все</label>
+                    </div>
+                    <div class="form_toggle-item item-mid">
+                      <input
+                        id="type_of_novetly-new"
+                        type="radio"
+                        name="condition"
+                        value="Новые"
+                        v-model="form.condition"
+                      /><label for="type_of_novetly-new">Новые</label>
+                    </div>
+                    <div class="form_toggle-item item-2">
+                      <input
+                        id="type_of_novetly-mileage"
+                        type="radio"
+                        name="condition"
+                        value="С пробегом"
+                        v-model="form.condition"
+                      /><label for="type_of_novetly-mileage">С пробегом</label>
+                    </div>
+                  </div>
                 </div>
-                <div class="form_toggle-item item-mid">
-                  <input
-                    id="type_of_novetly-new"
-                    type="radio"
-                    name="condition"
-                    value="Новые"
-                  /><label for="type_of_novetly-new">Новые</label>
+                <div class="real-estate-filter__row">
+                  <div class="real-estate-filter__subtitle">Площадь, м²</div>
+                  <div class="real-estate-filter__input splited">
+                    <input
+                      type="text"
+                      placeholder="от"
+                      name="square_min"
+                      v-model="form.square_min"
+                    />
+                    <input
+                      type="text"
+                      placeholder="до"
+                      name="square_max"
+                      v-model="form.square_max"
+                    />
+                  </div>
                 </div>
-                <div class="form_toggle-item item-2">
-                  <input
-                    id="type_of_novetly-mileage"
-                    type="radio"
-                    name="condition"
-                    value="С пробегом"
-                  /><label for="type_of_novetly-mileage">С пробегом</label>
+                <div class="real-estate-filter__row">
+                  <div class="real-estate-filter__subtitle">Этаж</div>
+                  <div class="real-estate-filter__block">
+                    <div class="real-estate-filter__input splited">
+                      <input
+                        type="text"
+                        placeholder="от"
+                        name="floor_min"
+                        v-model="form.floor_min"
+                      />
+                      <input
+                        type="text"
+                        placeholder="до"
+                        name="floor_max"
+                        v-model="form.floor_max"
+                      />
+                    </div>
+                    <div class="real-estate-filter__input">
+                      <input
+                        type="checkbox"
+                        id="not_first"
+                        v-model="form.floor_type"
+                        value="not_first"
+                      />
+                      <label for="not_first">Не первый</label>
+                    </div>
+                    <div class="real-estate-filter__input">
+                      <input
+                        type="checkbox"
+                        id="not_last"
+                        v-model="form.floor_type"
+                        value="not_last"
+                      />
+                      <label for="not_last">Не последний</label>
+                    </div>
+                    <div class="real-estate-filter__input">
+                      <input
+                        type="checkbox"
+                        id="only_last"
+                        v-model="form.floor_type"
+                        value="only_last"
+                      />
+
+                      <label for="only_last">Только последний</label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="real-estate-filter__row">
+                  <div class="real-estate-filter__subtitle">Местоположение</div>
+                  <div class="real-estate-filter__block">
+                    <div class="filter-option">
+                      <input
+                        type="radio"
+                        name="location"
+                        id="location_1"
+                        value="Станции метро"
+                        v-model="form.location"
+                      />
+                      <label for="location_1">Станции метро</label>
+                    </div>
+                    <div class="filter-option">
+                      <input
+                        type="radio"
+                        name="location"
+                        id="location_2"
+                        value="Районы и посёлки"
+                        v-model="form.location"
+                      />
+                      <label for="location_2">Районы и поселки</label>
+                    </div>
+                    <div class="filter-option">
+                      <input
+                        type="radio"
+                        name="location"
+                        id="location_3"
+                        value="Ориентиры"
+                        v-model="form.location"
+                      />
+                      <label for="location_3">Ориентиры</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="real-estate-filter__row">
+                  <div class="real-estate-filter__subtitle">Номер объявления</div>
+                  <div class="real-estate-filter__block">
+                    <div class="real-estate-filter__input">
+                      <input type="number" name="ad_number" />
+                    </div>
+                    <div class="real-estate-filter__input">
+                      <input type="checkbox" id="bil_of_sale" name="bil_of_sale" />
+                      <label for="bil_of_sale">Есть купчая</label>
+                    </div>
+                    <div class="real-estate-filter__input">
+                      <input type="checkbox" id="mortgage" name="mortgage" />
+                      <label for="mortgage">Есть ипотека</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="real-estate-filter__buttons">
+                  <button class="real-estate-filter__roll" type="button" @click="closeFilter">
+                    Свернуть
+                  </button>
+                  <div class="flex gap-2">
+                    <button type="button" class="real-estate-filter__reset">Сбросить</button>
+                    <button type="submit" class="real-estate-filter__submit" @click="submitFilter">
+                      Показать объявления
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
+            </transition>
           </div>
         </div>
 
@@ -113,6 +254,7 @@
         <router-link class="menu-bottom__link" to="/">Автомобиль</router-link>
       </div>
     </div>
+    <div class="dropdown-overlay" :class="{ active: isFilterMenuOpen }"></div>
   </div>
 </template>
 
@@ -123,6 +265,16 @@ export default {
     return {
       hiddenDropdowns: {},
       isFilterMenuOpen: false,
+      rolled: false,
+      form: {
+        location: 'Ориентиры',
+        floor_min: '',
+        floor_type: [],
+        floor_max: '',
+        squere_min: '',
+        squere_max: '',
+        condition: ''
+      },
       dropdowns: [
         {
           title: 'Купить',
@@ -179,12 +331,28 @@ export default {
       this.isFilterMenuOpen = !this.isFilterMenuOpen
     },
     toggleDropDowns(index) {
+      this.isFilterMenuOpen = false
       if (this.hiddenDropdowns[index]) {
         this.hiddenDropdowns[index] = false
       } else {
         this.closeDropDownMenu()
         this.hiddenDropdowns[index] = true
       }
+    },
+    submitFilter(e) {
+      e.preventDefault()
+      let requestUrl = `?`
+      for (let key in this.form) {
+        const value = this.form[key]
+        if (Array.isArray(value)) {
+          value.forEach((item) => {
+            requestUrl += `${key}=${item}&`
+          })
+        } else if (value) {
+          requestUrl += `${key}=${value}&`
+        }
+      }
+      console.log(requestUrl)
     },
     closeDropDownMenu() {
       Object.keys(this.hiddenDropdowns).forEach((key) => {

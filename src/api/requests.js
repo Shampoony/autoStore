@@ -626,7 +626,7 @@ export async function getFavouriteRealEstate() {
 export async function addFavouriteRealEstate(id) {
   try {
     const response = await fetch(`${domain}api/users/favorite/add_favorite/`, {
-      method: 'GET',
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${accessToken}`
@@ -638,4 +638,27 @@ export async function addFavouriteRealEstate(id) {
   } catch (error) {
     console.error('Ошибка при получении избранного:', error)
   }
+}
+
+async function getResponse(url) {
+  try {
+    const response = await fetch(`${domain}${url}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
+    const responseData = await response.json()
+    console.log(responseData)
+    return responseData
+  } catch (error) {
+    console.error('Ошибка при получении данных с сервера:', error)
+  }
+}
+
+/* Reak estate */
+
+export async function getRealEstate(page) {
+  return await getResponse(`api/real-estate/real-estate?page=${page}`)
 }

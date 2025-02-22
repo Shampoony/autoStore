@@ -1,5 +1,5 @@
 <template>
-  <div class="reviews-block">
+  <div class="reviews-block styled-scrollbar">
     <ul class="reviews-block__list flex flex-col">
       <li class="reviews-block__list-item" v-for="review in reviews" :key="review.id">
         <div class="review flex-col gap-2">

@@ -1,8 +1,8 @@
 <template>
   <section class="v-recomendations">
     <div class="v-recomendations__container container" v-if="!isLoading">
-      <div class="flex justify-between w-full">
-        <h1 class="v-recomendations__title" v-if="!notFoundProducts">Рекомендации для вас</h1>
+      <div class="flex justify-between w-full" v-if="!notFoundProducts">
+        <h1 class="v-recomendations__title">Рекомендации для вас</h1>
         <v-sort @sort="sortProducts" :vip="isVipProducts" />
       </div>
       <ul class="v-recomendations__list products-container" v-if="!notFoundProducts">
@@ -80,24 +80,26 @@ export default {
     async setCategoryProducts() {
       const params = this.queryParams
       this.isLoading = true
+      this.notFoundProducts = false
       for (const [key, value] of params.entries()) {
         if (key == 'subcategory') {
           const subcategoryProducts = await getCategoryProductsById('sub-categories', value)
           if (subcategoryProducts) {
             console.log(subcategoryProducts)
-            this.products.results = subcategoryProducts
+            this.products.results = subcategoryProducts.results
           }
         }
         if (key == 'category') {
           const categoryProducts = await getCategoryProductsById('categories', value)
           if (categoryProducts) {
-            this.products.results = categoryProducts
+            this.products.results = categoryProducts.results
           }
         }
+        console.log(this.products.results)
         if (!this.products.results.length) {
+          console.log('В условии')
           this.notFoundProducts = true
         }
-        console.log(this.products.results)
       }
       this.isLoading = false
     },
@@ -123,7 +125,6 @@ export default {
     sortProducts(sortedProducts) {
       this.products.results = sortedProducts
       this.products.total_count = sortedProducts.length
-      console.log(this.products.total_count)
     }
   },
   async mounted() {
