@@ -5,13 +5,16 @@
       <div class="v-residential-complexes__container container">
         <div class="v-residential-complexes__menu flex justify-between">
           <h1 class="v-residential-complexes__title title">Жилые комплкесы</h1>
-          <div class="flex gap-5 items-center">
-            <h2 class="v-residential-complexes__subtitle">Цены: за м² за квартиры</h2>
-            <!-- Rounded switch -->
-            <label class="switch">
-              <input type="checkbox" />
-              <span class="slider round"></span>
-            </label>
+          <div class="v-residential-complexes__menu-block">
+            <div class="flex w-full justify-between gap-4">
+              <h2 class="v-residential-complexes__subtitle">Цены: за м² за квартиры</h2>
+              <!-- Rounded switch -->
+              <label class="switch">
+                <input type="checkbox" />
+                <span class="slider round"></span>
+              </label>
+            </div>
+
             <div class="map-buttons flex">
               <div class="map-buttons__button flex">
                 <img src="../../../assets/images/map.svg" alt="" />

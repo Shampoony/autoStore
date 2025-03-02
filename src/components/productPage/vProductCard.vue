@@ -40,7 +40,7 @@
               <div class="flex gap-2">Номер объявления: {{ this.product_data.id }}</div>
             </div>
           </div>
-          <div class="prodct-card__specifications">
+          <div class="prodct-card__specifications" v-if="product_data.parameters">
             <h2 class="product-title">Характеристики</h2>
             <div class="product-card__specifications-container">
               <div
@@ -58,7 +58,7 @@
             <div class="product-card__block">
               <div class="flex justify-between">
                 <div class="flex">
-                  <p v-if="product_data.city">{{ product_data.city }},</p>
+                  <p v-if="product_data.city">{{ product_data.city.city }},</p>
                   <p>{{ product_data.address }}</p>
                 </div>
                 <div
@@ -75,7 +75,7 @@
               <mapView v-if="coordinates && mapShowed" :coordinates="coordinates" />
             </div>
           </div>
-          <div class="product-card__description">
+          <div class="product-card__description" v-if="product_data.descriptions">
             <h2 class="product-title">Описание</h2>
             <p v-for="description in product_data.descriptions" :key="description.id">
               {{ description.title }}
@@ -90,9 +90,16 @@
               </div>
             </div>
           </div>
+          <div class="product-card__description" v-if="product_data.description">
+            <h2 class="product-title">Описание</h2>
+            {{ product_data.description }}
+          </div>
         </div>
         <div class="product-card__right">
-          <h2 class="page-title product-card__price">
+          <h2
+            class="page-title product-card__price"
+            v-if="product_data.price && product_data.currency"
+          >
             {{ prettyNum(product_data.price) }} {{ product_data.currency.currency }}
           </h2>
           <h2 class="product-card__title page-title mob">
@@ -148,7 +155,10 @@
           />
         </div>
 
-        <h2 class="page-title product-card__price mb-4">
+        <h2
+          class="page-title product-card__price mb-4"
+          v-if="product_data.price && product_data.currency"
+        >
           {{ prettyNum(product_data.price) }} {{ product_data.currency.currency }}
         </h2>
         <h2 class="product-card__title page-title mob mb-6">
@@ -176,12 +186,12 @@
               </div>
             </div>
           </div>
-          <div class="product-card__location">
+          <div class="product-card__location" v-if="product_data.city">
             <h2 class="product-title">Расположение</h2>
             <div class="product-card__block">
               <div class="flex justify-between">
                 <div class="flex">
-                  <p v-if="product_data.city">{{ product_data.city }},</p>
+                  <p v-if="product_data.city">{{ product_data.city.city }},</p>
                   <p>{{ product_data.address }}</p>
                 </div>
                 <div
@@ -197,7 +207,7 @@
               <mapView v-if="coordinates && mapShowed" :coordinates="coordinates" />
             </div>
           </div>
-          <div class="product-card__description">
+          <div class="product-card__description" v-if="product_data.descriptions">
             <h2 class="product-title">Описание</h2>
             <p v-for="description in product_data.descriptions" :key="description.id">
               {{ description.title }}
@@ -212,6 +222,11 @@
               </div>
             </div>
           </div>
+          <div class="product-card__description" v-if="product_data.description">
+            <h2 class="product-title">Описание</h2>
+            {{ product_data.description }}
+          </div>
+
           <div class="product-card__owner flex gap-4 mb-4" v-if="user && user.user_profile">
             <img v-if="user.photo" :src="user.photo" alt="profile" />
             <div v-if="user.user_profile.full_name" class="product-card__owner-info flex flex-col">

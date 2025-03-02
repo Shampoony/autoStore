@@ -112,13 +112,13 @@
                       type="text"
                       placeholder="от"
                       name="square_min"
-                      v-model="form.square_min"
+                      v-model="form.squere_min"
                     />
                     <input
                       type="text"
                       placeholder="до"
                       name="square_max"
-                      v-model="form.square_max"
+                      v-model="form.squere_max"
                     />
                   </div>
                 </div>
@@ -352,7 +352,17 @@ export default {
           requestUrl += `${key}=${value}&`
         }
       }
+      window.location.search = requestUrl.slice(0, -1)
       console.log(requestUrl)
+    },
+    setFilterOptionsFromURL() {
+      const params = this.$route.query
+      for (let key in params) {
+        if (this.form[key] !== undefined) {
+          console.log(key, params[key])
+          this.form[key] = params[key]
+        }
+      }
     },
     closeDropDownMenu() {
       Object.keys(this.hiddenDropdowns).forEach((key) => {
@@ -470,6 +480,7 @@ export default {
     }, {})
 
     this.setParametersFromURL()
+    this.setFilterOptionsFromURL()
   }
 }
 </script>

@@ -31,6 +31,8 @@ const vRealEstate = () => import('@/components/real-estate/main/v-real-estate.vu
 /* Жилые комплексы */
 const VResidentialComplexes = () =>
   import('@/components/real-estate/residentialComplexes/v-residential-complexes.vue')
+const VResidentialComplex = () =>
+  import('@/components/real-estate/residentialComplexes/v-residential-complex.vue')
 
 /* Кошелёк */
 const VWallet = () => import('@/components/walletPage/v-wallet.vue')
@@ -328,9 +330,19 @@ const mainRealEstateRoutes = [
     component: vRealEstate
   },
   {
+    path: 'product/',
+    name: 'real_estate_product-item',
+    component: vProductPage
+  },
+  {
     path: 'residential-complexes',
     name: 'residential_complexes',
     component: VResidentialComplexes
+  },
+  {
+    path: 'residential-complexes/complex/:id?',
+    name: 'residential_complex',
+    component: VResidentialComplex
   },
   {
     path: 'profile/',

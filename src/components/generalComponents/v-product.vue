@@ -2,7 +2,7 @@
   <div class="v-product">
     <router-link
       :to="{
-        name: 'product-item',
+        name: getUrlsName('product-item'),
 
         query: { [type_of_product]: product_data.id }
       }"
@@ -50,7 +50,7 @@
       </div>
       <router-link
         :to="{
-          name: 'product-item',
+          name: getUrlsName('product-item'),
 
           query: { [type_of_product]: product_data.id }
         }"
@@ -91,10 +91,12 @@
 import 'swiper/css'
 import 'swiper/css/pagination'
 import { Pagination } from 'swiper/modules'
-import { isProductInFavourites } from '@/api/requests'
-import prettyNum from '@/filters/prettyNum.js'
 import { Swiper, SwiperSlide } from 'swiper/vue'
-import { addToFavourites, removeFromFavourites } from '@/api/requests'
+
+import { mapGetters } from 'vuex'
+import prettyNum from '@/filters/prettyNum.js'
+import { addToFavourites, removeFromFavourites, isProductInFavourites } from '@/api/requests'
+import { getUrlsName } from '@/utils'
 
 export default {
   name: 'v-product',
@@ -134,6 +136,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['PAGE_TYPE']),
     checkImagesLength() {
       if (this.product_data.images.length > 4) {
         return true
@@ -205,8 +208,11 @@ export default {
           this.productInFavourites = false
         })
       }
-    }
+    },
+    getUrlsName
   },
-  mounted() {}
+  mounted() {
+    this.checkIfProductInfFav()
+  }
 }
 </script>

@@ -6,7 +6,7 @@
       <div class="v-chat__content">
         <input type="text" class="v-chat__search" placeholder="Поиск" />
         <div class="v-chat__filters"></div>
-        <ul class="v-chat__list">
+        <ul class="v-chat__list styled-scrollbar">
           <li class="v-chat__list-item" v-for="(chat, index) in chats" :key="index">
             <router-link
               class="chat-item flex justify-between"

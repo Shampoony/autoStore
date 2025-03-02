@@ -649,11 +649,21 @@ async function getResponse(url) {
         Authorization: `Bearer ${accessToken}`
       }
     })
-    const responseData = await response.json()
-    console.log(responseData)
-    return responseData
+
+    if (!response.ok) {
+      throw new Error(`Ошибка HTTP: ${response.status} ${response.statusText}`)
+    }
+
+    const text = await response.text() // Читаем как текст
+
+    if (!text) {
+      throw new Error('Пустой ответ от сервера')
+    }
+
+    return JSON.parse(text) // Парсим JSON вручную
   } catch (error) {
     console.error('Ошибка при получении данных с сервера:', error)
+    return null // Возвращаем null, чтобы избежать краша
   }
 }
 
@@ -661,4 +671,8 @@ async function getResponse(url) {
 
 export async function getRealEstate(page) {
   return await getResponse(`api/real-estate/real-estate?page=${page}`)
+}
+
+export async function getUserRealEstate() {
+  return getResponse(`api/users/all-ads-real-estate/`)
 }

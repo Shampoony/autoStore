@@ -30,7 +30,7 @@
 </template>
 <script>
 import { getUserId } from '@/utils'
-import { getUserById, getUserTransport, createChat } from '@/api/requests'
+import { getUserById, getUserTransport, createChat, getUserRealEstate } from '@/api/requests'
 
 import { mapActions, mapGetters } from 'vuex'
 
@@ -50,7 +50,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['USER_INFO']),
+    ...mapGetters(['USER_INFO', 'PAGE_TYPE']),
     userId() {
       return parseInt(this.$route.params.id ? this.$route.params.id : getUserId())
     }
@@ -61,7 +61,8 @@ export default {
       await this.GET_USER_INFO()
       this.user = this.USER_INFO
       let userId = this.$route.params.id ? this.$route.params.id : getUserId()
-      this.userTransport = await getUserTransport(userId)
+      this.userTransport =
+        this.PAGE_TYPE === 'transport' ? await getUserTransport(userId) : await getUserRealEstate()
       console.log(this.user)
     },
     writeMessage() {

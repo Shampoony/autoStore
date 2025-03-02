@@ -3,16 +3,16 @@
   <main class="v-favourites">
     <div class="v-favourites__container container my-container">
       <v-left-menu />
-      <ul class="v-favourites__list" v-if="!isLoading && favouriites.length">
+      <ul class="v-favourites__list products-container" v-if="!isLoading && favourites.length">
         <li
           class="v-favourites__list-item"
-          v-for="(product_data, index) in favouriites"
+          v-for="(product_data, index) in favourites"
           :key="index"
         >
           <v-product
             v-if="product_data.transport"
             :product_data="product_data.transport"
-            :products_length="favouriites.length"
+            :products_length="favourites.length"
             :type_of_product="'transport'"
           />
           <v-product
@@ -52,7 +52,7 @@ export default {
   components: { vHeader, vLeftMenu, vProduct, vBottomMenu },
   data() {
     return {
-      favouriites: [],
+      favourites: [],
       isLoading: true
     }
   },
@@ -66,14 +66,20 @@ export default {
     async setFavourites() {
       this.isLoading = true
       try {
-        let products
-        if (this.PAGE_TYPE == 'transport') {
-          products = await getFavouriteProducts()
+        let products = await getFavouriteProducts()
+        this.favourites = []
+
+        if (this.PAGE_TYPE === 'transport') {
+          products.forEach((product) => {
+            if (product.real_estate === null) {
+              console.log('В условии')
+              this.favourites.push(product)
+              console.log(this.favourites)
+            }
+          })
         } else {
-          products = await getFavouriteRealEstate()
+          this.favourites = products.real_estate
         }
-        this.favouriites = products
-        console.log(this.favouriites)
       } catch (error) {
         console.error('Произошла ошибка при добавлении избранного', error)
       } finally {

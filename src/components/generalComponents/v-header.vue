@@ -128,18 +128,29 @@
                 <div class="looking-for__menu" v-if="isLookingForMenuVisible">
                   <div class="looking-for__menu-item">
                     <div
-                      class="looking-for__menu-name"
+                      class="looking-for__menu-name flex gap-2"
                       @click="() => toggleShowedLinks('transport')"
                     >
+                      <img src="/src/assets/images/car-icon.svg" alt="car" />
                       Авто
                     </div>
                     <transition name="fade">
                       <div class="looking-for__menu-links" v-show="showedLinks === 'transport'">
                         <div class="looking-for__menu-link">
-                          <router-link to="/">Продажа</router-link>
+                          <router-link to="/"
+                            ><img
+                              src="/src/assets/images/key-icon.svg"
+                              alt=""
+                            />Продажа</router-link
+                          >
                         </div>
                         <div class="looking-for__menu-link">
-                          <router-link :to="{ name: 'rent' }">Аренда</router-link>
+                          <router-link :to="{ name: 'rent' }"
+                            ><img
+                              src="/src/assets/images/rent-icon.svg"
+                              alt=""
+                            />Аренда</router-link
+                          >
                         </div>
                       </div>
                     </transition>
@@ -147,18 +158,29 @@
 
                   <div class="looking-for__menu-item">
                     <div
-                      class="looking-for__menu-name"
+                      class="looking-for__menu-name flex gap-2"
                       @click="() => toggleShowedLinks('real-estate')"
                     >
+                      <img src="/src/assets/images/house.svg" alt="" />
                       Недвижимость
                     </div>
                     <transition name="fade">
                       <div class="looking-for__menu-links" v-if="showedLinks === 'real-estate'">
                         <div class="looking-for__menu-link">
-                          <router-link :to="{ name: 'real_estate' }">Продажа</router-link>
+                          <router-link :to="{ name: 'real_estate' }"
+                            ><img
+                              src="/src/assets/images/rent-icon.svg"
+                              alt=""
+                            />Продажа</router-link
+                          >
                         </div>
                         <div class="looking-for__menu-link">
-                          <router-link to="">Аренда</router-link>
+                          <router-link to=""
+                            ><img
+                              src="/src/assets/images/rent-icon.svg"
+                              alt=""
+                            />Аренда</router-link
+                          >
                         </div>
                       </div>
                     </transition>

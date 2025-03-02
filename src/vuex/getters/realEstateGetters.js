@@ -3,6 +3,7 @@ export default {
     return state.companies['real-estate']
   },
   REAL_ESTATE__PRODUCTS(state) {
+    console.log(state)
     return state.products['real-estate']
   }
 }

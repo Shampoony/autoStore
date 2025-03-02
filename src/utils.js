@@ -5,7 +5,6 @@ import { onMounted, onUnmounted } from 'vue'
 
 export function decodeAccessToken() {
   const payload = accessToken.split('.')[1]
-  console.log(accessToken)
   const decodedPayload = atob(payload.replace(/-/g, '+').replace(/_/g, '/'))
   return JSON.parse(decodedPayload)
 }
@@ -202,6 +201,6 @@ export function isMobile(breakPoint = 600) {
   })
 
   onUnmounted(() => {
-    document.removeEventListener('resize')
+    document.removeEventListener('resize', isMobile)
   })
 }

@@ -52,9 +52,9 @@ export default {
       if (this.PAGE_TYPE == 'transport') {
         await this.GET_TRANSPORT_COMPANIES()
         this.companies = this.TRANSPORT_COMPANIES
-        console.log(this.TRANSPORT_COMPANIES)
       } else {
-        this.GET_REAL_ESTATE_COMPANIES()
+        await this.GET_REAL_ESTATE_COMPANIES()
+        this.companies = this.REAL_ESTATE_COMPANIES
       }
     }
   },

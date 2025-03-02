@@ -17,7 +17,7 @@
     <div class="v-ads__container container">
       <v-left-menu />
       <div class="v-ads__content profile-page__content">
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-4" v-if="userAds && userAds.length">
           <v-sort @sort="sortProducts" :owner-id="getUserId()" />
           <div class="v-ads__search search">
             <input type="text" placeholder="Поиск объявлений" />
@@ -67,8 +67,9 @@ import vHeader from '../generalComponents/v-header.vue'
 import vLeftMenu from '../generalComponents/v-left-menu.vue'
 import VHeaderAlt from '../generalComponents/v-header-alt.vue'
 
+import { mapGetters } from 'vuex'
 import { getUserId } from '@/utils'
-import { getUserTransport, getOptionsById } from '@/api/requests'
+import { getUserTransport, getOptionsById, getUserRealEstate } from '@/api/requests'
 
 export default {
   components: { vHeader, VHeaderAlt, vLeftMenu, vSort },
@@ -79,10 +80,14 @@ export default {
       currency: {}
     }
   },
+  computed: {
+    ...mapGetters(['PAGE_TYPE'])
+  },
   methods: {
     async fetchUserAds() {
       const userId = await getUserId()
-      const userAds = await getUserTransport(userId)
+      const userAds =
+        this.PAGE_TYPE === 'transport' ? await getUserTransport(userId) : await getUserRealEstate()
       this.userAds = userAds
     },
     async fetchCurrency() {
