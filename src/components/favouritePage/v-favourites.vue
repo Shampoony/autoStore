@@ -3,7 +3,7 @@
   <main class="v-favourites">
     <div class="v-favourites__container container my-container">
       <v-left-menu />
-      <ul class="v-favourites__list products-container" v-if="!isLoading && favourites.length">
+      <ul class="v-favourites__list profile-products" v-if="!isLoading && favourites.length">
         <li
           class="v-favourites__list-item"
           v-for="(product_data, index) in favourites"

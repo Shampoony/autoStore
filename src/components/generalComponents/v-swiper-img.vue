@@ -1,9 +1,5 @@
 <template>
-  <router-link
-    :to="{
-      name: 'product-item'
-    }"
-  >
+  <router-link :to="{ name: 'residential_complex', params: { id: product_data.id } }">
     <swiper
       v-if="product_data.images"
       ref="swiperRef"
@@ -27,6 +23,8 @@ import 'swiper/css'
 import 'swiper/css/pagination'
 import { Pagination } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/vue'
+
+import { getUrlsName } from '@/utils'
 export default {
   name: 'vSwiperImages',
   data() {
@@ -44,6 +42,11 @@ export default {
     Swiper,
     SwiperSlide
   },
+
+  methods: {
+    getUrlsName
+  },
+
   setup() {
     return {
       modules: [Pagination]

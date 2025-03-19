@@ -33,5 +33,21 @@ export default {
         console.error('Ошибка при получении компаний:', error)
         alert('Произошла ошибка при получении компаний')
       })
+  },
+  async GET_REAL_ESTATE_CATEGORIES({ commit }) {
+    return axios('http://api.rcarentacar.com/api/real-estate/categories', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
+      .then((categories) => {
+        commit('SET_REAL_ESTATE_CATEGORIES_TO_STATE', categories.data)
+      })
+      .catch((error) => {
+        console.error('Ошибка при получении компаний:', error)
+        alert('Произошла ошибка при получении компаний')
+      })
   }
 }

@@ -1,75 +1,103 @@
-import router from '@/router'
 import { accessToken } from './auth'
 const domain = `http://api.rcarentacar.com/`
 
-export async function getTransportProducts(page) {
+// Общая функция для всех типов запросов
+async function fetchData(url, method = 'GET', body = null) {
   try {
-    const response = await fetch(`${domain}api/transport/transport/?page=${page}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`
-      }
-    })
-
-    if (response.status === 401) {
-      router.push({ name: 'login' })
-      return
+    const headers = {
+      'Content-Type': 'application/json'
     }
 
-    const responseData = await response.json()
-    console.log(responseData)
-    return responseData
+    // Проверяем наличие accessToken и добавляем его в заголовки
+    if (accessToken) {
+      headers['Authorization'] = `Bearer ${accessToken}`
+    } else if (method !== 'GET') {
+      // Для POST, PUT, DELETE запросов требуем accessToken
+      return null
+    }
+
+    const options = {
+      method,
+      headers
+    }
+
+    if (body) {
+      options.body = typeof body === 'string' ? body : JSON.stringify(body)
+    }
+
+    const response = await fetch(`${domain}${url}`, options)
+
+    if (response.status === 401) {
+      return null
+    }
+
+    if (!response.ok) {
+      throw new Error(`Ошибка HTTP: ${response.status} ${response.statusText}`)
+    }
+
+    // Проверяем, есть ли в ответе контент
+    const text = await response.text()
+    if (!text) {
+      return method === 'DELETE' ? response : null
+    }
+
+    return JSON.parse(text)
   } catch (error) {
-    console.error(`Ошибка при получении товаров данной категории:`, error)
+    console.error(`Ошибка при выполнении ${method} запроса:`, error)
+    return null
   }
+}
+
+// Функция для GET запросов
+async function getResponse(url) {
+  return fetchData(url, 'GET')
+}
+
+// Функция для POST запросов
+async function postResponse(url, body) {
+  return fetchData(url, 'POST', body)
+}
+
+// Функция для DELETE запросов
+async function deleteResponse(url) {
+  return fetchData(url, 'DELETE')
+}
+
+// Функция для PUT запросов
+async function putResponse(url, body) {
+  return fetchData(url, 'PUT', body)
+}
+
+// GET запросы
+export async function getTransportProducts(page) {
+  return getResponse(`api/transport/transport/?page=${page}`)
 }
 
 export async function getFilteredProducts(url) {
   console.log(url)
   try {
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`
-      }
-    })
-    const responseData = await response.json()
-
-    return response.length ? responseData.results : responseData
+    // Если URL полный, используем его как есть
+    if (url.startsWith('http')) {
+      return fetchData(url.replace(domain, ''), 'GET')
+    } else {
+      return fetchData(url.replace(/^\//, ''), 'GET')
+    }
   } catch (error) {
     console.error('Ошибка при получении отфильтрованных товаров:', error)
+    return null
   }
 }
-export async function getCategoryProductsById(name, subcategory_id) {
-  try {
-    const response = await fetch(`${domain}api/transport/${name}/${subcategory_id}/transports/`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`
-      }
-    })
 
-    const responseData = await response.json()
-    return responseData
-  } catch (error) {
-    console.error(`Ошибка при получении товаров данной категории:`, error)
-  }
+export async function getCategoryProductsById(name, subcategory_id) {
+  return getResponse(`api/transport/${name}/${subcategory_id}/transports/`)
 }
+
 export async function getSelectOptions(title, name) {
   try {
     const options = []
-    const response = await fetch(`${domain}api/transport/${title}/`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`
-      }
-    })
+    const responseData = await getResponse(`api/transport/${title}/`)
+    if (!responseData) return []
 
-    const responseData = await response.json()
     if (title == 'brands') {
       for (let option of responseData.results) {
         options.push({
@@ -87,483 +115,171 @@ export async function getSelectOptions(title, name) {
         })
       }
     }
-
     return options
   } catch (error) {
     console.error(`Ошибка при получении ${title}:`, error)
+    return []
   }
 }
+
 export async function getOptionsById(title, id) {
-  try {
-    const response = await fetch(`${domain}api/transport/${title}/${id}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`
-      }
-    })
-
-    const responseData = await response.json()
-
-    return responseData
-  } catch (error) {
-    console.error(`Ошибка при получении ${title}:`, error)
-  }
+  return getResponse(`api/transport/${title}/${id}`)
 }
+
 export async function getOptionsByName(name) {
-  try {
-    const response = await fetch(`${domain}api/transport/${name}/`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`
-      }
-    })
-
-    const responseData = await response.json()
-
-    return responseData
-  } catch (error) {
-    console.error(`Ошибка при получении ${name}:`, error)
-  }
+  return getResponse(`api/transport/${name}/`)
 }
 
 export async function getCurrency(currencyId) {
-  try {
-    const response = await fetch(`${domain}api/transport/currency-tr/${currencyId}/`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`
-      }
-    })
-
-    const responseData = await response.json()
-    return responseData
-  } catch (error) {
-    console.error(`Ошибка при получении ${title}:`, error)
-  }
+  return getResponse(`api/transport/currency-tr/${currencyId}/`)
 }
 
 export async function getSimilarProducts(product_data) {
   console.log(product_data.brand.title)
   try {
-    const response = await fetch(
-      `${domain}api/transport/filter/?brand=${product_data.brand.title}`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`
-        }
-      }
+    const responseData = await getResponse(
+      `api/transport/filter/?brand=${product_data.brand.title}`
     )
-    const responseData = await response.json()
+    if (!responseData) return []
+
     const result = []
     for (let responseItem of responseData) {
       if (responseItem.id != product_data.id) {
         result.push(responseItem)
       }
     }
-
     return result
   } catch (error) {
     console.error(`Ошибка при получении схожих товаров:`, error)
-  }
-}
-export async function addToFavourites(name, id) {
-  console.log(name, id, JSON.stringify({ [name]: id }))
-  try {
-    const response = await fetch(`${domain}api/users/favorite/add_favorite/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`
-      },
-      body: JSON.stringify({ [name]: id })
-    })
-    const data = await response.json()
-    return data // Возвращаем результат, если требуется
-  } catch (error) {
-    console.error('Ошибка при добавлении в избранное:', error)
-    throw error // Пробрасываем ошибку для обработки вызывающим кодом
-  }
-}
-export async function removeFromFavourites(name, id) {
-  try {
-    const response = await fetch(`${domain}api/users/favorite/remove_favorite/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`
-      },
-      body: JSON.stringify({ [name]: id })
-    })
-  } catch (error) {
-    console.error('Ошибка при добавлении в избранное:', error)
-  }
-}
-export async function getFavouriteProducts() {
-  try {
-    const response = await fetch(`${domain}api/users/favorite/`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`
-      }
-    })
-    const responseData = await response.json()
-    return responseData
-  } catch (error) {
-    console.error('Ошибка при получении избранного:', error)
+    return []
   }
 }
 
 export async function getReviewAnswers(reviewId) {
-  try {
-    const response = await fetch(`${domain}api/users/reviews/${reviewId}/answers/`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`
-      }
-    })
-    const responseData = await response.json()
-    return responseData
-  } catch (error) {
-    console.error('Ошибка при получении ответов на отзыв:', error)
-  }
-}
-export async function setReviewAnswer(review, text) {
-  try {
-    const response = await fetch(`${domain}api/users/answers/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`
-      },
-      body: JSON.stringify({ review, text })
-    })
-    const responseData = await response.json()
-    return responseData
-  } catch (error) {
-    console.error('Ошибка при получении ответов на отзыв:', error)
-  }
-}
-export async function isProductInFavourites(productInfo) {
-  try {
-    const response = await fetch(`${domain}api/users/check-favorite/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`
-      },
-      body: productInfo
-    })
-
-    const responseData = await response.json()
-
-    return responseData['is_favorite']
-  } catch (error) {
-    console.error('Ошибка при получении избранного:', error)
-  }
+  return getResponse(`api/users/reviews/${reviewId}/answers/`)
 }
 
 export async function getUserProfile(userId) {
-  try {
-    const response = await fetch(`${domain}api/users/user-profile/${userId}/`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`
-      }
-    })
-    const responseData = await response.json()
-    return responseData
-  } catch (error) {
-    console.error('Ошибка при получении профиля пользователя:', error)
-  }
+  return getResponse(`api/users/user-profile/${userId}/`)
 }
 
-export async function registerUser(name, form) {
-  try {
-    await fetch(`${domain}api/${name}/register/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(form)
-    })
-
-    const response = await fetch('${domain}api/users/token/login/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(form)
-    })
-    if (!response.ok) {
-      throw new Error('Ошибка регистрации')
-    }
-
-    const responseData = await response.json()
-    // Сохраняем токен в localStorage
-    localStorage.setItem('user', JSON.stringify(responseData))
-  } catch (error) {
-    console.error('Ошибка при регистрации:', error)
-  }
-}
 export async function getUserById(userId) {
-  try {
-    const response = await fetch(`${domain}api/users/users/${userId}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`
-      }
-    })
-    if (!response.ok) {
-      throw new Error('Ошибка полчения данных о пользователе')
-    }
-
-    const responseData = await response.json()
-    return responseData
-  } catch (error) {
-    console.error('Ошибка при регистрации:', error)
-  }
+  return getResponse(`api/users/users/${userId}`)
 }
 
 export async function getUserTransport(userId) {
-  try {
-    const response = await fetch(`${domain}api/users/users/${userId}/transports/`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`
-      }
-    })
-    console.log(response)
-    if (!response.ok) {
-      throw new Error('Ошибка полчения транспорта пользователя')
-    }
-
-    const responseData = await response.json()
-    console.log('Транспорт пользователя: ', responseData)
-    return responseData
-  } catch (error) {
-    console.error('Ошибка при получении транспорта пользователя:', error)
-  }
+  return getResponse(`api/users/users/${userId}/transports/`)
 }
-
-/* Салоны */
 
 export async function getCompanyById(companyId) {
-  try {
-    const response = await fetch(`${domain}api/users/auto-company/${companyId}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`
-      }
-    })
-    if (!response.ok) {
-      throw new Error('Ошибка полчения данных о компании')
-    }
-
-    const responseData = await response.json()
-    return responseData
-  } catch (error) {
-    console.error('Ошибка при получении данных о компании:', error)
-  }
+  return getResponse(`api/users/auto-company/${companyId}`)
 }
 
-/* Сравнение */
-
 export async function getComparedProducts() {
-  try {
-    const response = await fetch(`${domain}api/transport/comparison-transports/`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`
-      }
-    })
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-    const responseData = await response.json()
-
-    return responseData
-  } catch (error) {
-    console.error('Ошибка при загрузке сообщений:', error)
-  }
+  return getResponse(`api/transport/comparison-transports/`)
 }
 
 export async function getComparedProductsById(id) {
-  try {
-    const response = await fetch(`${domain}api/transport/comparison-transports/${id}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`
-      }
-    })
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-    /* const responseData = await response.json() */
-    console.log(response)
-    return response
-  } catch (error) {
-    console.error('Ошибка при загрузке товара для сравнения:', error)
-  }
-}
-export async function deleteComparedProduct(id) {
-  try {
-    const response = await fetch(`${domain}api/transport/comparison-transports/${id}/`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`
-      }
-    })
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-    console.log(response)
-    return response
-  } catch (error) {
-    console.error('Ошибка при загрузке сообщений:', error)
-  }
-}
-
-export async function addProductToCompare(transport_id, owner) {
-  console.log(transport_id, owner)
-  try {
-    const response = await fetch(`${domain}api/transport/comparison-transports/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`
-      },
-      body: JSON.stringify({ transport: transport_id, owner: owner })
-    })
-    if (!response.ok) {
-      throw new Error('Ошибка полчения данных о компании')
-    }
-
-    const responseData = await response.json()
-    return responseData
-  } catch (error) {
-    console.error('Ошибка при получении данных о компании:', error)
-  }
+  return getResponse(`api/transport/comparison-transports/${id}`)
 }
 
 export async function getTransportById(transport_id) {
-  try {
-    const response = await fetch(`${domain}api/transport/transport/${transport_id}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`
-      }
-    })
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-    const responseData = await response.json()
-    console.log(responseData)
-    return responseData
-  } catch (error) {
-    console.error('Ошибка при загрузке траспорта:', error)
-  }
+  return getResponse(`api/transport/transport/${transport_id}`)
 }
-/* Чат */
 
 export async function fetchChatMessages(chatId, url = null) {
   console.log(url)
-  try {
-    let fetchUrl = url ? url : `${domain}api/chats/chats/${chatId}/messages`
-    const response = await fetch(fetchUrl, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`
-      }
-    })
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-    const responseData = await response.json()
-    console.log(responseData)
-    return responseData
-  } catch (error) {
-    console.error('Ошибка при загрузке сообщений:', error)
+  if (url) {
+    // Если URL полный, используем fetchData напрямую
+    return fetchData(url.replace(domain, ''), 'GET')
+  } else {
+    return getResponse(`api/chats/chats/${chatId}/messages`)
   }
 }
 
 export async function fetchChats() {
-  try {
-    const response = await fetch(`${domain}api/chats/chats/`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`
-      }
-    })
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-    const responseData = await response.json()
-    return responseData.results
-  } catch (error) {
-    console.error('Ошибка при загрузке чатов:', error)
-  }
+  const responseData = await getResponse(`api/chats/chats/`)
+  return responseData ? responseData.results : []
 }
 
 export async function fetchChatById(chatId) {
-  try {
-    const response = await fetch(`${domain}api/chats/chats/${chatId}/`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`
-      }
-    })
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-    const responseData = await response.json()
-    return responseData
-  } catch (error) {
-    console.error('Ошибка при загрузке чата:', error)
-  }
+  return getResponse(`api/chats/chats/${chatId}/`)
 }
 
 export async function createChat(username) {
+  return getResponse(`api/chats/chats/between/${username}/`)
+}
+
+export async function getSortedProducts(queryParams) {
+  return getResponse(`api/transport/sorted${queryParams}`)
+}
+
+export async function getFavouriteProducts() {
+  return getResponse(`api/users/favorite/`)
+}
+
+export async function getFavouriteRealEstate() {
+  return getResponse(`api/users/favorite/real-estate/`)
+}
+
+// POST запросы
+export async function isProductInFavourites(productInfo) {
+  return postResponse(`api/users/check-favorite/`, productInfo)
+}
+
+export async function addToFavourites(name, id) {
+  console.log(name, id, JSON.stringify({ [name]: id }))
+  return postResponse(`api/users/favorite/add_favorite/`, { [name]: id })
+}
+
+export async function removeFromFavourites(name, id) {
+  return postResponse(`api/users/favorite/remove_favorite/`, { [name]: id })
+}
+
+export async function setReviewAnswer(review, text) {
+  return postResponse(`api/users/answers/`, { review, text })
+}
+
+export async function registerUser(name, form) {
   try {
-    const response = await fetch(`${domain}api/chats/chats/between/${username}/`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`
-      }
-    })
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
+    await postResponse(`api/${name}/register/`, form)
+
+    const responseData = await postResponse(`api/users/token/login/`, form)
+    if (responseData) {
+      // Сохраняем токен в localStorage
+      localStorage.setItem('user', JSON.stringify(responseData))
+      return responseData
     }
-    const responseData = await response.json()
-    return responseData
+    return null
   } catch (error) {
-    console.error('Ошибка при загрузке чата:', error)
+    console.error('Ошибка при регистрации:', error)
+    return null
   }
+}
+
+// DELETE запросы
+export async function deleteComparedProduct(id) {
+  return deleteResponse(`api/transport/comparison-transports/${id}/`)
+}
+
+// POST запросы
+export async function addProductToCompare(transport_id, owner) {
+  console.log(transport_id, owner)
+  return postResponse(`api/transport/comparison-transports/`, {
+    transport: transport_id,
+    owner: owner
+  })
+}
+
+export async function addFavouriteRealEstate(id) {
+  return postResponse(`api/users/favorite/add_favorite/`, { real_estate_id: id })
 }
 
 export async function filterProducts(url, form, selectsRefs) {
   const filledFields = Object.fromEntries(
     Object.entries(form)
-      .filter(([_, field]) => field.value) // Оставляем поля, у которых value не пустое
-      .map(([key, field]) => [key, field.value]) // Разворачиваем объект { value, default } -> value
+      .filter(([_, field]) => field.value)
+      .map(([key, field]) => [key, field.value])
   )
   console.log('Зашли', filledFields)
 
@@ -582,97 +298,30 @@ export async function filterProducts(url, form, selectsRefs) {
   // Дожидаемся ответа от сервера
   const products = await getFilteredProducts(queryURL)
   console.log('Полученные продукты:', products)
-
-  return products // Возвращаем полученные данные
+  return products
 }
 
-/* Сортировка */
-
-export async function getSortedProducts(queryParams) {
-  try {
-    const response = await fetch(`${domain}api/transport/sorted${queryParams}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`
-      }
-    })
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-    const responseData = await response.json()
-    return responseData
-  } catch (error) {
-    console.error('Ошибка при загрузке чата:', error)
-  }
-}
-
-export async function getFavouriteRealEstate() {
-  try {
-    const response = await fetch(`${domain}api/users/favorite/real-estate/`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`
-      }
-    })
-    const responseData = await response.json()
-    return responseData
-  } catch (error) {
-    console.error('Ошибка при получении избранного:', error)
-  }
-}
-
-export async function addFavouriteRealEstate(id) {
-  try {
-    const response = await fetch(`${domain}api/users/favorite/add_favorite/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`
-      },
-      body: JSON.parse({ real_estate_id: id })
-    })
-    const responseData = await response.json()
-    return responseData
-  } catch (error) {
-    console.error('Ошибка при получении избранного:', error)
-  }
-}
-
-async function getResponse(url) {
-  try {
-    const response = await fetch(`${domain}${url}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`
-      }
-    })
-
-    if (!response.ok) {
-      throw new Error(`Ошибка HTTP: ${response.status} ${response.statusText}`)
-    }
-
-    const text = await response.text() // Читаем как текст
-
-    if (!text) {
-      throw new Error('Пустой ответ от сервера')
-    }
-
-    return JSON.parse(text) // Парсим JSON вручную
-  } catch (error) {
-    console.error('Ошибка при получении данных с сервера:', error)
-    return null // Возвращаем null, чтобы избежать краша
-  }
-}
-
-/* Reak estate */
-
+/* Real estate */
 export async function getRealEstate(page) {
-  return await getResponse(`api/real-estate/real-estate?page=${page}`)
+  return getResponse(`api/real-estate/real-estate?page=${page}`)
+}
+
+export async function getApartments() {
+  return getResponse(`api/real-estate/residential-complex/`)
 }
 
 export async function getUserRealEstate() {
   return getResponse(`api/users/all-ads-real-estate/`)
+}
+
+export async function filterRealEstate(requestUrl) {
+  return getResponse(`api/real-estate/filter/${requestUrl}`)
+}
+
+export async function getTypeOfSale() {
+  return getResponse(`api/real-estate/type-sale/`)
+}
+
+export async function getAdditionalyOptionsAppartments() {
+  return getResponse(`api/real-estate/additional-parameters-res-com/`)
 }

@@ -19,7 +19,7 @@
           <h2 class="v-profile__products-count">{{ userTransport.length }} объявлений</h2>
           <v-sort class="mr-10" @sort="sortProducts" :ownerId="user?.id" />
         </div>
-        <ul class="v-profile__products-list products-container">
+        <ul class="v-profile__products-list profile-products">
           <li class="v-profile__products-item" v-for="product in userTransport" :key="product.id">
             <v-product :product_data="product" :type_of_product="'transport'" />
           </li>

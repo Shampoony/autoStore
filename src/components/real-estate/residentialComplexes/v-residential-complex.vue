@@ -1,18 +1,22 @@
 <template>
-  <v-header />
+  <v-header-alt>
+    <div class="end flex justify-between gap-4">
+      <img src="/src/assets/images/repost.svg" alt="" />
+      <img src="/src/assets/images/favourites2.svg" alt="" />
+      <img src="/src/assets/images/favourites2-on.svg" alt="" />
+    </div>
+  </v-header-alt>
+  <v-header class="alt" />
   <main class="v-residential-complex">
     <div class="v-residential-complex__swiper">
       <swiper
         :slidesPerView="1"
         :spaceBetween="30"
-        :loop="true"
-        :navigation="{
-          nextEl: '.swiper-button-next',
-          prevEl: '.swiper-button-prev'
-        }"
+        :navigation="navigation"
         :modules="[Navigation]"
         centered-slides="true"
         class="mySwiper"
+        @swiper="onSwiperInit"
       >
         <swiper-slide class="v-residential-complex__slide"
           ><img src="/src/assets/images/rc/1.jpg" alt=""
@@ -30,8 +34,13 @@
           ><img src="/src/assets/images/rc/1.jpg" alt=""
         /></swiper-slide>
       </swiper>
+
+      <div class="v-residential-complex__slide-counter">
+        {{ displaySlideIndex }} / {{ totalSlides }}
+      </div>
+
       <div class="v-residential-complex__swiper-info">
-        <h1 class="v-residential-complex__swiper-title">ЖК “Grand Plaza”</h1>
+        <h1 class="v-residential-complex__swiper-title">ЖК "Grand Plaza"</h1>
         <p class="v-residential-complex__swiper-subtitle">от 137 700 AZN до 688 500 AZN</p>
         <div class="v-residential-complex__swiper-location">
           <img src="/src/assets/images/location-white.svg" alt="" />
@@ -74,10 +83,16 @@
             <h1 class="v-residential-complex__title page-title">
               Жилой комплекс от застройщика Winter City Group
             </h1>
-            <div class="flex gap-8">
-              <div>Корпусов: 3</div>
-              <div>Корпусов: 3</div>
-              <div>Корпусов: 3</div>
+            <div class="v-residential-complex__quick-info">
+              <div class="v-residential-complex__quick-info-container">
+                <span>Корпусов:</span> 3
+              </div>
+              <div class="v-residential-complex__quick-info-container">
+                <span>Корпусов:</span> 3
+              </div>
+              <div class="v-residential-complex__quick-info-container">
+                <span>Корпусов:</span> 3
+              </div>
             </div>
           </div>
           <div class="v-residential-complex__block">
@@ -113,13 +128,17 @@
             <h2 class="sec-title">Параметры</h2>
             <div class="v-residential-complex__parametrs-list">
               <div class="v-residential-complex__parametr">
-                <img src="/src/assets/images/rc/parametrs/calendar.svg" alt="" />
-                <p class="v-residential-complex__paramtr-subtitle">Срок сдачи</p>
+                <div class="v-residential-complex__parametr-row">
+                  <img src="/src/assets/images/rc/parametrs/calendar.svg" alt="" />
+                  <p class="v-residential-complex__paramtr-subtitle">Срок сдачи</p>
+                </div>
                 <span class="v-residential-complex__num">2021</span>
               </div>
               <div class="v-residential-complex__parametr">
-                <img src="/src/assets/images/rc/parametrs/house.svg" alt="" />
-                <p class="v-residential-complex__paramtr-subtitle">Всего корпусов</p>
+                <div class="v-residential-complex__parametr-row">
+                  <img src="/src/assets/images/rc/parametrs/house.svg" alt="" />
+                  <p class="v-residential-complex__paramtr-subtitle">Всего корпусов</p>
+                </div>
                 <span class="v-residential-complex__num">3</span>
               </div>
             </div>
@@ -143,37 +162,40 @@
             </button>
           </div>
           <div class="v-residential-complex__block">
-            <h2 class="sec-title">Промо-ролики и хощд строительства</h2>
+            <h2 class="sec-title">Промо-ролики и ход строительства</h2>
             <iframe class="v-residential-complex__video" src="" frameborder="0"></iframe>
           </div>
           <div class="v-residential-complex__block">
             <h2 class="sec-title">Расположение</h2>
             <p class="v-residential-complex__location">Художественная Акадеимя</p>
+            <map-test />
             <v-rc-filter @roomsChoosen="filterAds" />
             <div class="v-residential-complex__flats">
               <div class="v-residential-complex__flat flat">
                 <div class="flat__image">
                   <img src="" alt="" />
                 </div>
-                <div class="flat__block">
-                  <div class="flat__param">1-комнатные</div>
-                  <div class="flat__param">51,0 м</div>
-                </div>
-                <div class="flat__block">
-                  <div class="flat__param">от 137 700 AZN</div>
-                  <div class="flat__param">от 2 700AZN/м²</div>
-                </div>
-                <div class="flat__block">
-                  <div class="flat__param">Ремонт</div>
-                  <div class="flat__param">Под маяк</div>
-                </div>
-                <div class="flat__block">
-                  <div class="flat__param">Санузел</div>
-                  <div class="flat__param">1</div>
-                </div>
-                <div class="flat__block">
-                  <div class="flat__param">Балкон</div>
-                  <div class="flat__param">2</div>
+                <div class="flat__info">
+                  <div class="flat__block">
+                    <div class="flat__param">1-комнатные</div>
+                    <div class="flat__param">51,0 м</div>
+                  </div>
+                  <div class="flat__block">
+                    <div class="flat__param">от 137 700 AZN</div>
+                    <div class="flat__param">от 2 700AZN/м²</div>
+                  </div>
+                  <div class="flat__block">
+                    <div class="flat__param">Ремонт</div>
+                    <div class="flat__param">Под маяк</div>
+                  </div>
+                  <div class="flat__block">
+                    <div class="flat__param">Санузел</div>
+                    <div class="flat__param">1</div>
+                  </div>
+                  <div class="flat__block">
+                    <div class="flat__param">Балкон</div>
+                    <div class="flat__param">2</div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -210,7 +232,6 @@
                 <!-- <img src="/src/assets/images/rc/location.svg" alt="" /> -->
               </div>
             </div>
-
             <div>
               <button type="button" class="v-residential-complex__button">Контакты</button>
             </div>
@@ -221,30 +242,65 @@
   </main>
 </template>
 <script>
+import MapTest from '@/components/generalComponents/MapTest.vue'
 import VHeader from '@/components/generalComponents/v-header.vue'
 import vRcFilter from '@/components/generalComponents/v-rc-filter.vue'
-
+import vHeaderAlt from '@/components/generalComponents/v-header-alt.vue'
 import 'swiper/css'
 import { Navigation } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/vue'
-
 export default {
   name: 'VResidentialComplex',
-  components: { VHeader, vRcFilter, Swiper, SwiperSlide },
+  components: { VHeader, vRcFilter, Swiper, SwiperSlide, MapTest, vHeaderAlt },
   data: function () {
     return {
-      aboutMore: true
+      aboutMore: true,
+      currentSlide: 1,
+      totalSlides: 5,
+      isDragging: false,
+      swiperInstance: null,
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev'
+      }
     }
   },
   setup() {
     return { Navigation }
   },
+  computed: {
+    displaySlideIndex() {
+      if (!this.swiperInstance) return 1
+
+      return this.swiperInstance.activeIndex + 1
+    }
+  },
   methods: {
     filterAds(index) {
       const filterRooms = index === 0 ? 'all' : index
+    },
+    onSwiperInit(swiper) {
+      // Сохраняем экземпляр свайпера
+      this.swiperInstance = swiper
+
+      // Добавляем слушатели событий напрямую к Swiper API
+      swiper.on('slideChange', () => {
+        // Вызываем $forceUpdate для обновления computed-свойств
+        this.$forceUpdate()
+      })
+
+      // Также добавляем обработчик для события transitionEnd, чтобы гарантировать правильное обновление
+      swiper.on('transitionEnd', () => {
+        this.$forceUpdate()
+      })
+    },
+    mounted() {
+      this.$nextTick(() => {
+        if (this.swiperInstance) {
+          this.$forceUpdate()
+        }
+      })
     }
   }
 }
 </script>
-
-<style></style>

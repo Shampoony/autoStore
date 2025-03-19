@@ -43,6 +43,11 @@ import vSwiperImg from './v-swiper-img.vue'
 
 export default {
   name: 'vRc',
-  components: { vSwiperImg }
+  components: { vSwiperImg },
+  data() {
+    return {
+      apartmentData: {}
+    }
+  }
 }
 </script>

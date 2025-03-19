@@ -2,6 +2,11 @@ import store from '@/vuex/store'
 import MapTest from '../components/generalComponents/MapTest.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
+const VCreateAddResComp = () =>
+  import('@/components/real-estate/residentialComplexes/v-create-add-res-comp.vue')
+const vCreateRealEstateAd = () =>
+  import('@/components/real-estate/createAd/v-create-real-estate-ad.vue')
+
 /* ======================== Импорты для "Авто" ========================*/
 
 /* Аренда */
@@ -55,7 +60,7 @@ const vRegistrationUser = () => import('@/components/users/registration/v-regist
 const vChat = () => import('@/components/chat/v-chat.vue')
 const vChatCurrent = () => import('@/components/chat/v-chat-current.vue')
 
-/* Провиль */
+/* Профиль */
 const vAds = () => import('@/components/myAdsPage/v-ads.vue')
 const vProfile = () => import('@/components/profilePage/v-profile.vue')
 const vReviews = () => import('@/components/reviewsPage/v-reviews.vue')
@@ -66,6 +71,11 @@ const vBuyersReviews = () => import('@/components/reviewsPage/v-buyers-reviews.v
 const vNotifications = () => import('@/components/notificationsPage/v-notifications.vue')
 
 const vProductPage = () => import('@/components/productPage/vProductPage.vue')
+
+/* Добавленрие объявлений */
+const vCreateTransport = () => import('@/components/transport/createAd/v-create-transport.vue')
+const vCreateRentTransport = () =>
+  import('@/components/transport/rentPage/v-create-rent-transport.vue')
 
 /* ======================== Маршруты ========================*/
 
@@ -231,6 +241,19 @@ const chatRoutes = [
   }
 ]
 
+const createTransportRoutes = [
+  {
+    path: 'transport',
+    name: 'create_transport_ad',
+    component: vCreateTransport
+  },
+  {
+    path: 'transport-rent',
+    name: 'create_transport_rent_ad',
+    component: vCreateRentTransport
+  }
+]
+
 const transportRoutes = [
   {
     path: 'filter/',
@@ -262,6 +285,11 @@ const transportRoutes = [
     path: 'compare/:id?',
     name: 'transport-compare',
     component: vCompare
+  },
+  {
+    path: '/create/',
+    children: createTransportRoutes,
+    meta: { requiresAuth: true }
   }
 ]
 
@@ -306,6 +334,7 @@ const mainTransportRoutes = [
     children: chatRoutes,
     meta: { requiresAuth: true }
   },
+
   {
     path: '/chat/:chatId/:user2Username',
     name: 'Chat',
@@ -367,6 +396,16 @@ const mainRealEstateRoutes = [
     path: 'create/ad',
     name: 'real_estate_create_ad',
     component: vCreateAdd
+  },
+  {
+    path: 'create/ad/real-estate',
+    name: 'real_estate_create_ad_new',
+    component: vCreateRealEstateAd
+  },
+  {
+    path: 'create/ad/res-comp',
+    name: 'real_estate_create_ad_new_res_comp',
+    component: VCreateAddResComp
   }
 ]
 const routes = [
@@ -393,12 +432,13 @@ router.beforeEach((to, from, next) => {
   console.log('Маршрут принадлежит группе:', pageType)
 
   // Если маршрут требует авторизации и пользователь не авторизован
-  const isAuthenticated = localStorage.getItem('user')
+  /* const isAuthenticated = localStorage.getItem('user')
   if (to.meta.requiresAuth && !isAuthenticated) {
     next({ name: 'login' }) // Перенаправляем на страницу входа
   } else {
     next() // Продолжаем навигацию
-  }
+  } */
+  next()
 })
 
 export default router

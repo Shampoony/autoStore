@@ -16,11 +16,19 @@
             </div>
 
             <div class="map-buttons flex">
-              <div class="map-buttons__button flex">
+              <div
+                class="map-buttons__button flex"
+                :class="{ active: isMap }"
+                @click="isMap = true"
+              >
                 <img src="../../../assets/images/map.svg" alt="" />
                 Карта
               </div>
-              <div class="map-buttons__button flex active">
+              <div
+                class="map-buttons__button flex"
+                :class="{ active: !isMap }"
+                @click="isMap = false"
+              >
                 <img src="../../../assets/images/list.svg" alt="" />
                 Список
               </div>
@@ -28,30 +36,64 @@
             <v-sort />
           </div>
         </div>
-        <ul class="products-container">
-          <li>
-            <v-rc />
-          </li>
-        </ul>
-        <v-pagination :current-page="1" :items-per-page="1" :total-items="2" />
+        <div v-if="apartments.results">
+          <div v-if="apartments.results && apartments.results.length">
+            <map-test v-if="isMap" />
+            <ul class="products-container">
+              <li v-for="apartment in apartments.results" :key="apartment.id">
+                <v-rc :apartment-data="apartment" />
+              </li>
+            </ul>
+            <v-pagination
+              :current-page="1"
+              :items-per-page="20"
+              :total-items="apartments.results.length"
+            />
+          </div>
+          <div v-esle>
+            <h1 class="not-found">Не найдено ЖК</h1>
+          </div>
+        </div>
+        <div class="v-residential-complex__load" v-else>
+          <div class="cssload">
+            <div class="cssload-container">
+              <div class="cssload-whirlpool"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   </main>
 </template>
 <script>
-import vRc from '@/components/generalComponents/v-rc.vue'
-import vSort from '@/components/generalComponents/v-sort.vue'
-import vHeader from '@/components/generalComponents/v-header.vue'
 import VRc from '@/components/generalComponents/v-rc.vue'
+import vSort from '@/components/generalComponents/v-sort.vue'
+import MapTest from '@/components/generalComponents/MapTest.vue'
+import vHeader from '@/components/generalComponents/v-header.vue'
 import vPagination from '@/components/generalComponents/v-pagination.vue'
+import { getApartments } from '@/api/requests'
 export default {
   name: 'vResidentialComplexes',
   components: {
     vPagination,
     vHeader,
+    MapTest,
     vSort,
     VRc
+  },
+  data() {
+    return {
+      isMap: false,
+      apartments: []
+    }
+  },
+  methods: {
+    async fetchData() {
+      this.apartments = await getApartments()
+    }
+  },
+  mounted() {
+    this.fetchData()
   }
 }
 </script>
-, VPagination

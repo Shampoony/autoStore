@@ -24,18 +24,18 @@
               Техподдержка: <a href="tel:0125057755">(012) 505-77-55</a>
             </li>
 
-            <li class="menu__list-item chat">
+            <li class="menu__list-item chat" v-if="user">
               <router-link :to="{ name: getUrlsName('chat') }">
                 <img src="../../assets/images/chats.svg" alt="chat" />
                 <div class="chat__item">11</div>
               </router-link>
             </li>
-            <li class="menu__list-item">
+            <li class="menu__list-item" v-if="user">
               <router-link :to="{ name: getUrlsName('favourites') }">
                 <img src="../../assets/images/like.svg" alt="" />
               </router-link>
             </li>
-            <li class="menu__list-item">
+            <li class="menu__list-item" v-if="user">
               <router-link :to="{ name: getUrlsName('notifications') }"
                 ><img src="/src/assets/images/notification.svg" alt=""
               /></router-link>
@@ -46,7 +46,7 @@
             <router-link class="menu__list-item" :to="{ name: 'registration' }" v-if="!user"
               >Регистрация</router-link
             >
-            <li class="menu__list-item cabinet-link" v-click-outside="closeCabinetMenu">
+            <li class="menu__list-item cabinet-link" v-click-outside="closeCabinetMenu" v-if="user">
               <span
                 class="cabinet-link__title"
                 :class="{ selected: isCabinetActive }"
@@ -95,7 +95,7 @@
                 </div>
               </div>
             </li>
-            <li class="menu__list-item">
+            <li class="menu__list-item" v-if="user">
               <router-link
                 :to="{ name: getUrlsName('create_ad') }"
                 class="flex menu__btn items-center"
@@ -117,7 +117,7 @@
             <!--  @mouseover="showMenu" -->
             <li class="bottom-menu__list-item flex items-center" @click="showMenu">
               <img src="../../assets/images/all-categories.svg" alt="" />
-              Все категории
+              <div>Все категории</div>
             </li>
             <li
               class="bottom-menu__list-item looking-for"
@@ -322,6 +322,7 @@ export default {
       'TRANSPORT_CATEGORIES',
       'TRANSPORT_SUB_CATEGORIES',
       'SPARE_PARTS_CATEGORIES',
+      'REAL_ESTATE_CATEGORIES',
       'PAGE_TYPE'
     ]),
     getMenuTitle() {
@@ -334,6 +335,10 @@ export default {
       return this.SPARE_PARTS_CATEGORIES?.results || []
     },
 
+    realEstateCategories() {
+      return this.REAL_ESTATE_CATEGORIES?.results || []
+    },
+
     filteredCategory() {
       if (this.menuTitle === 'Транспорт') {
         return this.transportCategories
@@ -341,11 +346,19 @@ export default {
       if (this.menuTitle === 'Запчасти и аксессуары') {
         return this.sparePartsCategories
       }
+      if (this.menuTitle === 'Недвижимость') {
+        return this.realEstateCategories
+      }
       return null
     }
   },
   methods: {
-    ...mapActions(['GET_TRANSPORT_CATEGORIES_FROM_API', 'GET_SPARE_PARTS_CATEGORIES_FROM_API']),
+    ...mapActions([
+      'GET_REAL_ESTATE_CATEGORIES',
+      'GET_TRANSPORT_CATEGORIES_FROM_API',
+      'GET_SPARE_PARTS_CATEGORIES_FROM_API',
+      'GET_TRANSPORT_SUB_CATEGORIES_FROM_API'
+    ]),
     toggleShowedLinks(name) {
       name === this.showedLinks ? (this.showedLinks = '') : (this.showedLinks = name)
     },
@@ -378,6 +391,7 @@ export default {
     },
     async loadData() {
       if (!this.isMobile) {
+        await this.GET_REAL_ESTATE_CATEGORIES()
         await this.GET_TRANSPORT_CATEGORIES_FROM_API()
         await this.GET_SPARE_PARTS_CATEGORIES_FROM_API()
       }

@@ -962,6 +962,7 @@ export default {
         getSelectOptions(title, select).then((options) => {
           this.options[select].options = options
         })
+        console.log(this.options)
       }
     },
     async fetchTransportProducts() {
@@ -972,7 +973,6 @@ export default {
     },
     async fetchConditions() {
       const conditions = await getOptionsByName('condition')
-      console.log(conditions)
       this.conditions = conditions.results
     }
   },

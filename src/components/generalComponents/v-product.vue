@@ -71,7 +71,7 @@
           <div class="v-product__location flex gap-2">
             <div v-if="product_data.city">{{ product_data.city.city }},</div>
             <div v-if="product_data.created_at">
-              {{ formattedDateTime.time }}
+              {{ formattedDateTime.date }}, {{ formattedDateTime.time }}
             </div>
           </div>
         </div>
@@ -79,7 +79,7 @@
     </div>
     <div v-if="product_data.is_viewed" class="v-product__viewed">Просмотрено</div>
     <div
-      v-if="product_data.company && product_data.images"
+      v-if="product_data.company && product_data.images.length"
       class="v-product__mark flex items-center justify-center"
     >
       Салон
@@ -169,8 +169,12 @@ export default {
     formattedDateTime() {
       // Обрезаем строку до валидного формата
       const validDateString = this.product_data.created_at.slice(0, 23) + 'Z' // Берём только первые 23 символа и добавляем 'Z'
-      const date = new Date(validDateString)
-
+      let date = new Date(validDateString)
+      if (date == new Date()) {
+        date = 'Сегодня'
+      } else if (date.getTime() === new Date().getTime() - 86400000) {
+        date = 'Вчера'
+      }
       // Форматируем дату и время
       return {
         date: date.toLocaleDateString('ru-RU', {

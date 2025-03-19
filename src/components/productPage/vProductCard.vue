@@ -72,7 +72,7 @@
                 </div>
               </div>
 
-              <mapView v-if="coordinates && mapShowed" :coordinates="coordinates" />
+              <map-test v-if="coordinates && mapShowed" :coordinates="coordinates" />
             </div>
           </div>
           <div class="product-card__description" v-if="product_data.descriptions">
@@ -204,7 +204,7 @@
                   <img v-if="mapShowed" src="../../assets/images/arrow-up.svg" alt="" />
                 </div>
               </div>
-              <mapView v-if="coordinates && mapShowed" :coordinates="coordinates" />
+              <map-test v-if="coordinates && mapShowed" :coordinates="coordinates" />
             </div>
           </div>
           <div class="product-card__description" v-if="product_data.descriptions">
@@ -257,7 +257,10 @@
     <div class="main-image-block flex gap-2">
       <p>{{ product_data.title }}</p>
       <span>|</span>
-      <p>{{ prettyNum(product_data.price) }}</p>
+      <p>
+        {{ prettyNum(product_data.price) }}
+        <span v-if="product_data.currency"> {{ product_data.currency.currency }}</span>
+      </p>
     </div>
     <div class="main-image-block flex gap-2">
       <div
@@ -310,7 +313,7 @@
 <script>
 import { getUserId } from '@/utils'
 import prettyNum from '@/filters/prettyNum.js'
-import mapView from '../generalComponents/mapView.vue'
+import MapTest from '../generalComponents/MapTest.vue'
 import ProductCarousel from '../generalComponents/productCarousel.vue'
 import {
   addProductToCompare,
@@ -325,7 +328,7 @@ import { mapActions, mapGetters } from 'vuex'
 export default {
   name: 'vProductCard',
   emits: ['toggleBarterModal'],
-  components: { ProductCarousel, mapView },
+  components: { ProductCarousel, MapTest },
   props: {
     product_data: {
       type: Object
@@ -360,7 +363,10 @@ export default {
     },
     coordinates() {
       if (this.product_data.width && this.product_data.longitude) {
-        return { lat: this.product_data.width, lng: this.product_data.longitude }
+        return {
+          lat: parseFloat(this.product_data.width),
+          lng: parseFloat(this.product_data.longitude)
+        }
       }
       return null
     }
@@ -376,11 +382,7 @@ export default {
       }
     },
     async setUser() {
-      /* getUserById(this.product_data.owner).then((user) => {
-        this.user = user
-      }) */
-      await this.GET_USER_INFO()
-      this.user = this.USER_INFO
+      this.user = await getUserById(this.product_data.owner)
     },
 
     setSomparedProducts() {
