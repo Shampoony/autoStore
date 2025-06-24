@@ -3,16 +3,16 @@
     <!-- Текущая картинка -->
     <swiper
       class="main-image product-carousel__images"
-      ref="swiperRef"
+      ref="swiperInstance"
       :slides-per-view="1"
       :space-between="0"
-      @slideChange="onSlideChange"
+      @slideChange="currentIndex = $event.activeIndex"
     >
       <swiper-slide
         class="product-carousel__images-item"
         v-for="(image, index) in ImagesVideoSource"
         :key="index"
-        @click="toggleLightbox"
+        @click="() => toggleLightbox(index)"
       >
         <div v-if="image && image.image" class="main-image__button">
           <img class="carousel-overlay" :src="image.image" alt="" />
@@ -140,7 +140,6 @@ export default {
       if (this.link_to_video && this.thumbnailUrl) {
         images.splice(1, 0, this.embeddedVideoUrl) // Добавляем видео в нужное место
       }
-      console.log(images)
       return images
     },
     ImagesVideoSource() {
@@ -149,20 +148,17 @@ export default {
       if (this.link_to_video && this.thumbnailUrl) {
         images.splice(1, 0, { videoUrl: this.embeddedVideoUrl }) // Добавляем видео в нужное место
       }
-      console.log(images)
       return images
     }
   },
   methods: {
     setCurrentImage(index) {
       this.currentIndex = index
+      this.$refs.swiperInstance.$el.swiper.slideTo(index)
     },
-    toggleLightbox() {
+    toggleLightbox(index) {
+      this.activeSlide = index
       this.toggler = !this.toggler // Переключение состояния FsLightbox
-    },
-    onSlideChange() {
-      const swiperInstance = this.$refs.swiperRef
-      console.log(swiperInstance)
     }
   },
   mounted() {

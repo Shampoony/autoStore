@@ -199,7 +199,7 @@ export default {
       const isFavourite = await isProductInFavourites(
         JSON.stringify({ [typeOfProduct]: productId })
       )
-      this.productInFavourites = isFavourite
+      this.productInFavourites = isFavourite.is_favorite
     },
     toggleToFavourites() {
       const typeOfProduct = this.type_of_product.replace('-', '_')

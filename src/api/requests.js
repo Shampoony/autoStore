@@ -1,7 +1,12 @@
 import { accessToken } from './auth'
-const domain = `http://api.rcarentacar.com/`
+import { useRouter } from 'vue-router'
+
+const domainPROD = `http://api.rcarentacar.com/`
+const domain = `http://37.252.17.98/`
+const router = useRouter()
 
 // Общая функция для всех типов запросов
+
 async function fetchData(url, method = 'GET', body = null) {
   try {
     const headers = {
@@ -10,12 +15,9 @@ async function fetchData(url, method = 'GET', body = null) {
 
     // Проверяем наличие accessToken и добавляем его в заголовки
     if (accessToken) {
+      console.log(accessToken)
       headers['Authorization'] = `Bearer ${accessToken}`
-    } else if (method !== 'GET') {
-      // Для POST, PUT, DELETE запросов требуем accessToken
-      return null
     }
-
     const options = {
       method,
       headers
@@ -26,9 +28,10 @@ async function fetchData(url, method = 'GET', body = null) {
     }
 
     const response = await fetch(`${domain}${url}`, options)
-
-    if (response.status === 401) {
-      return null
+    console.log('Удаляем токен', response.status, accessToken)
+    if (response.status === 401 && accessToken) {
+      console.log('Удаляем токен')
+      localStorage.removeItem('user')
     }
 
     if (!response.ok) {
@@ -242,14 +245,17 @@ export async function setReviewAnswer(review, text) {
 
 export async function registerUser(name, form) {
   try {
-    await postResponse(`api/${name}/register/`, form)
-
-    const responseData = await postResponse(`api/users/token/login/`, form)
-    if (responseData) {
-      // Сохраняем токен в localStorage
-      localStorage.setItem('user', JSON.stringify(responseData))
-      return responseData
+    const registrationResponse = await postResponse(`api/${name}/register/`, form)
+    if (!registrationResponse) {
+      console.error('Регистрация не удалась')
+      return null
     }
+    const loginResponse = await postResponse(`api/users/token/login/`, form)
+    if (loginResponse) {
+      localStorage.setItem('user', JSON.stringify(loginResponse))
+      return loginResponse
+    }
+
     return null
   } catch (error) {
     console.error('Ошибка при регистрации:', error)
@@ -312,6 +318,10 @@ export async function getApartments() {
 
 export async function getUserRealEstate() {
   return getResponse(`api/users/all-ads-real-estate/`)
+}
+
+export async function getRealEstateById(user_id) {
+  return getResponse(`api/users/users/${user_id}/real-estate/`)
 }
 
 export async function filterRealEstate(requestUrl) {

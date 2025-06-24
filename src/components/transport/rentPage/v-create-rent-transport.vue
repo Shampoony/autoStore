@@ -166,12 +166,7 @@
 </template>
 
 <script>
-import {
-  getAdditionalyOptions,
-  getOptionsByName,
-  getSelectOptions,
-  getTypeOfSale
-} from '@/api/requests'
+import { getSelectOptions, getTypeOfSale } from '@/api/requests'
 import vHeader from '@/components/generalComponents/v-header.vue'
 import vSelectStyled from '@/components/generalComponents/v-select-styled.vue'
 import MapTest from '@/components/generalComponents/MapTest.vue'
@@ -296,7 +291,7 @@ export default {
     },
 
     async getAdditionalyOptions() {
-      const additionalOptions = await getAdditionalyOptions()
+      const additionalOptions = []
       this.additionalOptions = additionalOptions.results
     },
     async loadData() {

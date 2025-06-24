@@ -56,6 +56,9 @@ const vRegistrationRealEstate = () =>
 const vRegistration = () => import('@/components/users/registration/v-registration.vue')
 const vRegistrationUser = () => import('@/components/users/registration/v-registration-user.vue')
 
+/* Тарифы */
+const vTariff = () => import('@/components/tariffPage/v-tariff.vue')
+
 /* Чат */
 const vChat = () => import('@/components/chat/v-chat.vue')
 const vChatCurrent = () => import('@/components/chat/v-chat-current.vue')
@@ -393,6 +396,11 @@ const mainRealEstateRoutes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/rates/',
+    name: 'real_estate_rates',
+    component: vTariff
+  },
+  {
     path: 'create/ad',
     name: 'real_estate_create_ad',
     component: vCreateAdd
@@ -402,6 +410,7 @@ const mainRealEstateRoutes = [
     name: 'real_estate_create_ad_new',
     component: vCreateRealEstateAd
   },
+
   {
     path: 'create/ad/res-comp',
     name: 'real_estate_create_ad_new_res_comp',
@@ -416,6 +425,11 @@ const routes = [
   {
     path: '/real-estate/',
     children: mainRealEstateRoutes
+  },
+  {
+    path: '/rates/',
+    name: 'rates',
+    component: vTariff
   }
 ]
 
@@ -432,12 +446,12 @@ router.beforeEach((to, from, next) => {
   console.log('Маршрут принадлежит группе:', pageType)
 
   // Если маршрут требует авторизации и пользователь не авторизован
-  /* const isAuthenticated = localStorage.getItem('user')
+  const isAuthenticated = localStorage.getItem('user')
   if (to.meta.requiresAuth && !isAuthenticated) {
     next({ name: 'login' }) // Перенаправляем на страницу входа
   } else {
     next() // Продолжаем навигацию
-  } */
+  }
   next()
 })
 

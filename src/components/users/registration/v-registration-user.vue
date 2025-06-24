@@ -113,7 +113,8 @@ export default {
     register() {
       registerUser('users', this.form)
         .then(() => {
-          this.$router.push({ name: 'main' })
+          console.log('Зарегестрировали')
+          /* this.$router.push({ name: 'main' }) */
         })
         .catch((err) => {
           console.error('Ошибка регистрации')

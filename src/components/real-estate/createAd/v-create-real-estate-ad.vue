@@ -275,12 +275,7 @@
 </template>
 
 <script>
-import {
-  getAdditionalyOptions,
-  getOptionsByName,
-  getSelectOptions,
-  getTypeOfSale
-} from '@/api/requests'
+import { getAdditionalyOptionsAppartments, getSelectOptions, getTypeOfSale } from '@/api/requests'
 import vHeader from '@/components/generalComponents/v-header.vue'
 import vSelectStyled from '@/components/generalComponents/v-select-styled.vue'
 import MapTest from '@/components/generalComponents/MapTest.vue'
@@ -437,15 +432,15 @@ export default {
       this.options.currency.options = currencies
     },
 
-    async getAdditionalyOptions() {
-      const additionalOptions = await getAdditionalyOptions()
+    async fetchAdditionalyOptions() {
+      const additionalOptions = await getAdditionalyOptionsAppartments()
       this.additionalOptions = additionalOptions.results
     },
     async loadData() {
       await this.getTypeOfSale()
       await this.getCurrencies()
       await this.getCities()
-      await this.getAdditionalyOptions()
+      await this.fetchAdditionalyOptions()
     }
   },
   mounted() {
@@ -453,5 +448,3 @@ export default {
   }
 }
 </script>
-
-<style scoped></style>

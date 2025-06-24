@@ -8,19 +8,21 @@
             <img v-if="user.photo" :src="user.photo" alt="" />
           </div>
           <div class="">
-            <h3 class="v-profile__author-name">{{ user.user_profile.full_name }}</h3>
+            <h3 class="v-profile__author-name">
+              {{ user.user_profile?.full_name || user.username }}
+            </h3>
             <average-rating :userId="userId" />
           </div>
         </div>
         <div class="v-profile__author-button" @click="writeMessage">Написать</div>
       </div>
-      <div class="v-profile__products-container" v-if="userTransport.length">
+      <div class="v-profile__products-container" v-if="userProducts.length">
         <div class="flex w-full justify-between">
-          <h2 class="v-profile__products-count">{{ userTransport.length }} объявлений</h2>
+          <h2 class="v-profile__products-count">{{ userProducts.length }} объявлений</h2>
           <v-sort class="mr-10" @sort="sortProducts" :ownerId="user?.id" />
         </div>
         <ul class="v-profile__products-list profile-products">
-          <li class="v-profile__products-item" v-for="product in userTransport" :key="product.id">
+          <li class="v-profile__products-item" v-for="product in userProducts" :key="product.id">
             <v-product :product_data="product" :type_of_product="'transport'" />
           </li>
         </ul>
@@ -30,7 +32,13 @@
 </template>
 <script>
 import { getUserId } from '@/utils'
-import { getUserById, getUserTransport, createChat, getUserRealEstate } from '@/api/requests'
+import {
+  getUserById,
+  getUserTransport,
+  createChat,
+  getUserRealEstate,
+  getRealEstateById
+} from '@/api/requests'
 
 import { mapActions, mapGetters } from 'vuex'
 
@@ -45,8 +53,7 @@ export default {
   data() {
     return {
       userProducts: [],
-      user: null,
-      userTransport: []
+      user: null
     }
   },
   computed: {
@@ -58,12 +65,20 @@ export default {
   methods: {
     ...mapActions(['GET_USER_INFO']),
     async setUserInfo() {
-      await this.GET_USER_INFO()
-      this.user = this.USER_INFO
-      let userId = this.$route.params.id ? this.$route.params.id : getUserId()
-      this.userTransport =
-        this.PAGE_TYPE === 'transport' ? await getUserTransport(userId) : await getUserRealEstate()
-      console.log(this.user)
+      if (this.$route.params.id) {
+        this.user = await getUserById(this.$route.params.id)
+        this.userTransport =
+          this.PAGE_TYPE === 'transport'
+            ? await getUserTransport(this.$route.params.id)
+            : await getRealEstateById(this.$route.params.id)
+      } else {
+        await this.GET_USER_INFO()
+        this.user = this.USER_INFO
+      }
+      this.userProducts =
+        this.PAGE_TYPE === 'transport'
+          ? await getUserTransport(this.user.id)
+          : await getRealEstateById(this.user.id)
     },
     writeMessage() {
       createChat(this.user.username).then((res) => {
@@ -71,8 +86,7 @@ export default {
       })
     },
     sortProducts(sortedProducts) {
-      console.log('Пришли')
-      this.userTransport = sortedProducts
+      this.userProducts = sortedProducts
     }
   },
   mounted() {

@@ -3,7 +3,10 @@
   <main class="v-favourites">
     <div class="v-favourites__container container my-container">
       <v-left-menu />
-      <ul class="v-favourites__list profile-products" v-if="!isLoading && favourites.length">
+      <ul
+        class="v-favourites__list profile-products"
+        v-if="!isLoading && favourites && favourites.length"
+      >
         <li
           class="v-favourites__list-item"
           v-for="(product_data, index) in favourites"
@@ -66,20 +69,14 @@ export default {
     async setFavourites() {
       this.isLoading = true
       try {
-        let products = await getFavouriteProducts()
-        this.favourites = []
+        const products = await getFavouriteProducts()
 
-        if (this.PAGE_TYPE === 'transport') {
-          products.forEach((product) => {
-            if (product.real_estate === null) {
-              console.log('В условии')
-              this.favourites.push(product)
-              console.log(this.favourites)
-            }
-          })
-        } else {
-          this.favourites = products.real_estate
-        }
+        // Используем filter вместо forEach + push
+        this.favourites = products.filter((product) =>
+          this.PAGE_TYPE === 'transport'
+            ? product.real_estate === null
+            : product.real_estate !== null
+        )
       } catch (error) {
         console.error('Произошла ошибка при добавлении избранного', error)
       } finally {

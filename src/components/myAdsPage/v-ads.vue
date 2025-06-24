@@ -35,7 +35,7 @@
                     <div class="ad__block">
                       <div class="ad__title">{{ userAd.title }}</div>
                       <div class="ad__price" v-if="currency[userAd.currency]">
-                        {{ userAd.price }} {{ currency[userAd.currency].currency }}
+                        {{ userAd.price }} {{ userAd.currency }}
                       </div>
                     </div>
                     <div class="flex gap-4 ad__buttons">
@@ -90,13 +90,7 @@ export default {
         this.PAGE_TYPE === 'transport' ? await getUserTransport(userId) : await getUserRealEstate()
       this.userAds = userAds
     },
-    async fetchCurrency() {
-      this.userAds.forEach(async (userAd) => {
-        const currentCurrency = await getOptionsById('currency-tr', userAd.currency)
-        this.currency[userAd.currency] = currentCurrency
-        console.log(this.currency)
-      })
-    },
+
     sortProducts(sortedProducts) {
       console.log(sortedProducts)
       this.userAds = sortedProducts
@@ -105,7 +99,6 @@ export default {
   },
   async mounted() {
     await this.fetchUserAds()
-    await this.fetchCurrency()
   }
 }
 </script>

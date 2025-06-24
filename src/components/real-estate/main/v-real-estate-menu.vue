@@ -1,7 +1,7 @@
 <template>
   <div class="v-real-estate-menu">
     <div class="v-real-estate-menu__container">
-      <div class="v-real-estate-menu__top menu-top">
+      <div class="v-real-estate-menu__top menu-top" :class="{ drop: isFilterMenuOpen }">
         <div class="menu-top__container">
           <div
             class="menu-top__block"
@@ -72,7 +72,7 @@
             <transition name="fade">
               <div
                 class="menu-top__dropdown-filter menu-top__dropdown real-estate-filter"
-                v-show="isFilterMenuOpen"
+                v-if="isFilterMenuOpen"
               >
                 <div class="real-estate-filter__row">
                   <div class="form_toggle">

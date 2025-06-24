@@ -130,17 +130,20 @@
             Предложить бартер
             <p>На квартиру или участок</p>
           </button>
-          <div v-if="user && user.user_profile">
+          <div v-if="user">
             <router-link
               class="product-card__owner flex gap-4 mb-4"
               :to="{ name: 'profile', params: { id: user.id } }"
             >
-              <img v-if="user.photo" :src="user.photo" alt="profile" />
+              <div class="product-card__owner-image">
+                <img v-if="user.photo" :src="user.photo" alt="profile" />
+              </div>
+
               <div
-                v-if="user.user_profile.full_name"
+                v-if="user.user_profile?.full_name || user.username"
                 class="product-card__owner-info flex flex-col"
               >
-                <a href="">{{ user.user_profile.full_name }}</a>
+                <a href="">{{ user.user_profile?.full_name || user.username }}</a>
                 Частное лицо
               </div>
             </router-link>
@@ -227,10 +230,15 @@
             {{ product_data.description }}
           </div>
 
-          <div class="product-card__owner flex gap-4 mb-4" v-if="user && user.user_profile">
-            <img v-if="user.photo" :src="user.photo" alt="profile" />
-            <div v-if="user.user_profile.full_name" class="product-card__owner-info flex flex-col">
-              <a href="">{{ user.user_profile.full_name }}</a>
+          <div class="product-card__owner flex gap-4 mb-4" v-if="user">
+            <div class="product-card__owner-image">
+              <img v-if="user.photo" :src="user.photo" alt="profile" />
+            </div>
+            <div
+              v-if="user.user_profile?.full_name || user.username"
+              class="product-card__owner-info flex flex-col"
+            >
+              <a href="">{{ user.user_profile?.full_name || user.username }}</a>
               Частное лицо
             </div>
           </div>
@@ -292,6 +300,7 @@
       </div>
     </div>
   </div>
+
   <div class="compare-win flex" :class="{ hidden: !isCompared }">
     <div class="flex gap-2 items-center">
       <img
@@ -383,6 +392,7 @@ export default {
     },
     async setUser() {
       this.user = await getUserById(this.product_data.owner)
+      console.log(this.user)
     },
 
     setSomparedProducts() {
