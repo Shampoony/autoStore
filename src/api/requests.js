@@ -1,8 +1,8 @@
 import { accessToken } from './auth'
 import { useRouter } from 'vue-router'
 
-const domainPROD = `http://api.rcarentacar.com/`
-const domain = `http://37.252.17.98/`
+const domain = `http://api.rcarentacar.com/`
+const domainDev = `http://37.252.17.98/`
 const router = useRouter()
 
 // Общая функция для всех типов запросов
