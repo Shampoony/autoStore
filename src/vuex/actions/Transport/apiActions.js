@@ -3,7 +3,7 @@ import { accessToken } from '@/api/auth'
 import store from '@/vuex/store'
 
 // Базовый URL API
-const API_BASE_URL = 'http://api.rcarentacar.com/api/'
+const API_BASE_URL = 'https://api.rcarentacar.com/api/'
 
 // Создаем функцию для запросов с проверкой accessToken
 const apiRequest = async (url, method = 'GET', params = {}, requiresAuth = false) => {

@@ -205,7 +205,7 @@ export default {
       e.preventDefault()
       this.isLoading = true
       try {
-        const queryURL = `http://api.rcarentacar.com/api/rent-transport/filter/`
+        const queryURL = `https://api.rcarentacar.com/api/rent-transport/filter/`
         this.filteredRents = (await filterProducts(queryURL, this.form, this.$refs)) || []
       } catch (error) {
         console.error('Ошибка при фильтрации:', error)
@@ -227,11 +227,11 @@ export default {
       const queryParams = window.location.search
       if (queryParams) {
         this.isFilteredProductsFound = true
-        getFilteredProducts(`http://api.rcarentacar.com/api/spare-parts/filter${queryParams}`).then(
-          (products) => {
-            this.filteredRents = products || []
-          }
-        )
+        getFilteredProducts(
+          `https://api.rcarentacar.com/api/spare-parts/filter${queryParams}`
+        ).then((products) => {
+          this.filteredRents = products || []
+        })
       }
     }
   },

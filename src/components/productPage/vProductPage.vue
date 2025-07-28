@@ -260,7 +260,7 @@ export default {
         const productId = Object.values(this.$route.query)[0]
         console.log(typeOfProduct)
         const response = await fetch(
-          `http://api.rcarentacar.com/api/${typeOfProduct}/${typeOfProduct}/${productId}/`,
+          `https://api.rcarentacar.com/api/${typeOfProduct}/${typeOfProduct}/${productId}/`,
           {
             method: 'GET',
             headers: {

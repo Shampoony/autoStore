@@ -6,7 +6,7 @@ import store from '../store'
 
 export default {
   async GET_REVIEWS_FROM_API({ commit }) {
-    return axios('http://api.rcarentacar.com/api/users/reviews/', {
+    return axios('https://api.rcarentacar.com/api/users/reviews/', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -21,7 +21,7 @@ export default {
       })
   },
   async GET_FAVOURITES({ commit }) {
-    return axios('http://api.rcarentacar.com/api/users/favorite/', {
+    return axios('https://api.rcarentacar.com/api/users/favorite/', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -38,7 +38,7 @@ export default {
   },
   async GET_USER_INFO({ commit }) {
     const userId = getUserId()
-    return axios(`http://api.rcarentacar.com/api/users/users/${userId}/`, {
+    return axios(`https://api.rcarentacar.com/api/users/users/${userId}/`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

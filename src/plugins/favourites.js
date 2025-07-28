@@ -1,7 +1,7 @@
 export async function addToFavourites(accessToken, transportId) {
   try {
     const response = await fetch(
-      `http://api.rcarentacar.com/api/transport/favorites/add_favorite/`,
+      `https://api.rcarentacar.com/api/transport/favorites/add_favorite/`,
       {
         method: 'POST',
         headers: {

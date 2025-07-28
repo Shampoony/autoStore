@@ -123,7 +123,7 @@ export default {
       productInFavourites: false,
       swiper: null,
       city: {},
-      apiUrl: 'http://api.rcarentacar.com/'
+      apiUrl: 'https://api.rcarentacar.com/'
     }
   },
   components: {

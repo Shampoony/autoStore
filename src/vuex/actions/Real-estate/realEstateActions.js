@@ -3,7 +3,7 @@ import { accessToken } from '@/api/auth'
 
 export default {
   async GET_REAL_ESTATE_COMPANIES({ commit }) {
-    return axios('http://api.rcarentacar.com/api/users/real-estate-company/', {
+    return axios('https://api.rcarentacar.com/api/users/real-estate-company/', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -19,7 +19,7 @@ export default {
       })
   },
   async GET_REAL_ESTATE_PRODUCTS({ commit }) {
-    return axios('http://api.rcarentacar.com/api/real-estate/real-estate', {
+    return axios('https://api.rcarentacar.com/api/real-estate/real-estate', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -35,7 +35,7 @@ export default {
       })
   },
   async GET_REAL_ESTATE_CATEGORIES({ commit }) {
-    return axios('http://api.rcarentacar.com/api/real-estate/categories', {
+    return axios('https://api.rcarentacar.com/api/real-estate/categories', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

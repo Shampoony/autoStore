@@ -747,7 +747,7 @@ export default {
   },
   data() {
     return {
-      apiUrl: 'http://api.rcarentacar.com/api/transport/filter/?',
+      apiUrl: 'https://api.rcarentacar.com/api/transport/filter/?',
 
       popularCars: [],
       conditions: [],

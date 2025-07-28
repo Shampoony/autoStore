@@ -347,7 +347,7 @@ export default {
     async onSubmit(e) {
       e.preventDefault()
       // Полный URL с фильтром
-      const queryURL = `http://api.rcarentacar.com/api/spare-parts/filter`
+      const queryURL = `https://api.rcarentacar.com/api/spare-parts/filter`
 
       try {
         // Дожидаемся выполнения filterProducts
@@ -365,11 +365,11 @@ export default {
       const queryParams = window.location.search
       if (queryParams) {
         this.isFilteredProductsFound = true
-        getFilteredProducts(`http://api.rcarentacar.com/api/spare-parts/filter${queryParams}`).then(
-          (products) => {
-            this.filteredSpareParts = products || []
-          }
-        )
+        getFilteredProducts(
+          `https://api.rcarentacar.com/api/spare-parts/filter${queryParams}`
+        ).then((products) => {
+          this.filteredSpareParts = products || []
+        })
       }
     }
   },
