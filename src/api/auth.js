@@ -1,3 +1,5 @@
+import { domain } from './requests'
+
 export const accessToken = getAccessToken()
 export function getAccessToken() {
   return JSON.parse(localStorage.getItem('user'))?.access || ''
@@ -6,7 +8,7 @@ export function getAccessToken() {
 export async function logout() {
   try {
     console.log(JSON.stringify({ accesToken: accessToken }))
-    const response = await fetch('http://api.rcarentacar.com/api/users/logout/', {
+    const response = await fetch(`${domain}api/users/logout/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -28,7 +30,7 @@ export async function logout() {
 }
 export async function loginUser(form) {
   try {
-    await fetch('http://api.rcarentacar.com/api/users/login/', {
+    await fetch(`${domain}api/users/login/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -36,7 +38,7 @@ export async function loginUser(form) {
       body: JSON.stringify(form)
     })
 
-    const response = await fetch('http://api.rcarentacar.com/api/users/token/login/', {
+    const response = await fetch(`${domain}api/users/token/login/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

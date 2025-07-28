@@ -1,7 +1,7 @@
 import { accessToken } from './auth'
 import { useRouter } from 'vue-router'
 
-const domain = `https://api.rcarentacar.com/`
+export const domain = `https://api.rcarentacar.com/`
 const domainDev = `https://37.252.17.98/`
 const router = useRouter()
 
